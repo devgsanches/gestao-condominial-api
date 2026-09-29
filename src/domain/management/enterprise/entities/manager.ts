@@ -1,7 +1,8 @@
 import { Entity } from '@/core/entities/entity'
 import type { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import { Optional } from '@/core/types/optional'
 
-interface ManagerProps {
+export interface ManagerProps {
 	name: string
 	email: string
 	password: string
@@ -30,10 +31,14 @@ export class Manager extends Entity<ManagerProps> {
 		return this.props.updatedAt
 	}
 
-	static create(props: ManagerProps, id?: UniqueEntityId) {
+	static create(
+		props: Optional<ManagerProps, 'createdAt'>,
+		id?: UniqueEntityId,
+	) {
 		const manager = new Manager(
 			{
 				...props,
+				createdAt: props.createdAt ?? new Date(),
 			},
 			id,
 		)

@@ -1,7 +1,7 @@
 import { type Either, right } from '@/core/either'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Condominium } from '../../enterprise/entities/condominium'
-import { ICondominiumRepository } from '../repositories/condominium-repository'
+import { ICondominiumsRepository } from '../repositories/condominiums-repository'
 
 interface RegisterCondominiumInput {
 	managerId: UniqueEntityId
@@ -17,7 +17,7 @@ type RegisterCondominiumOutput = Either<
 >
 
 export class RegisterCondominiumUseCase {
-	constructor(private condominiumRepository: ICondominiumRepository) {}
+	constructor(private condominiumRepository: ICondominiumsRepository) {}
 
 	async execute({
 		managerId,

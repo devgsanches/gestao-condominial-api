@@ -17,7 +17,9 @@ export default defineConfig({
 	],
 	resolve: {
 		alias: {
-			src: resolve('./src'),
+			'@/test': resolve('./test'),
+			'@': resolve('./src'),
+			src: resolve('.'),
 			// Prisma client output (see prisma/schema.prisma generator output)
 			'generated/prisma': resolve('./generated/prisma'),
 		},
