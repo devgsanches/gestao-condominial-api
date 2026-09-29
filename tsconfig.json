@@ -23,6 +23,11 @@
     "noFallthroughCasesInSwitch": false,
     "types": [
       "node"
-    ]
+    ],
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    }
   }
 }
