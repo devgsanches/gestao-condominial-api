@@ -1,7 +1,5 @@
 # 🏢 API Gestão Condominial
 
-> 🚧 Projeto em desenvolvimento
-
 API REST que serve um aplicativo mobile para **síndicos** gerenciarem seus condomínios: cadastro de condomínios, controle de manutenções (gerais e periódicas), contratos, documentos e agendamento de reuniões e assembleias.
 
 Construída com **Node.js**, **TypeScript**, **NestJS** e **Prisma**, seguindo **SOLID**, **DDD** e **Clean Architecture**.
