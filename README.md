@@ -46,9 +46,9 @@ Construída com **Node.js**, **TypeScript**, **NestJS** e **Prisma**, seguindo *
 q
 ### Condomínios
 - [x] Deve ser possível que um síndico cadastre um condomínio;
-- [ ] Deve ser possível listar os condomínios do síndico;
-- [ ] Deve ser possível obter o total de condomínios do síndico;
-- [ ] Deve ser possível obter os detalhes de um condomínio;
+- [x] Deve ser possível listar os condomínios do síndico;
+- [x] Deve ser possível obter o total de condomínios do síndico;
+- [x] Deve ser possível obter os detalhes de um condomínio;
 - [ ] Deve ser possível editar e remover um condomínio;
 
 ### Manutenções e contratos
