@@ -15,7 +15,7 @@ describe('RegisterCondominiumUseCase', () => {
 		sut = new RegisterCondominiumUseCase(inMemoryCondominiumsRepository) // system under test
 	})
 
-	it('should be possible for a condominium to register a condominium.', async () => {
+	it('should be possible for a manager to register a condominium.', async () => {
 		const manager = makeManager({
 			name: 'Guilherme Sanches',
 		})
