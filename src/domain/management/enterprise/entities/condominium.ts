@@ -2,7 +2,7 @@ import { Entity } from '@/core/entities/entity'
 import type { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Optional } from '@/core/types/optional'
 
-interface CondominiumProps {
+export interface CondominiumProps {
 	managerId: UniqueEntityId
 	addressId: UniqueEntityId
 	name: string

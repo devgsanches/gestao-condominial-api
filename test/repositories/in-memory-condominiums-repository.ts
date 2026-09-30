@@ -19,6 +19,20 @@ export class InMemoryCondominiumsRepository implements ICondominiumsRepository {
 		return condominium
 	}
 
+	async findByManagerId(
+		managerId: UniqueEntityId,
+	): Promise<Condominium[] | null> {
+		const condominiums = this.items.filter((item) =>
+			item.managerId.equals(managerId),
+		)
+
+		if (condominiums.length === 0) {
+			return null
+		}
+
+		return condominiums
+	}
+
 	// async delete(id: UniqueEntityId) {
 	// 	const condominiums = this.items.filter((item) => item.id !== id)
 
