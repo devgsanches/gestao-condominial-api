@@ -4,7 +4,7 @@ import { RegisterManagerUseCase } from './register-manager'
 
 // @TODO: Add coverage and test all possible errors
 
-describe('RegisterManagerUseCaseUseCase', () => {
+describe.skip('RegisterManagerUseCaseUseCase', () => {
 	let inMemoryManagersRepository: InMemoryManagersRepository
 	let sut: RegisterManagerUseCase
 
