@@ -23,6 +23,10 @@ export class Condominium extends Entity<CondominiumProps> {
 		return this.props.name
 	}
 
+	set name(name: string) {
+		this.props.name = name
+	}
+
 	get createdAt(): Date {
 		return this.props.createdAt
 	}

@@ -49,7 +49,7 @@ q
 - [x] Deve ser possível listar os condomínios do síndico;
 - [x] Deve ser possível obter o total de condomínios do síndico;
 - [x] Deve ser possível obter os detalhes de um condomínio;
-- [ ] Deve ser possível editar e remover um condomínio;
+- [x] Deve ser possível editar e remover um condomínio;
 
 ### Manutenções e contratos
 - [ ] Deve ser possível cadastrar manutenções gerais e periódicas;

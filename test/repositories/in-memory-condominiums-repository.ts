@@ -33,11 +33,21 @@ export class InMemoryCondominiumsRepository implements ICondominiumsRepository {
 		return condominiums
 	}
 
-	// async delete(id: UniqueEntityId) {
-	// 	const condominiums = this.items.filter((item) => item.id !== id)
+	async update(
+		condominium: Pick<Condominium, 'name' | 'id'>,
+	): Promise<Condominium> {
+		const condominiumIndex = this.items.findIndex((i) =>
+			i.id.equals(condominium.id),
+		)
 
-	// 	this.items = condominiums
+		this.items[condominiumIndex].name = condominium.name
 
-	// 	return condominiums
-	// }
+		return this.items[condominiumIndex]
+	}
+
+	async delete(id: UniqueEntityId): Promise<void> {
+		const validCondominiums = this.items.filter((item) => !item.id.equals(id))
+
+		this.items = validCondominiums
+	}
 }
