@@ -39,11 +39,11 @@ Construída com **Node.js**, **TypeScript**, **NestJS** e **Prisma**, seguindo *
 
 ### Autenticação e perfil
 - [ ] Deve ser possível autenticar um síndico com e-mail e senha;
-- [ ] Deve ser possível obter o qperfil do síndico autenticado;
+- [ ] Deve ser possível obter o perfil do síndico autenticado;
 
 ### Autorização
 - [ ] TODAS as rotas devem ser autenticadas (exceto, a de login)
-q
+
 ### Condomínios
 - [x] Deve ser possível que um síndico cadastre um condomínio;
 - [x] Deve ser possível listar os condomínios do síndico;
@@ -80,7 +80,10 @@ q
 
 ---
 
-## 🛠️ Como rodar
+## Remove cache (BIOME)
+rm -rf ~/Library/Caches/dev.biomejs.biome
+
+## 🛠️ Como rodar o projeto
 
 ### Pré-requisitos
 - Node.js 20+
