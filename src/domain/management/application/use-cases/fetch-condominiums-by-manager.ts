@@ -23,7 +23,7 @@ export class FetchCondominiumsByManagerUseCase {
 		managerId,
 	}: FetchCondominiumsByManagerInput): Promise<FetchCondominiumsByManagerOutput> {
 		const condominiums =
-			await this.condominiumRepository.findByManagerId(managerId)
+			await this.condominiumRepository.findManyByManagerId(managerId)
 
 		if (!condominiums) {
 			return left(new NotFoundException())

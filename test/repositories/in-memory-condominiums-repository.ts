@@ -19,15 +19,25 @@ export class InMemoryCondominiumsRepository implements ICondominiumsRepository {
 		return condominium
 	}
 
-	async findByManagerId(
-		managerId: UniqueEntityId,
-	): Promise<Condominium[] | null> {
-		const condominiums = this.items.filter((item) =>
+	async findByManagerId(managerId: UniqueEntityId) {
+		const condominium = this.items.find((item) =>
 			item.managerId.equals(managerId),
 		)
 
-		if (condominiums.length === 0) {
+		if (!condominium) {
 			return null
+		}
+
+		return condominium
+	}
+
+	async findManyByManagerId(managerId: UniqueEntityId) {
+		const condominiums = this.items.filter((item) =>
+			item.managerId.equals(managerId),
+		)	
+
+		if (condominiums.length === 0) {
+			return []
 		}
 
 		return condominiums

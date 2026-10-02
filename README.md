@@ -59,8 +59,8 @@ Construída com **Node.js**, **TypeScript**, **NestJS** e **Prisma**, seguindo *
 - [ ] Deve ser possível anexar documentos a um contrato;
 
 ### Reuniões e assembleias
-- [ ] Deve ser possível agendar reuniões e assembleias;
-- [ ] Deve ser possível listar as reuniões de um condomínio;
+- [x] Deve ser possível agendar reuniões e assembleias;
+- [x] Deve ser possível listar as reuniões de um condomínio;
 - [ ] Deve ser possível cancelar uma reunião;
 
 ## 📏 Regras de Negócio

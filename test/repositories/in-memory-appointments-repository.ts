@@ -42,6 +42,20 @@ export class InMemoryAppointmentsRepository implements IAppointmentsRepository {
 		return assemblies
 	}
 
+	async update(appointment: Meeting | Assembly) {
+		const appointmentIndex = this.items.findIndex((item) =>
+			item.id.equals(appointment.id),
+		)
+
+		if (appointmentIndex === -1) {
+			return null
+		}
+
+		this.items[appointmentIndex] = appointment
+
+		return appointment
+	}
+
 	// async delete(id: UniqueEntityId) {
 	// 	const appointments = this.items.filter((item) => item.id !== id)
 

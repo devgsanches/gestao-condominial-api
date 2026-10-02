@@ -8,4 +8,5 @@ export interface IAppointmentsRepository {
 	findById(id: UniqueEntityId): Promise<Meeting | Assembly | null>
 	findManyMeetingsByCondominiumId(condominiumId: UniqueEntityId): Promise<Meeting[]>
 	findManyAssembliesByCondominiumId(condominiumId: UniqueEntityId): Promise<Assembly[]>
+	update(appointment: Meeting | Assembly): Promise<Meeting | Assembly | null>
 }

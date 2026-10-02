@@ -5,7 +5,8 @@ import { Condominium } from '../../enterprise/entities/condominium'
 export interface ICondominiumsRepository {
 	create(condominium: Condominium): Promise<void>
 	findById(id: UniqueEntityId): Promise<Condominium | null>
-	findByManagerId(managerId: UniqueEntityId): Promise<Condominium[] | null>
+	findManyByManagerId(managerId: UniqueEntityId): Promise<Condominium[]>
+	findByManagerId(managerId: UniqueEntityId): Promise<Condominium | null>
 	update(condominium: Pick<Condominium, 'name' | 'id'>): Promise<Condominium>
 	delete(id: UniqueEntityId): Promise<void>
 }

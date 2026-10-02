@@ -6,6 +6,7 @@ export interface AssemblyProps {
 	condominiumId: UniqueEntityId
 	title: string
 	description: string
+	canceledAt?: Date
 	createdAt: Date
 	updatedAt?: Date
 }
@@ -21,6 +22,14 @@ export class Assembly extends Entity<AssemblyProps> {
 
 	get description(): string {
 		return this.props.description
+	}
+
+	get canceledAt(): Date | undefined {
+		return this.props.canceledAt
+	}
+
+	set canceledAt(canceledAt: Date | undefined) {
+		this.props.canceledAt = canceledAt
 	}
 
 	get createdAt(): Date {
