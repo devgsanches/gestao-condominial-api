@@ -61,11 +61,11 @@ Construída com **Node.js**, **TypeScript**, **NestJS** e **Prisma**, seguindo *
 ### Reuniões e assembleias
 - [x] Deve ser possível agendar reuniões e assembleias;
 - [x] Deve ser possível listar as reuniões de um condomínio;
-- [ ] Deve ser possível cancelar uma reunião;
+- [x] Deve ser possível cancelar uma reunião;
 
 ## 📏 Regras de Negócio
 
-- [ ] Um síndico pode cadastrar no máximo **50** condomínios;
+- [x] Um síndico pode cadastrar no máximo **50** condomínios;
 - [ ] Um síndico só pode visualizar e alterar os condomínios que cadastrou;
 - [ ] Apenas manutenções **periódicas** possuem contrato;
 - [ ] A periodicidade deve ser **mensal**, **trimestral** ou **semestral**;

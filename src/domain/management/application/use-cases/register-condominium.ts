@@ -1,4 +1,4 @@
-import { type Either, right } from '@/core/either'
+import { type Either, left, right } from '@/core/either'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Condominium } from '../../enterprise/entities/condominium'
 import { ICondominiumsRepository } from '../repositories/condominiums-repository'
@@ -10,7 +10,7 @@ interface RegisterCondominiumInput {
 }
 
 type RegisterCondominiumOutput = Either<
-	undefined,
+	Error,
 	{
 		condominium: Condominium
 	}
@@ -24,6 +24,13 @@ export class RegisterCondominiumUseCase {
 		addressId,
 		name,
 	}: RegisterCondominiumInput): Promise<RegisterCondominiumOutput> {
+		const condominiums =
+			await this.condominiumRepository.findManyByManagerId(managerId)
+
+		if (condominiums.length >= 50) {
+			return left(new Error('Maximum number of condominiums reached'))
+		}
+
 		const condominium = Condominium.create({
 			managerId,
 			addressId,
