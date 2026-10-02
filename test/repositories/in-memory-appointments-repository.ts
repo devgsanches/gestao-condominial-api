@@ -1,7 +1,7 @@
 import type { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import type { IAppointmentsRepository } from '@/domain/management/application/repositories/appointments-repository'
-import type { Assembly } from '@/domain/management/enterprise/entities/assembly'
-import type { Meeting } from '@/domain/management/enterprise/entities/meeting'
+import { Assembly } from '@/domain/management/enterprise/entities/assembly'
+import { Meeting } from '@/domain/management/enterprise/entities/meeting'
 
 export class InMemoryAppointmentsRepository implements IAppointmentsRepository {
 	public items: (Meeting | Assembly)[] = []
@@ -18,6 +18,28 @@ export class InMemoryAppointmentsRepository implements IAppointmentsRepository {
 		}
 
 		return appointment
+	}
+
+	async findManyMeetingsByCondominiumId(
+		condominiumId: UniqueEntityId,
+	): Promise<Meeting[]> {
+		const meetings = this.items.filter(
+			(item) =>
+				item instanceof Meeting && item.condominiumId.equals(condominiumId),
+		)
+
+		return meetings
+	}
+
+	async findManyAssembliesByCondominiumId(
+		condominiumId: UniqueEntityId,
+	): Promise<Assembly[]> {
+		const assemblies = this.items.filter(
+			(item) =>
+				item instanceof Assembly && item.condominiumId.equals(condominiumId),
+		)
+
+		return assemblies
 	}
 
 	// async delete(id: UniqueEntityId) {
