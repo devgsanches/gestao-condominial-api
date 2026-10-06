@@ -10,7 +10,7 @@ export class InMemoryManagersRepository implements IManagersRepository {
 	}
 
 	async findById(id: UniqueEntityId) {
-		const manager = this.items.find((item) => item.id === id)
+		const manager = this.items.find((item) => item.id.equals(id))
 
 		if (!manager) {
 			return null
