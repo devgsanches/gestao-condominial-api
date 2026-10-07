@@ -66,7 +66,7 @@ Construída com **Node.js**, **TypeScript**, **NestJS** e **Prisma**, seguindo *
 ## 📏 Regras de Negócio
 
 - [x] Um síndico pode cadastrar no máximo **50** condomínios;
-- [ ] Um síndico só pode visualizar e alterar os condomínios que cadastrou;
+- [x] Um síndico só pode visualizar e alterar os condomínios que cadastrou;
 - [ ] Apenas manutenções **periódicas** possuem contrato;
 - [ ] A periodicidade deve ser **mensal**, **trimestral** ou **semestral**;
 - [ ] Não é possível agendar reuniões em datas passadas;
