@@ -1,12 +1,21 @@
 import type { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import type { IMaintenancesRepository } from '@/domain/management/application/repositories/maintenances-repository'
+import { MaintenanceType } from '@/domain/management/application/use-cases/fetch-maintenances'
 import type { Maintenance } from '@/domain/management/enterprise/entities/maintenance'
 
 export class InMemoryMaintenancesRepository implements IMaintenancesRepository {
+	
 	public items: Maintenance[] = []
 
 	async create(maintenance: Maintenance) {
 		this.items.push(maintenance)
+	}
+
+	async findManyByCondominiumId({ condominiumId, filters }: { condominiumId: UniqueEntityId, filters: { title?: string, type?: MaintenanceType } }) {
+		return this.items
+			.filter((i) => i.condominiumId.equals(condominiumId))
+			.filter((i) => (filters.title ? i.title.includes(filters.title) : true))
+			.filter((i) => (filters.type ? i.type === filters.type : true))
 	}
 
 	async findById(id: UniqueEntityId) {
