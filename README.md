@@ -52,7 +52,7 @@ Construída com **Node.js**, **TypeScript**, **NestJS** e **Prisma**, seguindo *
 - [x] Deve ser possível editar e remover um condomínio;
 
 ### Manutenções e contratos
-- [ ] Deve ser possível cadastrar manutenções gerais e periódicas;
+- [x] Deve ser possível cadastrar manutenções gerais e periódicas;
 - [ ] Deve ser possível buscar manutenções por nome e tipo;
 - [ ] Deve ser possível editar e remover uma manutenção;
 - [ ] Deve ser possível cadastrar um contrato para uma manutenção periódica;
