@@ -28,6 +28,15 @@ export class InMemoryMaintenancesRepository implements IMaintenancesRepository {
 		return maintenance
 	}
 
+	async update(maintenance: Maintenance): Promise<Maintenance> {
+		const maintenanceIndex = this.items.findIndex((item) => item.id.equals(maintenance.id))
+
+		this.items[maintenanceIndex] = maintenance
+
+		return this.items[maintenanceIndex]
+	}
+	
+
 	async delete(id: UniqueEntityId) {
 		const maintenances = this.items.filter((item) => !item.id.equals(id))
 

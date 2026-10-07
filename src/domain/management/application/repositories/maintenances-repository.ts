@@ -7,5 +7,6 @@ export interface IMaintenancesRepository {
 	create(maintenance: Maintenance): Promise<void>
 	findById(id: UniqueEntityId): Promise<Maintenance | null>
 	findManyByCondominiumId({ condominiumId, filters }: { condominiumId: UniqueEntityId, filters: { title?: string, type?: MaintenanceType } }): Promise<Maintenance[]>
+	update(maintenance: Maintenance): Promise<Maintenance>
 	delete(id: UniqueEntityId): Promise<void>
 }

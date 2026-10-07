@@ -53,9 +53,10 @@ Construída com **Node.js**, **TypeScript**, **NestJS** e **Prisma**, seguindo *
 
 ### Manutenções e contratos
 - [x] Deve ser possível cadastrar manutenções gerais e periódicas;
-- [ ] Deve ser possível buscar manutenções por nome e tipo;
-- [ ] Deve ser possível editar e remover uma manutenção;
+- [x] Deve ser possível buscar manutenções por nome e tipo;
+- [x] Deve ser possível editar (title e description) de uma manutenção;
 - [ ] Deve ser possível cadastrar um contrato para uma manutenção periódica;
+- [ ] Deve ser possível cancelar uma manutenção e invalidar o contrato equivalente;
 - [ ] Deve ser possível anexar documentos a um contrato;
 
 ### Reuniões e assembleias
