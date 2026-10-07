@@ -1,11 +1,13 @@
 import { Entity } from '@/core/entities/entity'
 import type { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Optional } from '@/core/types/optional'
+import { Slug } from './value-objects/slug'
 
 export interface CondominiumProps {
 	managerId: UniqueEntityId
 	addressId: UniqueEntityId
 	name: string
+	slug: Slug
 	createdAt: Date
 	updatedAt?: Date
 }
@@ -25,6 +27,10 @@ export class Condominium extends Entity<CondominiumProps> {
 
 	set name(name: string) {
 		this.props.name = name
+	}
+
+	get slug(): Slug {
+		return this.props.slug
 	}
 
 	get createdAt(): Date {
