@@ -2,6 +2,7 @@ import { type Either, left, right } from '@/core/either'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Condominium } from '../../enterprise/entities/condominium'
 import { ICondominiumsRepository } from '../repositories/condominiums-repository'
+import { Slug } from '../../enterprise/entities/value-objects/slug'
 
 interface RegisterCondominiumInput {
 	managerId: UniqueEntityId
@@ -35,6 +36,7 @@ export class RegisterCondominiumUseCase {
 			managerId,
 			addressId,
 			name,
+			slug: Slug.createFromText(name),
 		})
 
 		await this.condominiumRepository.create(condominium)
