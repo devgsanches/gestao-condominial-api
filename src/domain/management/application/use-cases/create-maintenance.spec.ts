@@ -40,19 +40,21 @@ describe('CreateMaintenanceUseCase', () => {
 			condominiumId: condominium.id,
 			title: 'Título da manutenção',
 			description: 'Descrição da manutenção',
+			periodicity: 'month',
 		})
 
 		expect(response.isRight()).toBe(true)
 		expect(response.isLeft()).toBe(false)
 		if (response.isRight()) {
-			expect(response.result).toMatchObject({
-				maintenance: expect.objectContaining({
-					id: expect.any(UniqueEntityId),
-					condominiumId: expect.any(UniqueEntityId),
-					title: 'Título da manutenção',
-					description: 'Descrição da manutenção',
-					type: 'general',
-				}),
+			const { maintenance } = response.result
+
+			expect(maintenance).toMatchObject({
+				id: expect.any(UniqueEntityId),
+				condominiumId: expect.any(UniqueEntityId),
+				title: 'Título da manutenção',
+				description: 'Descrição da manutenção',
+				type: 'general',
+				periodicity: null,
 			})
 		}
 	})
@@ -75,6 +77,7 @@ describe('CreateMaintenanceUseCase', () => {
 			title: 'Título da manutenção',
 			description: 'Descrição da manutenção',
 			type: 'periodic',
+			periodicity: 'semester',
 		})
 
 		expect(response.isRight()).toBe(true)
@@ -87,6 +90,7 @@ describe('CreateMaintenanceUseCase', () => {
 					title: 'Título da manutenção',
 					description: 'Descrição da manutenção',
 					type: 'periodic',
+					periodicity: 'semester',
 				}),
 			})
 		}

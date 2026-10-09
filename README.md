@@ -68,8 +68,8 @@ Construída com **Node.js**, **TypeScript**, **NestJS** e **Prisma**, seguindo *
 
 - [x] Um síndico pode cadastrar no máximo **50** condomínios;
 - [x] Um síndico só pode visualizar e alterar os condomínios que cadastrou;
-- [ ] Apenas manutenções **periódicas** possuem contrato;
-- [ ] A periodicidade deve ser **mensal**, **trimestral** ou **semestral**;
+- [x] Apenas manutenções **periódicas** possuem contrato;
+- [x] A periodicidade deve ser **mensal**, **trimestral** ou **semestral**;
 - [ ] Não é possível agendar reuniões em datas passadas;
 
 ## ⚙️ Requisitos Não-Funcionais

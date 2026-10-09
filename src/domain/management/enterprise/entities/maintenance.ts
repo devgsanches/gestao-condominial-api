@@ -5,7 +5,8 @@ import { Optional } from '@/core/types/optional'
 export interface MaintenanceProps {
 	condominiumId: UniqueEntityId
 	type: 'general' | 'periodic'
-  title: string
+	periodicity: 'month' | 'trimester' | 'semester' | null
+	title: string
 	description: string
 	canceledAt?: Date
 	createdAt: Date
@@ -21,19 +22,23 @@ export class Maintenance extends Entity<MaintenanceProps> {
 		return this.props.type
 	}
 
+	get periodicity(): 'month' | 'trimester' | 'semester' | null {
+		return this.props.periodicity
+	}
+
 	get title(): string {
 		return this.props.title
 	}
 
-  set title(title: string) {
+	set title(title: string) {
 		this.props.title = title
 	}
 
-  get description(): string {
+	get description(): string {
 		return this.props.description
 	}
 
-  set description(description: string) {
+	set description(description: string) {
 		this.props.description = description
 	}
 
@@ -41,7 +46,7 @@ export class Maintenance extends Entity<MaintenanceProps> {
 		return this.props.canceledAt
 	}
 
-  set canceledAt(canceledAt: Date | undefined) {
+	set canceledAt(canceledAt: Date | undefined) {
 		this.props.canceledAt = canceledAt
 	}
 

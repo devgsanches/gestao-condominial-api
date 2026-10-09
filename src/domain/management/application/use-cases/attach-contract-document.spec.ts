@@ -70,7 +70,6 @@ describe('AttachContractDocument UseCase', () => {
 				}),
 			)
 			expect(contract.attachments.currentItems).toHaveLength(4)
-			console.log(contract.attachments.currentItems)
 
 			expect(contract.attachments.currentItems).toEqual([
 				expect.objectContaining({

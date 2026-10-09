@@ -85,12 +85,13 @@ export class Contract extends Entity<ContractProps> {
 	}
 
 	static create(
-		props: Optional<ContractProps, 'createdAt'>,
+		props: Optional<ContractProps, 'slug' | 'createdAt'>,
 		id?: UniqueEntityId,
 	) {
 		const contract = new Contract(
 			{
 				...props,
+				slug: props.slug ?? Slug.createFromText(props.title),
 				attachments: props.attachments ?? new ContractAttachmentList([]),
 				createdAt: props.createdAt ?? new Date(),
 			},

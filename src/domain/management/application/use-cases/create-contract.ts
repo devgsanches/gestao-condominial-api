@@ -1,11 +1,12 @@
 import {
-  BadRequestException,
-  NotFoundException,
-  UnauthorizedException,
+	BadRequestException,
+	NotFoundException,
+	UnauthorizedException,
 } from '@nestjs/common'
 import { type Either, left, right } from '@/core/either'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Contract } from '../../enterprise/entities/contract'
+import { ContractAttachmentList } from '../../enterprise/entities/contract-attachment-list'
 import { ICondominiumsRepository } from '../repositories/condominiums-repository'
 import { IContractsRepository } from '../repositories/contracts-repository'
 import { IMaintenancesRepository } from '../repositories/maintenances-repository'
@@ -76,6 +77,7 @@ export class CreateContractUseCase {
 			title,
 			description,
 			isValid: true,
+			attachments: new ContractAttachmentList([]),
 			startVigencyDate,
 			endVigencyDate,
 		})

@@ -1,22 +1,21 @@
+import { NotFoundException, UnauthorizedException } from '@nestjs/common'
 import { type Either, left, right } from '@/core/either'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { Condominium } from '../../enterprise/entities/condominium'
-import { ICondominiumsRepository } from '../repositories/condominiums-repository'
 import { Maintenance } from '../../enterprise/entities/maintenance'
+import { ICondominiumsRepository } from '../repositories/condominiums-repository'
 import { IMaintenancesRepository } from '../repositories/maintenances-repository'
-import { NotFoundException, UnauthorizedException } from '@nestjs/common'
 
 interface CreateMaintenanceInput {
 	managerId: UniqueEntityId
 	condominiumId: UniqueEntityId
-  type?: 'general' | 'periodic' 
-  title: string
-  description: string
+	type?: 'general' | 'periodic'
+	periodicity?: 'month' | 'trimester' | 'semester' | null
+	title: string
+	description: string
 }
 
 type CreateMaintenanceOutput = Either<
-	NotFoundException |
-	UnauthorizedException,
+	NotFoundException | UnauthorizedException,
 	{
 		maintenance: Maintenance
 	}
@@ -24,13 +23,15 @@ type CreateMaintenanceOutput = Either<
 
 export class CreateMaintenanceUseCase {
 	constructor(
-    private condominiumRepository: ICondominiumsRepository,
-    private maintenanceRepository: IMaintenancesRepository) {}
+		private condominiumRepository: ICondominiumsRepository,
+		private maintenanceRepository: IMaintenancesRepository,
+	) {}
 
 	async execute({
 		managerId,
 		condominiumId,
 		type = 'general',
+		periodicity = null,
 		title,
 		description,
 	}: CreateMaintenanceInput): Promise<CreateMaintenanceOutput> {
@@ -46,9 +47,10 @@ export class CreateMaintenanceUseCase {
 			return left(new UnauthorizedException())
 		}
 
-    const maintenance = Maintenance.create({
+		const maintenance = Maintenance.create({
 			condominiumId,
-			type: type ?? 'general',
+			type,
+			periodicity: type === 'general' ? null : periodicity,
 			title,
 			description,
 		})
