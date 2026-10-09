@@ -4,6 +4,7 @@ import {
 	Contract,
 	ContractProps,
 } from '@/domain/management/enterprise/entities/contract'
+import { ContractAttachmentList } from '@/domain/management/enterprise/entities/contract-attachment-list'
 import { Slug } from '@/domain/management/enterprise/entities/value-objects/slug'
 
 export function makeContract(
@@ -21,6 +22,7 @@ export function makeContract(
 			isValid: true,
 			startVigencyDate: faker.date.recent(),
 			endVigencyDate: faker.date.future(),
+			attachments: new ContractAttachmentList([]),
 			createdAt: new Date(),
 			...override,
 		},

@@ -57,7 +57,7 @@ Construída com **Node.js**, **TypeScript**, **NestJS** e **Prisma**, seguindo *
 - [x] Deve ser possível editar (title e description) de uma manutenção;
 - [x] Deve ser possível cadastrar um contrato para uma manutenção periódica;
 - [x] Deve ser possível cancelar uma manutenção e, se a manutenção for periódica, invalidar o contrato equivalente;
-- [ ] Deve ser possível anexar documentos a um contrato;
+- [x] Deve ser possível anexar documentos a um contrato;
 
 ### Reuniões e assembleias
 - [x] Deve ser possível agendar reuniões e assembleias;
