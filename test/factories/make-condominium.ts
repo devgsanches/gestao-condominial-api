@@ -4,16 +4,20 @@ import {
 	Condominium,
 	CondominiumProps,
 } from '@/domain/management/enterprise/entities/condominium'
+import { Slug } from '@/domain/management/enterprise/entities/value-objects/slug'
 
 export function makeCondominium(
 	override: Partial<CondominiumProps> = {},
 	id?: UniqueEntityId,
 ) {
+	const name = faker.company.name()
+
 	const condominium = Condominium.create(
 		{
 			managerId: new UniqueEntityId(),
 			addressId: new UniqueEntityId(),
-			name: faker.company.name(),
+			name,
+			slug: Slug.createFromText(name),
 			createdAt: new Date(),
 			...override,
 		},

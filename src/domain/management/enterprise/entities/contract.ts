@@ -1,10 +1,12 @@
 import { Entity } from '@/core/entities/entity'
 import type { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Optional } from '@/core/types/optional'
+import { Slug } from './value-objects/slug'
 
 export interface ContractProps {
 	maintenanceId: UniqueEntityId
 	title: string
+	slug: Slug
 	description: string
 	isValid: boolean
 	startVigencyDate: Date
@@ -38,6 +40,11 @@ export class Contract extends Entity<ContractProps> {
 		this.props.isValid = isValid
 	}
 
+	invalidate() {
+		this.isValid = false
+		this.touch()
+	}
+
 	get startVigencyDate(): Date {
 		return this.props.startVigencyDate
 	}
@@ -60,6 +67,10 @@ export class Contract extends Entity<ContractProps> {
 
 	get updatedAt(): Date | undefined {
 		return this.props.updatedAt
+	}
+
+	touch() {
+		this.props.updatedAt = new Date()
 	}
 
 	static create(

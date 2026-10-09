@@ -9,6 +9,12 @@ export class InMemoryContractsRepository implements IContractsRepository {
 		this.items.push(contract)
 	}
 
+	async save(contract: Contract) {
+		const contractIndex = this.items.findIndex((item) => item.id.equals(contract.id))
+
+		this.items[contractIndex] = contract
+	}
+
 	async findById(id: UniqueEntityId) {
 		const contract = this.items.find((item) => item.id.equals(id))
 
@@ -23,5 +29,17 @@ export class InMemoryContractsRepository implements IContractsRepository {
 		const contracts = this.items.filter((item) => !item.id.equals(id))
 
 		this.items = contracts
+	}
+
+	async findByMaintenanceId(maintenanceId: UniqueEntityId) {
+		const contract = this.items.find((item) =>
+			item.maintenanceId.equals(maintenanceId),
+		)
+
+		if (!contract) {
+			return null
+		}
+
+		return contract
 	}
 }

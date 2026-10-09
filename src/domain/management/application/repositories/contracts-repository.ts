@@ -4,6 +4,8 @@ import { Contract } from '../../enterprise/entities/contract'
 
 export interface IContractsRepository {
 	create(contract: Contract): Promise<void>
+	save(contract: Contract): Promise<void>
 	findById(id: UniqueEntityId): Promise<Contract | null>
 	delete(id: UniqueEntityId): Promise<void>
+	findByMaintenanceId(maintenanceId: UniqueEntityId): Promise<Contract | null>
 }

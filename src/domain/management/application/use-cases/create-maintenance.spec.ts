@@ -1,10 +1,10 @@
+import { NotFoundException, UnauthorizedException } from '@nestjs/common'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import { makeCondominium } from '@/test/factories/make-condominium'
 import { makeManager } from '@/test/factories/make-manager'
 import { InMemoryCondominiumsRepository } from '@/test/repositories/in-memory-condominiums-repository'
-import { CreateMaintenanceUseCase } from './create-maintenance'
 import { InMemoryMaintenancesRepository } from '@/test/repositories/in-memory-maintenances-repository'
-import { makeCondominium } from '@/test/factories/make-condominium'
-import { NotFoundException, UnauthorizedException } from '@nestjs/common'
+import { CreateMaintenanceUseCase } from './create-maintenance'
 
 // @TODO: Add coverage and test all possible errors
 
@@ -17,7 +17,10 @@ describe('CreateMaintenanceUseCase', () => {
 		inMemoryCondominiumsRepository = new InMemoryCondominiumsRepository()
 		inMemoryMaintenancesRepository = new InMemoryMaintenancesRepository()
 
-		sut = new CreateMaintenanceUseCase(inMemoryCondominiumsRepository, inMemoryMaintenancesRepository) // system under test
+		sut = new CreateMaintenanceUseCase(
+			inMemoryCondominiumsRepository,
+			inMemoryMaintenancesRepository,
+		) // system under test
 	})
 
 	it('should be possible for a manager to create a general maintenance at a condominium.', async () => {

@@ -4,14 +4,27 @@ import { MaintenanceType } from '@/domain/management/application/use-cases/fetch
 import type { Maintenance } from '@/domain/management/enterprise/entities/maintenance'
 
 export class InMemoryMaintenancesRepository implements IMaintenancesRepository {
-	
 	public items: Maintenance[] = []
 
 	async create(maintenance: Maintenance) {
 		this.items.push(maintenance)
 	}
 
-	async findManyByCondominiumId({ condominiumId, filters }: { condominiumId: UniqueEntityId, filters: { title?: string, type?: MaintenanceType } }) {
+	async save(maintenance: Maintenance) {
+		const maintenanceIndex = this.items.findIndex((item) =>
+			item.id.equals(maintenance.id),
+		)
+
+		this.items[maintenanceIndex] = maintenance
+	}
+
+	async findManyByCondominiumId({
+		condominiumId,
+		filters,
+	}: {
+		condominiumId: UniqueEntityId
+		filters: { title?: string; type?: MaintenanceType }
+	}) {
 		return this.items
 			.filter((i) => i.condominiumId.equals(condominiumId))
 			.filter((i) => (filters.title ? i.title.includes(filters.title) : true))
@@ -29,13 +42,14 @@ export class InMemoryMaintenancesRepository implements IMaintenancesRepository {
 	}
 
 	async update(maintenance: Maintenance): Promise<Maintenance> {
-		const maintenanceIndex = this.items.findIndex((item) => item.id.equals(maintenance.id))
+		const maintenanceIndex = this.items.findIndex((item) =>
+			item.id.equals(maintenance.id),
+		)
 
 		this.items[maintenanceIndex] = maintenance
 
 		return this.items[maintenanceIndex]
 	}
-	
 
 	async delete(id: UniqueEntityId) {
 		const maintenances = this.items.filter((item) => !item.id.equals(id))
