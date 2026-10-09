@@ -1,6 +1,7 @@
 import { Entity } from '@/core/entities/entity'
 import type { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Optional } from '@/core/types/optional'
+import { ContractAttachmentList } from './contract-attachment-list'
 import { Slug } from './value-objects/slug'
 
 export interface ContractProps {
@@ -11,6 +12,7 @@ export interface ContractProps {
 	isValid: boolean
 	startVigencyDate: Date
 	endVigencyDate: Date
+	attachments: ContractAttachmentList
 	createdAt: Date
 	updatedAt?: Date
 }
@@ -61,6 +63,15 @@ export class Contract extends Entity<ContractProps> {
 		this.props.endVigencyDate = date
 	}
 
+	get attachments(): ContractAttachmentList {
+		return this.props.attachments
+	}
+
+	set attachments(attachments: ContractAttachmentList) {
+		this.props.attachments = attachments
+		this.touch()
+	}
+
 	get createdAt(): Date {
 		return this.props.createdAt
 	}
@@ -80,6 +91,7 @@ export class Contract extends Entity<ContractProps> {
 		const contract = new Contract(
 			{
 				...props,
+				attachments: props.attachments ?? new ContractAttachmentList([]),
 				createdAt: props.createdAt ?? new Date(),
 			},
 			id,
