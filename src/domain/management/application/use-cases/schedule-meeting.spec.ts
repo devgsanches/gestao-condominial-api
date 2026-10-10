@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker'
 import { UnauthorizedException } from '@nestjs/common'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { makeCondominium } from '@/test/factories/make-condominium'
@@ -12,11 +13,14 @@ describe('ScheduleMeetingUseCase', () => {
 	let inMemoryCondominiumsRepository: InMemoryCondominiumsRepository
 	let inMemoryAppointmentsRepository: InMemoryAppointmentsRepository
 
+	let scheduledAt: Date
 	let sut: ScheduleMeetingUseCase
 
 	beforeEach(() => {
 		inMemoryCondominiumsRepository = new InMemoryCondominiumsRepository()
 		inMemoryAppointmentsRepository = new InMemoryAppointmentsRepository()
+
+		scheduledAt = faker.date.future()
 
 		sut = new ScheduleMeetingUseCase(
 			inMemoryCondominiumsRepository,
@@ -42,6 +46,7 @@ describe('ScheduleMeetingUseCase', () => {
 			type: ScheduleType.MEETING,
 			title: 'Reunião Teste',
 			description: 'Descrição da reunião teste',
+			scheduledAt,
 		})
 
 		expect(response.isRight()).toBe(true)
@@ -74,6 +79,7 @@ describe('ScheduleMeetingUseCase', () => {
 			type: ScheduleType.ASSEMBLY,
 			title: 'Assembleia Teste',
 			description: 'Descrição da assembleia teste',
+			scheduledAt,
 		})
 
 		expect(response.isRight()).toBe(true)
@@ -105,6 +111,7 @@ describe('ScheduleMeetingUseCase', () => {
 			type: ScheduleType.MEETING,
 			title: 'Reunião Teste',
 			description: 'Descrição da reunião teste',
+			scheduledAt,
 		})
 
 		expect(response.isLeft()).toBe(true)
@@ -131,6 +138,7 @@ describe('ScheduleMeetingUseCase', () => {
 			type: ScheduleType.ASSEMBLY,
 			title: 'Assembleia Teste',
 			description: 'Descrição da assembleia teste',
+			scheduledAt,
 		})
 
 		expect(response.isLeft()).toBe(true)
