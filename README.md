@@ -70,7 +70,7 @@ Construída com **Node.js**, **TypeScript**, **NestJS** e **Prisma**, seguindo *
 - [x] Um síndico só pode visualizar e alterar os condomínios que cadastrou;
 - [x] Apenas manutenções **periódicas** possuem contrato;
 - [x] A periodicidade deve ser **mensal**, **trimestral** ou **semestral**;
-- [ ] Não é possível agendar reuniões em datas passadas;
+- [x] Não é possível agendar reuniões em datas passadas;
 
 ## ⚙️ Requisitos Não-Funcionais
 

@@ -1,4 +1,9 @@
-import { NotFoundException, UnauthorizedException } from '@nestjs/common'
+import {
+	BadRequestException,
+	NotFoundException,
+	UnauthorizedException,
+} from '@nestjs/common'
+import { compareAsc } from 'date-fns'
 import { type Either, left, right } from '@/core/either'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Assembly } from '../../enterprise/entities/assembly'
@@ -17,6 +22,7 @@ interface ScheduleMeetingInput {
 	type: ScheduleType
 	title: string
 	description: string
+	scheduledAt: Date
 }
 
 type ScheduleMeetingOutput = Either<
@@ -37,6 +43,7 @@ export class ScheduleMeetingUseCase {
 		type,
 		title,
 		description,
+		scheduledAt,
 	}: ScheduleMeetingInput): Promise<ScheduleMeetingOutput> {
 		const condominium = await this.condominiumRepository.findById(condominiumId)
 
@@ -50,13 +57,27 @@ export class ScheduleMeetingUseCase {
 			return left(new UnauthorizedException())
 		}
 
+		const scheduleDate = new Date(scheduledAt)
+		const today = new Date()
+
+		const isScheduleDateIsValid = compareAsc(scheduleDate, today)
+
+		if (!isScheduleDateIsValid) {
+			return left(
+				new BadRequestException(
+					'Schedule date is in the past. Please, select a date in the future.',
+				),
+			)
+		}
+
 		const isAssembly = type === ScheduleType.ASSEMBLY
 
 		if (!isAssembly) {
 			const meeting = Meeting.create({
 				condominiumId,
 				title,
-				description,
+				description,	
+				scheduledAt,
 			})
 
 			await this.appointmentsRepository.create(meeting)
@@ -68,6 +89,7 @@ export class ScheduleMeetingUseCase {
 			condominiumId,
 			title,
 			description,
+			scheduledAt,
 		})
 
 		await this.appointmentsRepository.create(assembly)

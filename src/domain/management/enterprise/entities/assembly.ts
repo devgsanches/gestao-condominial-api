@@ -6,6 +6,7 @@ export interface AssemblyProps {
 	condominiumId: UniqueEntityId
 	title: string
 	description: string
+	scheduledAt: Date
 	canceledAt?: Date
 	createdAt: Date
 	updatedAt?: Date
