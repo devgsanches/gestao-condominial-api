@@ -5,4 +5,5 @@ import { Manager } from '../../enterprise/entities/manager'
 export interface IManagersRepository {
 	create(manager: Manager): Promise<void>
 	findById(id: UniqueEntityId): Promise<Manager | null>
+	findByEmail(email: string): Promise<Manager | null>
 }

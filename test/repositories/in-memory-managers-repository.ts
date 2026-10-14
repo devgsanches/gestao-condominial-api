@@ -19,6 +19,16 @@ export class InMemoryManagersRepository implements IManagersRepository {
 		return manager
 	}
 
+	async findByEmail(email: string) {
+		const manager = this.items.find((item) => item.email === email)
+
+		if (!manager) {
+			return null
+		}
+
+		return manager
+	}
+
 	// async delete(id: UniqueEntityId) {
 	// 	const managers = this.items.filter((item) => item.id !== id)
 
