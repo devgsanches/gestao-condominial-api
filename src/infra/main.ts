@@ -1,10 +1,13 @@
 import { ValidationPipe, VersioningType } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import { AppModule } from './app.module'
+import { EnvService } from './env/env.service'
 
 async function bootstrap() {
-	const port = process.env.PORT ?? 3333
 	const app = await NestFactory.create(AppModule)
+
+	const configService = app.get(EnvService)
+	const port = configService.get('PORT') ?? 3333
 
 	app.enableVersioning({
 		type: VersioningType.URI,
