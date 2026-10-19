@@ -1,6 +1,5 @@
 # CMD + \ = split screen to view response on a side
 @baseUrl = http://localhost:3333
-
 @authToken = {{authenticate.response.body.access_token}}
 
 # @name healthCheck
@@ -28,9 +27,6 @@ Content-Type: application/json
 	"email": "claudia@email.com",
 	"password": "1q2w3e4r"
 }
-
-###
-
 
 ###
 
