@@ -84,6 +84,9 @@ Construída com **Node.js**, **TypeScript**, **NestJS** e **Prisma**, seguindo *
 ## Remove cache (BIOME)
 rm -rf ~/Library/Caches/dev.biomejs.biome
 
+## Type-checking (verifica se há erro de ts na app, e não emite nenhum build )
+pnpm tsc --noEmit
+
 ## 🛠️ Como rodar o projeto
 
 ### Pré-requisitos
