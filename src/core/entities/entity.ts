@@ -13,6 +13,7 @@ export class Entity<Props> {
 		this._id = id ?? new UniqueEntityId(id)
 	}
 
+	// biome-ignore lint/suspicious/noExplicitAny: any é usado para comparar entidades
 	public equals(entity: Entity<any>): boolean {
 		if (entity === this) {
 			return true

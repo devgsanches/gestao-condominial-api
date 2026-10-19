@@ -6,7 +6,6 @@ import { makeManager } from '@/test/factories/make-manager'
 import { InMemoryAppointmentsRepository } from '@/test/repositories/in-memory-appointments-repository'
 import { InMemoryCondominiumsRepository } from '@/test/repositories/in-memory-condominiums-repository'
 import { FetchAppointmentsUseCase } from './fetch-appointments'
-import { FetchCondominiumsByManagerUseCase } from './fetch-condominiums-by-manager'
 import { ScheduleType } from './schedule-meeting'
 
 // @TODO: Add coverage and test all possible errors

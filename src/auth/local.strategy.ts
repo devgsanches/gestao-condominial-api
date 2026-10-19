@@ -9,6 +9,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 		super({ usernameField: 'email' })
 	}
 
+	// biome-ignore lint/suspicious/noExplicitAny: any é usado para retornar o usuário sem a senha
 	async validate(email: string, password: string): Promise<any> {
 		const manager = await this.authService.validateUser(email, password)
 		if (!manager) {

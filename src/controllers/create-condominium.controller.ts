@@ -3,7 +3,6 @@ import { CurrentUser } from '@/auth/current-user-decorator'
 import { UserPayload } from '@/auth/jwt.strategy'
 import { JwtAuthGuard } from '@/auth/jwt-auth.guard'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { CreateCondominiumUseCase } from '@/domain/management/application/use-cases/create-condominium'
 import { CreateCondominiumRequestDTO } from '@/dtos/create-condominium'
 
 @Controller({
@@ -12,7 +11,9 @@ import { CreateCondominiumRequestDTO } from '@/dtos/create-condominium'
 })
 @UseGuards(JwtAuthGuard)
 export class CreateCondominiumController {
-	constructor(private createCondominiumUseCase: CreateCondominiumUseCase) {}
+	constructor(
+		/* private createCondominiumUseCase: CreateCondominiumUseCase */
+	) {}
 
 	@Post()
 	@HttpCode(201)
@@ -20,7 +21,7 @@ export class CreateCondominiumController {
 		@Body() body: CreateCondominiumRequestDTO,
 		@CurrentUser() user: UserPayload,
 	) {
-		const { managerId, addressId, name } = body
+		const { addressId, name } = body
 
 		// await this.createCondominiumUseCase.execute({
 		//   managerId: new UniqueEntityId(managerId),

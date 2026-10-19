@@ -3,13 +3,6 @@ import { IsNotEmpty, IsString } from 'class-validator'
 
 export class CreateCondominiumRequestDTO {
 	@ApiProperty({
-		description: 'Manager ID',
-	})
-	@IsString()
-	@IsNotEmpty()
-	managerId: string
-
-	@ApiProperty({
 		description: 'Address ID',
 	})
 	@IsString()
