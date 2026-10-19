@@ -38,7 +38,7 @@ Construída com **Node.js**, **TypeScript**, **NestJS** e **Prisma**, seguindo *
 ## ✅ Requisitos Funcionais
 
 ### Autenticação e perfil
-- [ ] Deve ser possível autenticar um síndico com e-mail e senha;
+- [x] Deve ser possível autenticar um síndico com e-mail e senha;
 - [ ] Deve ser possível obter o perfil do síndico autenticado;
 
 ### Autorização
