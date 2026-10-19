@@ -3,33 +3,40 @@ import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Condominium } from '../../enterprise/entities/condominium'
 import { ICondominiumsRepository } from '../repositories/condominiums-repository'
 import { Slug } from '../../enterprise/entities/value-objects/slug'
+import { BadRequestException, ConflictException } from '@nestjs/common'
 
-interface RegisterCondominiumInput {
+interface CreateCondominiumInput {
 	managerId: UniqueEntityId
 	addressId: UniqueEntityId
 	name: string
 }
 
-type RegisterCondominiumOutput = Either<
-	Error,
+type CreateCondominiumOutput = Either<
+ConflictException | BadRequestException,
 	{
 		condominium: Condominium
 	}
 >
 
-export class RegisterCondominiumUseCase {
+export class CreateCondominiumUseCase {
 	constructor(private condominiumRepository: ICondominiumsRepository) {}
 
 	async execute({
 		managerId,
 		addressId,
 		name,
-	}: RegisterCondominiumInput): Promise<RegisterCondominiumOutput> {
+	}: CreateCondominiumInput): Promise<CreateCondominiumOutput> {
+		const condominiumAlreadyExists = await this.condominiumRepository.findByName(name)
+		
+		if (condominiumAlreadyExists) {
+			return left(new ConflictException(`Condominium with name "${name}" already exists`))
+		}
+
 		const condominiums =
 			await this.condominiumRepository.findManyByManagerId(managerId)
 
 		if (condominiums.length >= 50) {
-			return left(new Error('Maximum number of condominiums reached'))
+			return left(new BadRequestException('Maximum number of condominiums per manager reached'))
 		}
 
 		const condominium = Condominium.create({

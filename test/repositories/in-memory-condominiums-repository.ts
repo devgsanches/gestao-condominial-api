@@ -3,6 +3,7 @@ import type { ICondominiumsRepository } from '@/domain/management/application/re
 import type { Condominium } from '@/domain/management/enterprise/entities/condominium'
 
 export class InMemoryCondominiumsRepository implements ICondominiumsRepository {
+	
 	public items: Condominium[] = []
 
 	async create(condominium: Condominium) {
@@ -11,6 +12,16 @@ export class InMemoryCondominiumsRepository implements ICondominiumsRepository {
 
 	async findById(id: UniqueEntityId) {
 		const condominium = this.items.find((item) => item.id === id)
+
+		if (!condominium) {
+			return null
+		}
+
+		return condominium
+	}
+
+	async findByName(name: string) {
+		const condominium = this.items.find((item) => item.name === name)
 
 		if (!condominium) {
 			return null

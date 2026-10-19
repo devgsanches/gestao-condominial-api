@@ -1,13 +1,15 @@
 # CMD + \ = split screen to view response on a side
 @baseUrl = http://localhost:3333
 
+@authToken = {{authenticate.response.body.access_token}}
+
 # @name healthCheck
 GET {{baseUrl}}
 
 ###
 
-# @name signUp
-POST {{baseUrl}}/auth/sign-up
+# @name createAccount
+POST {{baseUrl}}/v1/accounts
 Content-Type: application/json
 
 {
@@ -18,8 +20,8 @@ Content-Type: application/json
 
 ###
 
-# @name signIn
-POST {{baseUrl}}/auth/sign-in
+# @name authenticate
+POST {{baseUrl}}/v1/sessions
 Content-Type: application/json
 
 {
@@ -29,4 +31,15 @@ Content-Type: application/json
 
 ###
 
-@authToken = {{signIn.response.body.access_token}}
+
+###
+
+# @name createCondominium
+POST {{baseUrl}}/v1/condominium
+Content-Type: application/json
+
+{
+	"managerId": "00000000-0000-0000-0000-000000000001",
+	"addressId": "00000000-0000-0000-0000-000000000002",
+	"name": "Residencial Jardim das Flores"
+}
