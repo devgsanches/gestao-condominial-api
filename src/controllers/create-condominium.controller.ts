@@ -1,13 +1,10 @@
-import {
-	Body, Controller,
-	HttpCode,
-	Post,
-	UseGuards
-} from '@nestjs/common'
-import { CreateCondominiumRequestDTO } from '@/dtos/create-condominium'
-import { CreateCondominiumUseCase } from '@/domain/management/application/use-cases/create-condominium'
-import { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import { Body, Controller, HttpCode, Post, UseGuards } from '@nestjs/common'
+import { CurrentUser } from '@/auth/current-user-decorator'
+import { UserPayload } from '@/auth/jwt.strategy'
 import { JwtAuthGuard } from '@/auth/jwt-auth.guard'
+import { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import { CreateCondominiumUseCase } from '@/domain/management/application/use-cases/create-condominium'
+import { CreateCondominiumRequestDTO } from '@/dtos/create-condominium'
 
 @Controller({
 	version: '1',
@@ -19,22 +16,24 @@ export class CreateCondominiumController {
 
 	@Post()
 	@HttpCode(201)
-	async handle(@Body() body: CreateCondominiumRequestDTO) {
+	async handle(
+		@Body() body: CreateCondominiumRequestDTO,
+		@CurrentUser() user: UserPayload,
+	) {
 		const { managerId, addressId, name } = body
-    
 
 		// await this.createCondominiumUseCase.execute({
-    //   managerId: new UniqueEntityId(managerId),
-    //   addressId: new UniqueEntityId(addressId),
-    //   name,
-    // })
+		//   managerId: new UniqueEntityId(managerId),
+		//   addressId: new UniqueEntityId(addressId),
+		//   name,
+		// })
 
 		return {
 			condominium: {
 				id: new UniqueEntityId(),
-				name,
-				managerId,
+				managerId: new UniqueEntityId(user.id),
 				addressId,
+				name,
 			},
 		}
 	}

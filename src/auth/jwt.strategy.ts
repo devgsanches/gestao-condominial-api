@@ -2,6 +2,15 @@ import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { PassportStrategy } from '@nestjs/passport'
 import { ExtractJwt, Strategy } from 'passport-jwt'
+import { z } from 'zod'
+
+const tokenPayloadSchema = z
+	.object({
+		sub: z.uuid(),
+	})
+	.transform(({ sub }) => ({ id: sub }))
+
+export type UserPayload = z.output<typeof tokenPayloadSchema>
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -13,7 +22,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 		})
 	}
 
-	async validate(payload: { sub: string }) {
-		return { userId: payload.sub }
+	async validate(payload: z.input<typeof tokenPayloadSchema>) {
+		return tokenPayloadSchema.parse(payload)
 	}
 }
