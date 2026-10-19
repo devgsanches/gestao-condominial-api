@@ -1,9 +1,9 @@
 import { Body, Controller, HttpCode, Post, UseGuards } from '@nestjs/common'
-import { CurrentUser } from '@/auth/current-user-decorator'
-import { UserPayload } from '@/auth/jwt.strategy'
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { CreateCondominiumRequestDTO } from '@/dtos/create-condominium'
+import { CurrentUser } from '@/infra/auth/current-user-decorator'
+import { UserPayload } from '@/infra/auth/jwt.strategy'
+import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
+import { CreateCondominiumRequestDTO } from '@/infra/http/dtos/create-condominium'
 
 @Controller({
 	version: '1',

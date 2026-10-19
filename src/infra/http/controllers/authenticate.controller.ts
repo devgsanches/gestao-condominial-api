@@ -4,8 +4,8 @@ import { compare } from 'bcryptjs'
 import {
 	AuthenticateRequestDTO,
 	AuthenticateResponseDTO,
-} from '@/dtos/authenticate.dto'
-import { PrismaService } from '@/prisma/prisma.service'
+} from '@/infra/http/dtos/authenticate.dto'
+import { PrismaService } from '@/infra/prisma/prisma.service'
 
 @Controller({
 	version: '1',

@@ -1,5 +1,5 @@
 import { Controller, Get } from '@nestjs/common'
-import { HealthCheckResponseDTO } from '@/dtos/health-check.dto'
+import { HealthCheckResponseDTO } from '@/infra/http/dtos/health-check.dto'
 
 @Controller()
 export class HealthCheckController {

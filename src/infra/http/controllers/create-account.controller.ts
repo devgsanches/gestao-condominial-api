@@ -6,8 +6,8 @@ import {
 	Post,
 } from '@nestjs/common'
 import { hash } from 'bcryptjs'
-import { CreateAccountRequestDTO } from '@/dtos/create-account.dto'
-import { PrismaService } from '@/prisma/prisma.service'
+import { CreateAccountRequestDTO } from '@/infra/http/dtos/create-account.dto'
+import { PrismaService } from '@/infra/prisma/prisma.service'
 
 @Controller({
 	version: '1',
