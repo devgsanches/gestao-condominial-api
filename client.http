@@ -34,9 +34,12 @@ Content-Type: application/json
 
 ###
 
+# Condominiums routes
+
 # @name createCondominium
 POST {{baseUrl}}/v1/condominium
 Content-Type: application/json
+Authorization: Bearer {{authToken}}
 
 {
 	"managerId": "00000000-0000-0000-0000-000000000001",
