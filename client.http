@@ -1,0 +1,32 @@
+# CMD + \ = split screen to view response on a side
+@baseUrl = http://localhost:3333
+
+# @name healthCheck
+GET {{baseUrl}}
+
+###
+
+# @name signUp
+POST {{baseUrl}}/auth/sign-up
+Content-Type: application/json
+
+{
+	"name": "John Doe",
+	"email": "johndoe@example.com",
+	"password": "123456"
+}
+
+###
+
+# @name signIn
+POST {{baseUrl}}/auth/sign-in
+Content-Type: application/json
+
+{
+	"email": "claudia@email.com",
+	"password": "1q2w3e4r"
+}
+
+###
+
+@authToken = {{signIn.response.body.access_token}}

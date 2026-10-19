@@ -16,4 +16,6 @@
   "[jsonc]": {
     "editor.defaultFormatter": "biomejs.biome"
   },
+  "rest-client.previewResponseInUntitledDocument": true,
+  "rest-client.previewColumn": "beside"
 }
