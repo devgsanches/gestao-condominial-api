@@ -1,7 +1,10 @@
 import { Body, Controller, Post } from '@nestjs/common'
 import { AuthService } from './auth.service'
 
-@Controller('auth')
+@Controller({
+	version: '1',
+	path: 'auth',
+})
 export class AuthController {
 	constructor(private readonly authService: AuthService) {}
 
