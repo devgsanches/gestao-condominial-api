@@ -13,6 +13,7 @@ export function makeMaintenance(
 		{
 			condominiumId: new UniqueEntityId(),
 			type: 'general',
+			periodicity: override.periodicity ?? null,
 			title: faker.lorem.sentence(),
 			description: faker.lorem.paragraph(),
 			...override,
