@@ -2,8 +2,8 @@ import { NotFoundException, UnauthorizedException } from '@nestjs/common'
 import { type Either, left, right } from '@/core/either'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Maintenance } from '../../enterprise/entities/maintenance'
-import { ICondominiumsRepository } from '../repositories/condominiums-repository'
-import { IMaintenancesRepository } from '../repositories/maintenances-repository'
+import { CondominiumsRepository } from '../repositories/condominiums-repository'
+import { MaintenancesRepository } from '../repositories/maintenances-repository'
 
 interface UpdateMaintenanceInput {
 	managerId: UniqueEntityId
@@ -22,8 +22,8 @@ type UpdateMaintenanceOutput = Either<
 
 export class UpdateMaintenanceUseCase {
 	constructor(
-		private condominiumRepository: ICondominiumsRepository,
-		private maintenanceRepository: IMaintenancesRepository,
+		private condominiumRepository: CondominiumsRepository,
+		private maintenanceRepository: MaintenancesRepository,
 	) {}
 
 	async execute({

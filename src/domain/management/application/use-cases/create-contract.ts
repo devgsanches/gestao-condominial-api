@@ -7,9 +7,9 @@ import { type Either, left, right } from '@/core/either'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Contract } from '../../enterprise/entities/contract'
 import { ContractAttachmentList } from '../../enterprise/entities/contract-attachment-list'
-import { ICondominiumsRepository } from '../repositories/condominiums-repository'
-import { IContractsRepository } from '../repositories/contracts-repository'
-import { IMaintenancesRepository } from '../repositories/maintenances-repository'
+import { CondominiumsRepository } from '../repositories/condominiums-repository'
+import { ContractsRepository } from '../repositories/contracts-repository'
+import { MaintenancesRepository } from '../repositories/maintenances-repository'
 import { MaintenanceType } from './fetch-maintenances'
 
 interface CreateContractInput {
@@ -31,9 +31,9 @@ type CreateContractOutput = Either<
 
 export class CreateContractUseCase {
 	constructor(
-		private condominiumRepository: ICondominiumsRepository,
-		private maintenanceRepository: IMaintenancesRepository,
-		private contractRepository: IContractsRepository,
+		private condominiumRepository: CondominiumsRepository,
+		private maintenanceRepository: MaintenancesRepository,
+		private contractRepository: ContractsRepository,
 	) {}
 
 	async execute({

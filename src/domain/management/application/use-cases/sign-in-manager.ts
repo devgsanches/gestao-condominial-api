@@ -1,6 +1,6 @@
 import { type Either, right } from '@/core/either'
 import { Manager } from '../../enterprise/entities/manager'
-import { IManagersRepository } from '../repositories/managers-repository'
+import { ManagersRepository } from '../repositories/managers-repository'
 
 // @TODO: Habilitar jwt/nestjs e, caso login seja bem-sucedido, retornar token de acesso
 
@@ -19,7 +19,7 @@ type SignInManagerOutput = Either<
 >
 
 export class SignInManagerUseCase {
-	constructor(private managerRepository: IManagersRepository) {}
+	constructor(private managerRepository: ManagersRepository) {}
 
 	async execute({
 		name,

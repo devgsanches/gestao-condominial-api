@@ -2,8 +2,8 @@ import { NotFoundException } from '@nestjs/common'
 import { type Either, left, right } from '@/core/either'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Condominium } from '../../enterprise/entities/condominium'
-import { ICondominiumsRepository } from '../repositories/condominiums-repository'
-import { IManagersRepository } from '../repositories/managers-repository'
+import { CondominiumsRepository } from '../repositories/condominiums-repository'
+import { ManagersRepository } from '../repositories/managers-repository'
 
 interface GetManagerProfileInput {
 	managerId: UniqueEntityId
@@ -24,8 +24,8 @@ type GetManagerProfileOutput = Either<
 
 export class GetManagerProfileUseCase {
 	constructor(
-		private managerRepository: IManagersRepository,
-		private condominiumRepository: ICondominiumsRepository,
+		private managerRepository: ManagersRepository,
+		private condominiumRepository: CondominiumsRepository,
 	) {}
 
 	async execute({

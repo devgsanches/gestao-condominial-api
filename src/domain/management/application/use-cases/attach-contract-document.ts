@@ -4,7 +4,7 @@ import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Contract } from '../../enterprise/entities/contract'
 import { ContractAttachment } from '../../enterprise/entities/contract-attachment'
 import { ContractAttachmentList } from '../../enterprise/entities/contract-attachment-list'
-import { IContractsRepository } from '../repositories/contracts-repository'
+import { ContractsRepository } from '../repositories/contracts-repository'
 
 interface AttachContractDocumentUseCaseRequest {
 	contractId: UniqueEntityId
@@ -19,7 +19,7 @@ type AttachContractDocumentUseCaseResponse = Either<
 >
 
 export class AttachContractDocumentUseCase {
-	constructor(private contractsRepository: IContractsRepository) {}
+	constructor(private contractsRepository: ContractsRepository) {}
 
 	async execute({
 		contractId,

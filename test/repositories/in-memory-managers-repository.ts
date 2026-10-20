@@ -1,8 +1,8 @@
 import type { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import type { IManagersRepository } from '@/domain/management/application/repositories/managers-repository'
+import type { ManagersRepository } from '@/domain/management/application/repositories/managers-repository'
 import type { Manager } from '@/domain/management/enterprise/entities/manager'
 
-export class InMemoryManagersRepository implements IManagersRepository {
+export class InMemoryManagersRepository implements ManagersRepository {
 	public items: Manager[] = []
 
 	async create(manager: Manager) {

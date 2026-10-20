@@ -1,8 +1,8 @@
 import type { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import type { IAddressesRepository } from '@/domain/management/application/repositories/addresses-repository'
+import type { AddressesRepository } from '@/domain/management/application/repositories/addresses-repository'
 import type { Address } from '@/domain/management/enterprise/entities/address'
 
-export class InMemoryAddressesRepository implements IAddressesRepository {
+export class InMemoryAddressesRepository implements AddressesRepository {
 	public items: Address[] = []
 
 	async create(address: Address) {

@@ -1,7 +1,7 @@
 import { MaintenanceType as PrismaMaintenanceType } from '@generated/prisma/client'
 import { Injectable } from '@nestjs/common'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { IMaintenancesRepository } from '@/domain/management/application/repositories/maintenances-repository'
+import { MaintenancesRepository } from '@/domain/management/application/repositories/maintenances-repository'
 import { MaintenanceType } from '@/domain/management/application/use-cases/fetch-maintenances'
 import { Maintenance } from '@/domain/management/enterprise/entities/maintenance'
 import { PrismaMaintenanceMapper } from '../mappers/prisma-maintenance-mapper'
@@ -13,7 +13,7 @@ const typeToPrismaMap: Record<string, PrismaMaintenanceType> = {
 }
 
 @Injectable()
-export class PrismaMaintenancesRepository implements IMaintenancesRepository {
+export class PrismaMaintenancesRepository implements MaintenancesRepository {
 	constructor(private readonly prisma: PrismaService) {}
 
 	async create(maintenance: Maintenance): Promise<void> {

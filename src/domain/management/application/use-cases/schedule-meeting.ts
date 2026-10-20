@@ -8,8 +8,8 @@ import { type Either, left, right } from '@/core/either'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Assembly } from '../../enterprise/entities/assembly'
 import { Meeting } from '../../enterprise/entities/meeting'
-import { IAppointmentsRepository } from '../repositories/appointments-repository'
-import { ICondominiumsRepository } from '../repositories/condominiums-repository'
+import { AppointmentsRepository } from '../repositories/appointments-repository'
+import { CondominiumsRepository } from '../repositories/condominiums-repository'
 
 export enum ScheduleType {
 	MEETING = 'meeting',
@@ -33,8 +33,8 @@ type ScheduleMeetingOutput = Either<
 
 export class ScheduleMeetingUseCase {
 	constructor(
-		private condominiumRepository: ICondominiumsRepository,
-		private appointmentsRepository: IAppointmentsRepository,
+		private condominiumRepository: CondominiumsRepository,
+		private appointmentsRepository: AppointmentsRepository,
 	) {}
 
 	async execute({

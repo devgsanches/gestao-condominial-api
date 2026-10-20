@@ -3,10 +3,10 @@ import { Assembly } from '../../enterprise/entities/assembly'
 import { Meeting } from '../../enterprise/entities/meeting'
 // import type { IPaginationParams } from '@/core/repositories/pagination-params'
 
-export interface IAppointmentsRepository {
-	create(appointment: Meeting | Assembly): Promise<void>
-	findById(id: UniqueEntityId): Promise<Meeting | Assembly | null>
-	findManyMeetingsByCondominiumId(condominiumId: UniqueEntityId): Promise<Meeting[]>
-	findManyAssembliesByCondominiumId(condominiumId: UniqueEntityId): Promise<Assembly[]>
-	update(appointment: Meeting | Assembly): Promise<Meeting | Assembly | null>
+export abstract class AppointmentsRepository {
+	abstract create(appointment: Meeting | Assembly): Promise<void>
+	abstract findById(id: UniqueEntityId): Promise<Meeting | Assembly | null>
+	abstract findManyMeetingsByCondominiumId(condominiumId: UniqueEntityId): Promise<Meeting[]>
+	abstract findManyAssembliesByCondominiumId(condominiumId: UniqueEntityId): Promise<Assembly[]>
+	abstract update(appointment: Meeting | Assembly): Promise<Meeting | Assembly | null>
 }

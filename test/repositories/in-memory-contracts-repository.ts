@@ -1,8 +1,8 @@
 import type { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import type { IContractsRepository } from '@/domain/management/application/repositories/contracts-repository'
+import type { ContractsRepository } from '@/domain/management/application/repositories/contracts-repository'
 import type { Contract } from '@/domain/management/enterprise/entities/contract'
 
-export class InMemoryContractsRepository implements IContractsRepository {
+export class InMemoryContractsRepository implements ContractsRepository {
 	public items: Contract[] = []
 
 	async create(contract: Contract) {

@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { IContractsRepository } from '@/domain/management/application/repositories/contracts-repository'
+import { ContractsRepository } from '@/domain/management/application/repositories/contracts-repository'
 import { Contract } from '@/domain/management/enterprise/entities/contract'
 import { PrismaContractMapper } from '../mappers/prisma-contract-mapper'
 import { PrismaService } from '../prisma.service'
 
 @Injectable()
-export class PrismaContractsRepository implements IContractsRepository {
+export class PrismaContractsRepository implements ContractsRepository {
 	constructor(private readonly prisma: PrismaService) {}
 
 	async create(contract: Contract): Promise<void> {

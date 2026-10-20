@@ -2,12 +2,12 @@ import type { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Condominium } from '../../enterprise/entities/condominium'
 // import type { IPaginationParams } from '@/core/repositories/pagination-params'
 
-export interface ICondominiumsRepository {
-	create(condominium: Condominium): Promise<void>
-	findByName(name: string): Promise<Condominium | null>
-	findById(id: UniqueEntityId): Promise<Condominium | null>
-	findManyByManagerId(managerId: UniqueEntityId): Promise<Condominium[]>
-	findByManagerId(managerId: UniqueEntityId): Promise<Condominium | null>
-	update(condominium: Pick<Condominium, 'name' | 'id'>): Promise<Condominium>
-	delete(id: UniqueEntityId): Promise<void>
+export abstract class CondominiumsRepository {
+	abstract create(condominium: Condominium): Promise<void>
+	abstract findByName(name: string): Promise<Condominium | null>
+	abstract findById(id: UniqueEntityId): Promise<Condominium | null>
+	abstract findManyByManagerId(managerId: UniqueEntityId): Promise<Condominium[]>
+	abstract findByManagerId(managerId: UniqueEntityId): Promise<Condominium | null>
+	abstract update(condominium: Pick<Condominium, 'name' | 'id'>): Promise<Condominium>
+	abstract delete(id: UniqueEntityId): Promise<void>
 }

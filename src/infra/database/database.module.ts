@@ -6,11 +6,15 @@ import { PrismaCondominiumsRepository } from './prisma/repositories/prisma-condo
 import { PrismaContractsRepository } from './prisma/repositories/prisma-contracts-repository'
 import { PrismaMaintenancesRepository } from './prisma/repositories/prisma-maintenances-repository'
 import { PrismaManagersRepository } from './prisma/repositories/prisma-managers-repository'
+import { ManagersRepository } from '@/domain/management/application/repositories/managers-repository'
 
 @Module({
 	providers: [
 		PrismaService,
-		PrismaManagersRepository,
+		{
+			provide: ManagersRepository,
+			useClass: PrismaManagersRepository,
+		},
 		PrismaMaintenancesRepository,
 		PrismaContractsRepository,
 		PrismaCondominiumsRepository,

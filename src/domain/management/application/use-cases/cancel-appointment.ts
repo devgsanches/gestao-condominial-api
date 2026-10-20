@@ -1,8 +1,8 @@
 import { NotFoundException, UnauthorizedException } from '@nestjs/common'
 import { type Either, left, right } from '@/core/either'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { IAppointmentsRepository } from '../repositories/appointments-repository'
-import { ICondominiumsRepository } from '../repositories/condominiums-repository'
+import { AppointmentsRepository } from '../repositories/appointments-repository'
+import { CondominiumsRepository } from '../repositories/condominiums-repository'
 
 interface CancelAppointmentsInput {
 	managerId: UniqueEntityId
@@ -16,8 +16,8 @@ type CancelAppointmentsOutput = Either<
 
 export class CancelAppointmentsUseCase {
 	constructor(
-		private condominiumRepository: ICondominiumsRepository,
-		private appointmentsRepository: IAppointmentsRepository,
+		private condominiumRepository: CondominiumsRepository,
+		private appointmentsRepository: AppointmentsRepository,
 	) {}
 
 	async execute({

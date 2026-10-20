@@ -1,8 +1,8 @@
 import { NotFoundException, UnauthorizedException } from '@nestjs/common'
 import { type Either, left, right } from '@/core/either'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { IAddressesRepository } from '../repositories/addresses-repository'
-import { ICondominiumsRepository } from '../repositories/condominiums-repository'
+import { AddressesRepository } from '../repositories/addresses-repository'
+import { CondominiumsRepository } from '../repositories/condominiums-repository'
 
 interface DeleteCondominiumInput {
 	managerId: UniqueEntityId
@@ -16,8 +16,8 @@ type DeleteCondominiumOutput = Either<
 
 export class DeleteCondominiumUseCase {
 	constructor(
-		private condominiumRepository: ICondominiumsRepository,
-		private addressesRepository: IAddressesRepository,
+		private condominiumRepository: CondominiumsRepository,
+		private addressesRepository: AddressesRepository,
 	) {}
 
 	// managerId virá a partir da autenticação do síndico - rota estará protegida

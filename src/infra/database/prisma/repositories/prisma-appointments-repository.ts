@@ -1,14 +1,14 @@
 import { AppointmentType } from '@generated/prisma/client'
 import { Injectable } from '@nestjs/common'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { IAppointmentsRepository } from '@/domain/management/application/repositories/appointments-repository'
+import { AppointmentsRepository } from '@/domain/management/application/repositories/appointments-repository'
 import { Assembly } from '@/domain/management/enterprise/entities/assembly'
 import { Meeting } from '@/domain/management/enterprise/entities/meeting'
 import { PrismaAppointmentMapper } from '../mappers/prisma-appointment-mapper'
 import { PrismaService } from '../prisma.service'
 
 @Injectable()
-export class PrismaAppointmentsRepository implements IAppointmentsRepository {
+export class PrismaAppointmentsRepository implements AppointmentsRepository {
 	constructor(private readonly prisma: PrismaService) {}
 
 	async create(appointment: Meeting | Assembly): Promise<void> {

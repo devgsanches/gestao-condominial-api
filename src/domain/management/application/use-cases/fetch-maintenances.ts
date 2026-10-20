@@ -1,8 +1,8 @@
 import { NotFoundException, UnauthorizedException } from '@nestjs/common'
 import { type Either, left, right } from '@/core/either'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { IMaintenancesRepository } from '../repositories/maintenances-repository'
-import { ICondominiumsRepository } from '../repositories/condominiums-repository'
+import { MaintenancesRepository } from '../repositories/maintenances-repository'
+import { CondominiumsRepository } from '../repositories/condominiums-repository'
 import { Maintenance } from '../../enterprise/entities/maintenance'
 
 export enum MaintenanceType {
@@ -24,8 +24,8 @@ type FetchMaintenancesOutput = Either<
 
 export class FetchMaintenancesUseCase {
 	constructor(
-		private condominiumRepository: ICondominiumsRepository,
-		private maintenancesRepository: IMaintenancesRepository,
+		private condominiumRepository: CondominiumsRepository,
+		private maintenancesRepository: MaintenancesRepository,
 	) {}
 
 	async execute({

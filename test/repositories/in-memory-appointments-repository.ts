@@ -1,9 +1,9 @@
 import type { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import type { IAppointmentsRepository } from '@/domain/management/application/repositories/appointments-repository'
+import type { AppointmentsRepository } from '@/domain/management/application/repositories/appointments-repository'
 import { Assembly } from '@/domain/management/enterprise/entities/assembly'
 import { Meeting } from '@/domain/management/enterprise/entities/meeting'
 
-export class InMemoryAppointmentsRepository implements IAppointmentsRepository {
+export class InMemoryAppointmentsRepository implements AppointmentsRepository {
 	public items: (Meeting | Assembly)[] = []
 
 	async create(appointment: Meeting | Assembly) {

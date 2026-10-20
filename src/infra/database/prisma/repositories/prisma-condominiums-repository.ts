@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { ICondominiumsRepository } from '@/domain/management/application/repositories/condominiums-repository'
+import { CondominiumsRepository } from '@/domain/management/application/repositories/condominiums-repository'
 import { Condominium } from '@/domain/management/enterprise/entities/condominium'
 import { PrismaCondominiumMapper } from '../mappers/prisma-condominium-mapper'
 import { PrismaService } from '../prisma.service'
 
 @Injectable()
-export class PrismaCondominiumsRepository implements ICondominiumsRepository {
+export class PrismaCondominiumsRepository implements CondominiumsRepository {
 	constructor(private readonly prisma: PrismaService) {}
 
 	async create(condominium: Condominium): Promise<void> {

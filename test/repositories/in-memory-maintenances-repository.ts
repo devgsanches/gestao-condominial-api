@@ -1,9 +1,9 @@
 import type { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import type { IMaintenancesRepository } from '@/domain/management/application/repositories/maintenances-repository'
+import type { MaintenancesRepository } from '@/domain/management/application/repositories/maintenances-repository'
 import { MaintenanceType } from '@/domain/management/application/use-cases/fetch-maintenances'
 import type { Maintenance } from '@/domain/management/enterprise/entities/maintenance'
 
-export class InMemoryMaintenancesRepository implements IMaintenancesRepository {
+export class InMemoryMaintenancesRepository implements MaintenancesRepository {
 	public items: Maintenance[] = []
 
 	async create(maintenance: Maintenance) {

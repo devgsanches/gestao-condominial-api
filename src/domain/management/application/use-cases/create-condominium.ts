@@ -1,7 +1,7 @@
 import { type Either, left, right } from '@/core/either'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Condominium } from '../../enterprise/entities/condominium'
-import { ICondominiumsRepository } from '../repositories/condominiums-repository'
+import { CondominiumsRepository } from '../repositories/condominiums-repository'
 import { Slug } from '../../enterprise/entities/value-objects/slug'
 import { BadRequestException, ConflictException } from '@nestjs/common'
 
@@ -19,7 +19,7 @@ ConflictException | BadRequestException,
 >
 
 export class CreateCondominiumUseCase {
-	constructor(private condominiumRepository: ICondominiumsRepository) {}
+	constructor(private condominiumRepository: CondominiumsRepository) {}
 
 	async execute({
 		managerId,

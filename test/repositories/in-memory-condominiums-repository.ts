@@ -1,8 +1,8 @@
 import type { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import type { ICondominiumsRepository } from '@/domain/management/application/repositories/condominiums-repository'
+import type { CondominiumsRepository } from '@/domain/management/application/repositories/condominiums-repository'
 import type { Condominium } from '@/domain/management/enterprise/entities/condominium'
 
-export class InMemoryCondominiumsRepository implements ICondominiumsRepository {
+export class InMemoryCondominiumsRepository implements CondominiumsRepository {
 	
 	public items: Condominium[] = []
 
