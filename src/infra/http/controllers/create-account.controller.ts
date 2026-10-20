@@ -1,3 +1,4 @@
+import { UserRole } from '@generated/prisma/client'
 import {
 	Body,
 	ConflictException,
@@ -38,7 +39,7 @@ export class CreateAccountController {
 		await this.prisma.user.create({
 			data: {
 				name,
-				role: 'MANAGER',
+				role: UserRole.CONDOMINIUM_MANAGER,
 				email,
 				password: hashedPassword,
 			},

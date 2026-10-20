@@ -1,11 +1,6 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider     = "prisma-client"
+  output       = "../generated/prisma"
   moduleFormat = "cjs"
 }
 
@@ -14,17 +9,174 @@ datasource db {
 }
 
 enum UserRole {
-  MANAGER
+  CONDOMINIUM_MANAGER
+  RESIDENT
+}
+
+enum AppointmentType {
+  MEETING
+  ASSEMBLY
+}
+
+enum MaintenanceType {
+  GENERAL
+  PERIODIC
+}
+
+enum MaintenancePeriodicity {
+  MONTH
+  TRIMESTER
+  SEMESTER
 }
 
 model User {
-  id String @id @default(uuid())
-  name String
-  role UserRole
-  email String @unique
+  id       String   @id @default(uuid())
+  name     String
+  role     UserRole
+  email    String   @unique
   password String
+
+  condominiums Condominium[]
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("users")
+}
+
+model Address {
+  id           String  @id @default(uuid())
+  zipCode      String  @map("zip_code")
+  street       String
+  number       Int
+  complement   String?
+  neighborhood String
+  city         String
+  state        String
+  country      String
+
+  condominium Condominium?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("address")
+}
+
+model Condominium {
+  id        String @id @default(uuid())
+  name      String
+  slug      String @unique
+  managerId String @map("manager_id")
+  addressId String @unique @map("address_id")
+
+  manager User @relation(fields: [managerId], references: [id])
+  address Address @relation(fields: [addressId], references: [id])
+
+  appointments Appointment[]
+  maintenances Maintenance[]
+  finances     CondominiumFinance[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("condominiums")
+}
+
+model Appointment {
+  id             String          @id @default(uuid())
+  condominiumId  String          @map("condominium_id")
+  type           AppointmentType
+  title          String
+  description    String
+  scheduledAt    DateTime        @map("scheduled_at")
+  canceledAt     DateTime?       @map("canceled_at")
+
+  condominium Condominium @relation(fields: [condominiumId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("appointments")
+}
+
+model Maintenance {
+  id            String                  @id @default(uuid())
+  condominiumId String                  @map("condominium_id")
+  type          MaintenanceType
+  periodicity   MaintenancePeriodicity?
+  title         String
+  description   String
+  canceledAt    DateTime?               @map("canceled_at")
+
+  condominium Condominium @relation(fields: [condominiumId], references: [id])
+  contract    Contract?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("maintenances")
+}
+
+model Contract {
+  id               String   @id @default(uuid())
+  maintenanceId    String   @unique @map("maintenance_id")
+  title            String
+  slug             String   @unique
+  description      String
+  isValid          Boolean  @default(true) @map("is_valid")
+  startVigencyDate DateTime @map("start_vigency_date")
+  endVigencyDate   DateTime @map("end_vigency_date")
+
+  maintenance Maintenance          @relation(fields: [maintenanceId], references: [id])
+  attachments ContractAttachment[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("contracts")
+}
+
+model Finance {
+  id    String  @id @default(uuid())
+  value Decimal
+
+  condominiums CondominiumFinance[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("finances")
+}
+
+model CondominiumFinance {
+  id            String @id @default(uuid())
+  condominiumId String @map("condominium_id")
+  financeId     String @map("finance_id")
+
+  condominium Condominium @relation(fields: [condominiumId], references: [id])
+  finance     Finance     @relation(fields: [financeId], references: [id])
+
+  @@map("condominium_finance")
+}
+
+model Attachment {
+  id    String @id @default(uuid())
+  title String
+  link  String
+
+  contracts ContractAttachment[]
+
+  @@map("attachments")
+}
+
+model ContractAttachment {
+  id           String @id @default(uuid())
+  contractId   String @map("contract_id")
+  attachmentId String @map("attachment_id")
+
+  contract   Contract   @relation(fields: [contractId], references: [id])
+  attachment Attachment @relation(fields: [attachmentId], references: [id])
+
+  @@map("contracts_attachments")
 }

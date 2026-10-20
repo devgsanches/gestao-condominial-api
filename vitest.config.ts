@@ -21,7 +21,7 @@ export default defineConfig({
 			'@': resolve('./src'),
 			src: resolve('.'),
 			// Prisma client output (see prisma/schema.prisma generator output)
-			'generated/prisma': resolve('./generated/prisma'),
+			'@generated': resolve('./generated'),
 		},
 	},
 })
