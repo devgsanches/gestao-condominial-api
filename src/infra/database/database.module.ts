@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common'
+import { AddressesRepository } from '@/domain/management/application/repositories/addresses-repository'
+import { CondominiumsRepository } from '@/domain/management/application/repositories/condominiums-repository'
 import { ManagersRepository } from '@/domain/management/application/repositories/managers-repository'
 import { PrismaService } from './prisma/prisma.service'
 import { PrismaAddressesRepository } from './prisma/repositories/prisma-addresses-repository'
@@ -17,18 +19,24 @@ import { PrismaManagersRepository } from './prisma/repositories/prisma-managers-
 		},
 		PrismaMaintenancesRepository,
 		PrismaContractsRepository,
-		PrismaCondominiumsRepository,
+		{
+			provide: CondominiumsRepository,
+			useClass: PrismaCondominiumsRepository,
+		},
 		PrismaAppointmentsRepository,
-		PrismaAddressesRepository,
+		{
+			provide: AddressesRepository,
+			useClass: PrismaAddressesRepository,
+		},
 	],
 	exports: [
 		PrismaService,
 		ManagersRepository,
 		PrismaMaintenancesRepository,
 		PrismaContractsRepository,
-		PrismaCondominiumsRepository,
+		CondominiumsRepository,
 		PrismaAppointmentsRepository,
-		PrismaAddressesRepository,
+		AddressesRepository,
 	],
 })
 export class DatabaseModule {}

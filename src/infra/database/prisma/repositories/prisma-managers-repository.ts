@@ -1,3 +1,4 @@
+import { UserRole } from '@generated/prisma/enums'
 import { Injectable } from '@nestjs/common'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { ManagersRepository } from '@/domain/management/application/repositories/managers-repository'
@@ -23,6 +24,9 @@ export class PrismaManagersRepository implements ManagersRepository {
 		const manager = await this.prisma.user.findUnique({
 			where: {
 				id: id.toString(),
+				AND: {
+					role: UserRole.CONDOMINIUM_MANAGER,
+				},
 			},
 		})
 

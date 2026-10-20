@@ -65,7 +65,7 @@ model Address {
 
 model Condominium {
   id        String @id @default(uuid())
-  name      String
+  name      String @unique
   slug      String @unique
   managerId String @map("manager_id")
   addressId String @unique @map("address_id")

@@ -1,5 +1,6 @@
 import { Body, Controller, HttpCode, Post, UseGuards } from '@nestjs/common'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import { CreateCondominiumUseCase } from '@/domain/management/application/use-cases/create-condominium'
 import { CurrentUser } from '@/infra/auth/current-user-decorator'
 import { UserPayload } from '@/infra/auth/jwt.strategy'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
@@ -11,9 +12,7 @@ import { CreateCondominiumRequestDTO } from '@/infra/http/dtos/create-condominiu
 })
 @UseGuards(JwtAuthGuard)
 export class CreateCondominiumController {
-	constructor(
-		/* private createCondominiumUseCase: CreateCondominiumUseCase */
-	) {}
+	constructor(private createCondominiumUseCase: CreateCondominiumUseCase) {}
 
 	@Post()
 	@HttpCode(201)
@@ -23,19 +22,10 @@ export class CreateCondominiumController {
 	) {
 		const { addressId, name } = body
 
-		// await this.createCondominiumUseCase.execute({
-		//   managerId: new UniqueEntityId(managerId),
-		//   addressId: new UniqueEntityId(addressId),
-		//   name,
-		// })
-
-		return {
-			condominium: {
-				id: new UniqueEntityId(),
-				managerId: new UniqueEntityId(user.id),
-				addressId,
-				name,
-			},
-		}
+		await this.createCondominiumUseCase.execute({
+			managerId: new UniqueEntityId(user.id),
+			addressId: new UniqueEntityId(addressId),
+			name,
+		})
 	}
 }
