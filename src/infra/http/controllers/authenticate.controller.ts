@@ -1,11 +1,11 @@
 import { Body, Controller, Post, UnauthorizedException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { compare } from 'bcryptjs'
+import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import {
 	AuthenticateRequestDTO,
 	AuthenticateResponseDTO,
 } from '@/infra/http/dtos/authenticate.dto'
-import { PrismaService } from '@/infra/prisma/prisma.service'
 
 @Controller({
 	version: '1',
