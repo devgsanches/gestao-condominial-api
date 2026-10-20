@@ -9,8 +9,14 @@ import { PrismaService } from '../prisma.service'
 export class PrismaManagersRepository implements IManagersRepository {
 	constructor(private readonly prisma: PrismaService) {}
 
-	create(manager: Manager): Promise<void> {
-		throw new Error('Method not implemented.')
+	async create(manager: Manager): Promise<void> {
+		const managerPrisma = PrismaManagerMapper.toPrisma(manager)
+
+		await this.prisma.user.create({
+			data: {
+				...managerPrisma,
+			},
+		})
 	}
 
 	async findById(id: UniqueEntityId): Promise<Manager | null> {
@@ -27,7 +33,17 @@ export class PrismaManagersRepository implements IManagersRepository {
 		return PrismaManagerMapper.toDomain(manager)
 	}
 
-	findByEmail(email: string): Promise<Manager | null> {
-		throw new Error('Method not implemented.')
+	async findByEmail(email: string): Promise<Manager | null> {
+		const manager = await this.prisma.user.findUnique({
+			where: {
+				email,
+			},
+		})
+
+		if (!manager) {
+			return null
+		}
+
+		return PrismaManagerMapper.toDomain(manager)
 	}
 }
