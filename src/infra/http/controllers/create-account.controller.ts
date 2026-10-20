@@ -1,11 +1,13 @@
-import { Body, Controller, HttpCode, Post } from '@nestjs/common'
+import { Body, Controller, HttpCode, Post, UseGuards } from '@nestjs/common'
 import { RegisterManagerUseCase } from '@/domain/management/application/use-cases/register-manager'
+import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { CreateAccountRequestDTO } from '@/infra/http/dtos/create-account.dto'
 
 @Controller({
 	version: '1',
 	path: 'accounts',
 })
+@UseGuards(JwtAuthGuard)
 export class CreateAccountController {
 	constructor(private registerManager: RegisterManagerUseCase) {}
 

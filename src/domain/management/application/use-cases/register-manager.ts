@@ -1,4 +1,3 @@
-import { UserRole } from '@generated/prisma/enums'
 import { ConflictException, Injectable } from '@nestjs/common'
 import { hash } from 'bcryptjs'
 import { type Either, right } from '@/core/either'
@@ -11,9 +10,8 @@ interface RegisterManagerInput {
 	password: string
 }
 
-// erros: conflito e não autorizado
 type RegisterManagerOutput = Either<
-	undefined,
+	ConflictException,
 	{
 		manager: Manager
 	}
