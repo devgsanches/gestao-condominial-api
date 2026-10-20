@@ -7,7 +7,7 @@ export interface ManagerProps {
 	email: string
 	password: string
 	createdAt: Date
-	updatedAt?: Date
+	updatedAt?: Date | null
 }
 
 export class Manager extends Entity<ManagerProps> {
@@ -27,7 +27,7 @@ export class Manager extends Entity<ManagerProps> {
 		return this.props.createdAt
 	}
 
-	get updatedAt(): Date | undefined {
+	get updatedAt(): Date | null | undefined {
 		return this.props.updatedAt
 	}
 
