@@ -30,6 +30,26 @@ Content-Type: application/json
 
 ###
 
+# Addresses routes
+
+# @name createAddress
+POST {{baseUrl}}/v1/addresses
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+	"zipCode": "01001-000",
+	"street": "Praça da Sé",
+	"number": 100,
+	"complement": "Bloco A",
+	"neighborhood": "Sé",
+	"city": "São Paulo",
+	"state": "SP",
+	"country": "Brasil"
+}
+
+###
+
 # Condominiums routes
 
 # @name createCondominium
