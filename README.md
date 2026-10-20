@@ -87,6 +87,9 @@ rm -rf ~/Library/Caches/dev.biomejs.biome
 ## Type-checking (verifica se há erro de ts na app, e não emite nenhum build )
 pnpm tsc --noEmit
 
+## Biome lint
+pnpm run lint
+
 ## 🛠️ Como rodar o projeto
 
 ### Pré-requisitos
