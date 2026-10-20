@@ -1,5 +1,6 @@
 import { UserRole } from '@generated/prisma/enums'
 import { ConflictException, Injectable } from '@nestjs/common'
+import { hash } from 'bcryptjs'
 import { type Either, right } from '@/core/either'
 import { Manager } from '../../enterprise/entities/manager'
 import { ManagersRepository } from '../repositories/managers-repository'
@@ -20,18 +21,14 @@ type RegisterManagerOutput = Either<
 
 @Injectable()
 export class RegisterManagerUseCase {
-	constructor(private managerRepository: ManagersRepository) {}
+	constructor(private managersRepository: ManagersRepository) {}
 
 	async execute({
 		name,
 		email,
 		password,
 	}: RegisterManagerInput): Promise<RegisterManagerOutput> {
-		const userWithSameEmail = await this.prisma.user.findUnique({
-			where: {
-				email,
-			},
-		})
+		const userWithSameEmail = await this.managersRepository.findByEmail(email)
 
 		if (userWithSameEmail) {
 			throw new ConflictException(
@@ -41,21 +38,13 @@ export class RegisterManagerUseCase {
 
 		const hashedPassword = await hash(password, 8)
 
-		await this.prisma.user.create({
-			data: {
-				name,
-				role: UserRole.CONDOMINIUM_MANAGER,
-				email,
-				password: hashedPassword,
-			},
-		})
 		const manager = Manager.create({
 			name,
 			email,
-			password,
+			password: hashedPassword,
 		})
 
-		await this.managerRepository.create(manager)
+		await this.managersRepository.create(manager)
 
 		return right({ manager })
 	}

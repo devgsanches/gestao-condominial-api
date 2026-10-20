@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common'
+import { ManagersRepository } from '@/domain/management/application/repositories/managers-repository'
 import { PrismaService } from './prisma/prisma.service'
 import { PrismaAddressesRepository } from './prisma/repositories/prisma-addresses-repository'
 import { PrismaAppointmentsRepository } from './prisma/repositories/prisma-appointments-repository'
@@ -6,7 +7,6 @@ import { PrismaCondominiumsRepository } from './prisma/repositories/prisma-condo
 import { PrismaContractsRepository } from './prisma/repositories/prisma-contracts-repository'
 import { PrismaMaintenancesRepository } from './prisma/repositories/prisma-maintenances-repository'
 import { PrismaManagersRepository } from './prisma/repositories/prisma-managers-repository'
-import { ManagersRepository } from '@/domain/management/application/repositories/managers-repository'
 
 @Module({
 	providers: [
@@ -23,7 +23,7 @@ import { ManagersRepository } from '@/domain/management/application/repositories
 	],
 	exports: [
 		PrismaService,
-		PrismaManagersRepository,
+		ManagersRepository,
 		PrismaMaintenancesRepository,
 		PrismaContractsRepository,
 		PrismaCondominiumsRepository,
