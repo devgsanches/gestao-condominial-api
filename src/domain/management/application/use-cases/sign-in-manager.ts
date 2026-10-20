@@ -39,7 +39,7 @@ export class SignInManagerUseCase {
 			throw new UnauthorizedException('User credentials do not match.')
 		}
 
-		const accessToken = this.jwt.sign({ sub: user.id })
+		const accessToken = this.jwt.sign({ sub: user.id.toString() })
 
 		return right({
 			access_token: accessToken,
