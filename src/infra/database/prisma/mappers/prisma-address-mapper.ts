@@ -1,4 +1,4 @@
-import { Address as PrismaAddress, Prisma } from '@generated/prisma/client'
+import { Prisma, Address as PrismaAddress } from '@generated/prisma/client'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Address } from '@/domain/management/enterprise/entities/address'
 
