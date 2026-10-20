@@ -1,48 +1,29 @@
-import { Body, Controller, Post, UnauthorizedException } from '@nestjs/common'
-import { JwtService } from '@nestjs/jwt'
-import { compare } from 'bcryptjs'
-import { PrismaService } from '@/infra/database/prisma/prisma.service'
-import {
-	AuthenticateRequestDTO,
-	AuthenticateResponseDTO,
-} from '@/infra/http/dtos/authenticate.dto'
+import { Body, Controller, Post } from '@nestjs/common'
+import { SignInManagerUseCase } from '@/domain/management/application/use-cases/sign-in-manager'
+import { AuthenticateRequestDTO } from '@/infra/http/dtos/authenticate.dto'
 
 @Controller({
 	version: '1',
 	path: 'sessions',
 })
 export class AuthenticateController {
-	constructor(
-		private prisma: PrismaService,
-		private jwt: JwtService,
-	) {}
+	constructor(private signInManager: SignInManagerUseCase) {}
 
 	@Post()
-	async handle(
-		@Body() body: AuthenticateRequestDTO,
-	): Promise<AuthenticateResponseDTO> {
+	async handle(@Body() body: AuthenticateRequestDTO) {
 		const { email, password } = body
 
-		const user = await this.prisma.user.findUnique({
-			where: {
-				email,
-			},
+		const response = await this.signInManager.execute({
+			email,
+			password,
 		})
 
-		if (!user) {
-			throw new UnauthorizedException('User credentials do not match.')
-		}
+		if (response.isRight()) {
+			const { access_token } = response.result
 
-		const isPasswordValid = await compare(password, user.password)
-
-		if (!isPasswordValid) {
-			throw new UnauthorizedException('User credentials do not match.')
-		}
-
-		const accessToken = this.jwt.sign({ sub: user.id })
-
-		return {
-			access_token: accessToken,
+			return {
+				access_token,
+			}
 		}
 	}
 }

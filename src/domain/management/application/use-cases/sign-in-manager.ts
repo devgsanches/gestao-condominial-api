@@ -1,39 +1,48 @@
+import { Injectable, UnauthorizedException } from '@nestjs/common'
+import { JwtService } from '@nestjs/jwt'
+import { compare } from 'bcryptjs'
 import { type Either, right } from '@/core/either'
-import { Manager } from '../../enterprise/entities/manager'
 import { ManagersRepository } from '../repositories/managers-repository'
 
-// @TODO: Habilitar jwt/nestjs e, caso login seja bem-sucedido, retornar token de acesso
-
 interface SignInManagerInput {
-	name: string
 	email: string
 	password: string
 }
 
-// erros: Não autorizado
 type SignInManagerOutput = Either<
-	undefined,
+	UnauthorizedException,
 	{
-		manager: Manager
+		access_token: string
 	}
 >
 
+@Injectable()
 export class SignInManagerUseCase {
-	constructor(private managerRepository: ManagersRepository) {}
+	constructor(
+		private managersRepository: ManagersRepository,
+		private jwt: JwtService,
+	) {}
 
 	async execute({
-		name,
 		email,
 		password,
 	}: SignInManagerInput): Promise<SignInManagerOutput> {
-		const manager = Manager.create({
-			name,
-			email,
-			password,
+		const user = await this.managersRepository.findByEmail(email)
+
+		if (!user) {
+			throw new UnauthorizedException('User credentials do not match.')
+		}
+
+		const isPasswordValid = await compare(password, user.password)
+
+		if (!isPasswordValid) {
+			throw new UnauthorizedException('User credentials do not match.')
+		}
+
+		const accessToken = this.jwt.sign({ sub: user.id })
+
+		return right({
+			access_token: accessToken,
 		})
-
-		await this.managerRepository.create(manager)
-
-		return right({ manager })
 	}
 }
