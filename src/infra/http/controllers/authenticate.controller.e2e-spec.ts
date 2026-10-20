@@ -1,3 +1,4 @@
+import { UserRole } from '@generated/prisma/enums'
 import {
 	INestApplication,
 	ValidationPipe,
@@ -7,7 +8,7 @@ import { Test } from '@nestjs/testing'
 import { hash } from 'bcryptjs'
 import request from 'supertest'
 import { AppModule } from '@/infra/app.module'
-import { PrismaService } from '@/infra/prisma/prisma.service'
+import { PrismaService } from '@/infra/database/prisma/prisma.service'
 
 describe('Authenticate (E2E)', () => {
 	let app: INestApplication
@@ -45,7 +46,7 @@ describe('Authenticate (E2E)', () => {
 		await prisma.user.create({
 			data: {
 				name: 'John Doe',
-				role: 'MANAGER',
+				role: UserRole.CONDOMINIUM_MANAGER,
 				email: 'johndoe@example.com',
 				password: await hash('123456', 8),
 			},
