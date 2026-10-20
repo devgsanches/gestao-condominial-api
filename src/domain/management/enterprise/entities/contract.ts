@@ -26,6 +26,10 @@ export class Contract extends Entity<ContractProps> {
 		this.props.maintenanceId = maintenanceId
 	}
 
+	get slug(): Slug {
+		return this.props.slug
+	}
+
 	get title(): string {
 		return this.props.title
 	}

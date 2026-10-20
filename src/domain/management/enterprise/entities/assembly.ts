@@ -25,6 +25,10 @@ export class Assembly extends Entity<AssemblyProps> {
 		return this.props.description
 	}
 
+	get scheduledAt(): Date {
+		return this.props.scheduledAt
+	}
+
 	get canceledAt(): Date | undefined {
 		return this.props.canceledAt
 	}
