@@ -37,7 +37,7 @@ export class RegisterManagerUseCase {
 			throw new ManagerAlreadyExistsError(email)
 		}
 
-		const hashedPassword = await this.hashGenerator.hash(password, 8)
+		const hashedPassword = await this.hashGenerator.hash(password)
 
 		const manager = Manager.create({
 			name,
