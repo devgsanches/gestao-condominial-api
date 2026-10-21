@@ -1,4 +1,11 @@
-import { Body, Controller, Post } from '@nestjs/common'
+import {
+	BadRequestException,
+	Body,
+	Controller,
+	Post,
+	UnauthorizedException,
+} from '@nestjs/common'
+import { WrongCredentialsError } from '@/domain/management/application/use-cases/errors/wrong-credentials-error'
 import { SignInManagerUseCase } from '@/domain/management/application/use-cases/sign-in-manager'
 import { AuthenticateRequestDTO } from '@/infra/http/dtos/authenticate.dto'
 
@@ -19,7 +26,14 @@ export class AuthenticateController {
 		})
 
 		if (session.isLeft()) {
-			throw new Error()
+			const error = session.reason
+
+			switch (error.constructor) {
+				case WrongCredentialsError:
+					throw new UnauthorizedException(error.message)
+				default:
+					throw new BadRequestException(error.message)
+			}
 		}
 
 		const { access_token } = session.result

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { type Either, right } from '@/core/either'
+import { type Either, left, right } from '@/core/either'
 import { Encrypter } from '../cryptography/encrypter'
 import { HashComparer } from '../cryptography/hash-comparer'
 import { ManagersRepository } from '../repositories/managers-repository'
@@ -32,7 +32,7 @@ export class SignInManagerUseCase {
 		const user = await this.managersRepository.findByEmail(email)
 
 		if (!user) {
-			throw new WrongCredentialsError()
+			return left(new WrongCredentialsError())
 		}
 
 		const isPasswordValid = await this.hashComparer.compare(
@@ -41,7 +41,7 @@ export class SignInManagerUseCase {
 		)
 
 		if (!isPasswordValid) {
-			throw new WrongCredentialsError()
+			return left(new WrongCredentialsError())
 		}
 
 		const accessToken = await this.encrypter.encrypt({
