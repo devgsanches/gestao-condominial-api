@@ -1,7 +1,7 @@
 import {
-	Appointment as PrismaAppointment,
 	AppointmentType,
 	Prisma,
+	Appointment as PrismaAppointment,
 } from '@generated/prisma/client'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Assembly } from '@/domain/management/enterprise/entities/assembly'

@@ -1,8 +1,8 @@
 import {
-	Maintenance as PrismaMaintenance,
-	MaintenancePeriodicity as PrismaPeriodicity,
-	MaintenanceType as PrismaMaintenanceType,
 	Prisma,
+	Maintenance as PrismaMaintenance,
+	MaintenanceType as PrismaMaintenanceType,
+	MaintenancePeriodicity as PrismaPeriodicity,
 } from '@generated/prisma/client'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Maintenance } from '@/domain/management/enterprise/entities/maintenance'
@@ -17,7 +17,10 @@ const typeToPrismaMap: Record<string, PrismaMaintenanceType> = {
 	periodic: 'PERIODIC',
 }
 
-const periodicityToDomainMap: Record<PrismaPeriodicity, 'month' | 'trimester' | 'semester'> = {
+const periodicityToDomainMap: Record<
+	PrismaPeriodicity,
+	'month' | 'trimester' | 'semester'
+> = {
 	MONTH: 'month',
 	TRIMESTER: 'trimester',
 	SEMESTER: 'semester',
