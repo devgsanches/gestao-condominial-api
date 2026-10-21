@@ -1,11 +1,21 @@
 # CMD + \ = split screen to view response on a side
 @baseUrl = http://localhost:3333
 @authToken = {{authenticate.response.body.access_token}}
+@addressId = {{createAddress.response.body.address.id}}
+@condominiumId = {{createCondominium.response.body.condominium.id}}
+@maintenanceId = {{createMaintenance.response.body.maintenance.id}}
+@contractId = {{createContract.response.body.contract.id}}
+@appointmentId = {{scheduleMeeting.response.body.meeting.id}}
+@attachmentId = 00000000-0000-0000-0000-000000000010
+
+# Health
 
 # @name healthCheck
 GET {{baseUrl}}
 
 ###
+
+# Accounts routes
 
 # @name createAccount
 POST {{baseUrl}}/v1/accounts
@@ -27,6 +37,12 @@ Content-Type: application/json
 	"email": "claudia@email.com",
 	"password": "1q2w3e4r"
 }
+
+###
+
+# @name getManagerProfile
+GET {{baseUrl}}/v1/accounts/profile
+Authorization: Bearer {{authToken}}
 
 ###
 
@@ -58,7 +74,150 @@ Content-Type: application/json
 Authorization: Bearer {{authToken}}
 
 {
-	"managerId": "00000000-0000-0000-0000-000000000001",
-	"addressId": "00000000-0000-0000-0000-000000000002",
+	"addressId": "{{addressId}}",
 	"name": "Residencial Jardim das Flores"
 }
+
+###
+
+# @name fetchCondominiumsByManager
+GET {{baseUrl}}/v1/condominium
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name getCondominium
+GET {{baseUrl}}/v1/condominium/{{condominiumId}}
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name updateCondominium
+PATCH {{baseUrl}}/v1/condominium/{{condominiumId}}
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+	"name": "Residencial Jardim das Flores Atualizado"
+}
+
+###
+
+# @name deleteCondominium
+DELETE {{baseUrl}}/v1/condominium/{{condominiumId}}
+Authorization: Bearer {{authToken}}
+
+###
+
+# Maintenances routes
+
+# @name createMaintenance
+POST {{baseUrl}}/v1/condominium/{{condominiumId}}/maintenances
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+	"type": "periodic",
+	"periodicity": "month",
+	"title": "Manutenção do elevador",
+	"description": "Revisão mensal do elevador social"
+}
+
+###
+
+# @name fetchMaintenances
+GET {{baseUrl}}/v1/condominium/{{condominiumId}}/maintenances?type=periodic&title=elevador
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name updateMaintenance
+PATCH {{baseUrl}}/v1/condominium/{{condominiumId}}/maintenances/{{maintenanceId}}
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+	"title": "Manutenção do elevador - atualizado",
+	"description": "Revisão mensal do elevador social e de serviço"
+}
+
+###
+
+# @name cancelMaintenance
+PATCH {{baseUrl}}/v1/condominium/{{condominiumId}}/maintenances/{{maintenanceId}}/cancel
+Authorization: Bearer {{authToken}}
+
+###
+
+# Contracts routes
+
+# @name createContract
+POST {{baseUrl}}/v1/condominium/{{condominiumId}}/maintenances/{{maintenanceId}}/contracts
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+	"title": "Contrato de manutenção do elevador",
+	"description": "Contrato anual de manutenção preventiva",
+	"startVigencyDate": "2026-01-01T00:00:00.000Z",
+	"endVigencyDate": "2026-12-31T23:59:59.000Z"
+}
+
+###
+
+# @name attachContractDocument
+POST {{baseUrl}}/v1/contracts/{{contractId}}/attachments
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+	"attachmentsIds": ["{{attachmentId}}"]
+}
+
+###
+
+# Appointments routes
+
+# @name scheduleMeeting
+POST {{baseUrl}}/v1/condominium/{{condominiumId}}/appointments
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+	"type": "meeting",
+	"title": "Reunião de síndicos",
+	"description": "Alinhamento mensal sobre manutenções",
+	"scheduledAt": "2026-11-15T19:00:00.000Z"
+}
+
+###
+
+# @name scheduleAssembly
+POST {{baseUrl}}/v1/condominium/{{condominiumId}}/appointments
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+	"type": "assembly",
+	"title": "Assembleia ordinária",
+	"description": "Prestação de contas do condomínio",
+	"scheduledAt": "2026-12-10T19:00:00.000Z"
+}
+
+###
+
+# @name fetchMeetings
+GET {{baseUrl}}/v1/condominium/{{condominiumId}}/appointments?type=meeting
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name fetchAssemblies
+GET {{baseUrl}}/v1/condominium/{{condominiumId}}/appointments?type=assembly
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name cancelAppointment
+PATCH {{baseUrl}}/v1/appointments/{{appointmentId}}/cancel
+Authorization: Bearer {{authToken}}
