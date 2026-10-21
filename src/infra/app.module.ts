@@ -13,8 +13,8 @@ import { HttpModule } from './http/http.module'
 			envFilePath: '.env',
 		}),
 		AuthModule,
-		EnvModule,
 		HttpModule,
+		EnvModule,
 	],
 })
 export class AppModule {}
