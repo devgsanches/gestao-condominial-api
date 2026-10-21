@@ -1,6 +1,6 @@
 import { ConflictException, Injectable } from '@nestjs/common'
 import { hash } from 'bcryptjs'
-import { type Either, right } from '@/core/either'
+import { type Either, left, right } from '@/core/either'
 import { Manager } from '../../enterprise/entities/manager'
 import { HashGenerator } from '../cryptography/hash-generator'
 import { ManagersRepository } from '../repositories/managers-repository'
@@ -34,7 +34,7 @@ export class RegisterManagerUseCase {
 		const userWithSameEmail = await this.managersRepository.findByEmail(email)
 
 		if (userWithSameEmail) {
-			throw new ManagerAlreadyExistsError(email)
+			return left(new ManagerAlreadyExistsError(email))
 		}
 
 		const hashedPassword = await this.hashGenerator.hash(password)
