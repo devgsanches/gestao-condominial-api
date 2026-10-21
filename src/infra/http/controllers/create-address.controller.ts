@@ -14,7 +14,6 @@ import { CreateAddressRequestDTO } from '@/infra/http/dtos/create-address.dto'
 	version: '1',
 	path: 'addresses',
 })
-@UseGuards(JwtAuthGuard)
 export class CreateAddressController {
 	constructor(private createAddress: CreateAddressUseCase) {}
 

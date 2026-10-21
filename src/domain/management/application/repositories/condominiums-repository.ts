@@ -8,6 +8,7 @@ export abstract class CondominiumsRepository {
 	abstract findById(id: UniqueEntityId): Promise<Condominium | null>
 	abstract findManyByManagerId(managerId: UniqueEntityId): Promise<Condominium[]>
 	abstract findByManagerId(managerId: UniqueEntityId): Promise<Condominium | null>
+	abstract findByAddressId(addressId: UniqueEntityId): Promise<Condominium | null>
 	abstract update(condominium: Pick<Condominium, 'name' | 'id'>): Promise<Condominium>
 	abstract delete(id: UniqueEntityId): Promise<void>
 }

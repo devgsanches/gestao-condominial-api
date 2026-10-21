@@ -5,6 +5,7 @@ import { Condominium } from '../../enterprise/entities/condominium'
 import { Slug } from '../../enterprise/entities/value-objects/slug'
 import { CondominiumsRepository } from '../repositories/condominiums-repository'
 import { ManagersRepository } from '../repositories/managers-repository'
+import { AddressAlreadyInUseError } from './errors/address-already-in-use-error'
 import { CondominiumAlreadyExistsError } from './errors/condominium-already-exists-error'
 import { MaxCondominiumsReachedError } from './errors/max-condominiums-reached-error'
 import { NotAManagerError } from './errors/not-a-manager-error'
@@ -16,7 +17,7 @@ interface CreateCondominiumInput {
 }
 
 type CreateCondominiumOutput = Either<
-	NotAManagerError | CondominiumAlreadyExistsError | MaxCondominiumsReachedError,
+	NotAManagerError | CondominiumAlreadyExistsError | MaxCondominiumsReachedError | AddressAlreadyInUseError,
 	{
 		condominium: Condominium
 	}
@@ -38,6 +39,13 @@ export class CreateCondominiumUseCase {
 
 		if (!manager) {
 			return left(new NotAManagerError())
+		}
+
+		const addressAlreadyInUse =
+			await this.condominiumRepository.findByAddressId(addressId)
+
+		if (addressAlreadyInUse) {
+			return left(new AddressAlreadyInUseError())
 		}
 
 		const condominiumAlreadyExists =

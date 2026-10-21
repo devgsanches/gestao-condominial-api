@@ -77,6 +77,22 @@ export class PrismaCondominiumsRepository implements CondominiumsRepository {
 		return PrismaCondominiumMapper.toDomain(condominium)
 	}
 
+	async findByAddressId(
+		addressId: UniqueEntityId,
+	): Promise<Condominium | null> {
+		const condominium = await this.prisma.condominium.findUnique({
+			where: {
+				addressId: addressId.toValue(),
+			},
+		})
+
+		if (!condominium) {
+			return null
+		}
+
+		return PrismaCondominiumMapper.toDomain(condominium)
+	}
+
 	async update(
 		condominium: Pick<Condominium, 'name' | 'id'>,
 	): Promise<Condominium> {

@@ -42,6 +42,18 @@ export class InMemoryCondominiumsRepository implements CondominiumsRepository {
 		return condominium
 	}
 
+	async findByAddressId(addressId: UniqueEntityId) {
+		const condominium = this.items.find((item) =>
+			item.addressId.equals(addressId),
+		)
+
+		if (!condominium) {
+			return null
+		}
+
+		return condominium
+	}
+
 	async findManyByManagerId(managerId: UniqueEntityId) {
 		const condominiums = this.items.filter((item) =>
 			item.managerId.equals(managerId),

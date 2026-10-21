@@ -4,12 +4,10 @@ import {
 	ConflictException,
 	Controller,
 	HttpCode,
-	Post,
-	UseGuards,
+	Post
 } from '@nestjs/common'
 import { ManagerAlreadyExistsError } from '@/domain/management/application/use-cases/errors/manager-already-exists-error'
 import { RegisterManagerUseCase } from '@/domain/management/application/use-cases/register-manager'
-import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { CreateAccountRequestDTO } from '@/infra/http/dtos/create-account.dto'
 import { ManagerPresenter } from '../presenters/manager-presenter'
 
@@ -17,7 +15,6 @@ import { ManagerPresenter } from '../presenters/manager-presenter'
 	version: '1',
 	path: 'accounts',
 })
-@UseGuards(JwtAuthGuard)
 export class CreateAccountController {
 	constructor(private registerManager: RegisterManagerUseCase) {}
 

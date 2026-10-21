@@ -6,23 +6,21 @@ import {
 	HttpCode,
 	Post,
 	UnauthorizedException,
-	UseGuards,
 } from '@nestjs/common'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { CreateCondominiumUseCase } from '@/domain/management/application/use-cases/create-condominium'
+import { AddressAlreadyInUseError } from '@/domain/management/application/use-cases/errors/address-already-in-use-error'
 import { CondominiumAlreadyExistsError } from '@/domain/management/application/use-cases/errors/condominium-already-exists-error'
 import { MaxCondominiumsReachedError } from '@/domain/management/application/use-cases/errors/max-condominiums-reached-error'
 import { NotAManagerError } from '@/domain/management/application/use-cases/errors/not-a-manager-error'
 import { CurrentUser } from '@/infra/auth/current-user-decorator'
 import { UserPayload } from '@/infra/auth/jwt.strategy'
-import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { CreateCondominiumRequestDTO } from '@/infra/http/dtos/create-condominium'
 
 @Controller({
 	version: '1',
 	path: 'condominium',
 })
-@UseGuards(JwtAuthGuard)
 export class CreateCondominiumController {
 	constructor(private createCondominiumUseCase: CreateCondominiumUseCase) {}
 
@@ -41,12 +39,16 @@ export class CreateCondominiumController {
 		})
 
 		if (response.isLeft()) {
+			console.log('teste')
+
 			const error = response.reason
 
 			switch (error.constructor) {
 				case NotAManagerError:
 					throw new UnauthorizedException(error.message)
 				case CondominiumAlreadyExistsError:
+					throw new ConflictException(error.message)
+				case AddressAlreadyInUseError:
 					throw new ConflictException(error.message)
 				case MaxCondominiumsReachedError:
 					throw new BadRequestException(error.message)
