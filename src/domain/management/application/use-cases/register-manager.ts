@@ -2,7 +2,9 @@ import { ConflictException, Injectable } from '@nestjs/common'
 import { hash } from 'bcryptjs'
 import { type Either, right } from '@/core/either'
 import { Manager } from '../../enterprise/entities/manager'
+import { HashGenerator } from '../cryptography/hash-generator'
 import { ManagersRepository } from '../repositories/managers-repository'
+import { ManagerAlreadyExistsError } from './errors/manager-already-exists-error'
 
 interface RegisterManagerInput {
 	name: string
@@ -11,7 +13,7 @@ interface RegisterManagerInput {
 }
 
 type RegisterManagerOutput = Either<
-	ConflictException,
+	ManagerAlreadyExistsError,
 	{
 		manager: Manager
 	}
@@ -19,7 +21,10 @@ type RegisterManagerOutput = Either<
 
 @Injectable()
 export class RegisterManagerUseCase {
-	constructor(private managersRepository: ManagersRepository) {}
+	constructor(
+		private managersRepository: ManagersRepository,
+		private hashGenerator: HashGenerator,
+	) {}
 
 	async execute({
 		name,
@@ -29,12 +34,10 @@ export class RegisterManagerUseCase {
 		const userWithSameEmail = await this.managersRepository.findByEmail(email)
 
 		if (userWithSameEmail) {
-			throw new ConflictException(
-				'User with same e-mail address already exists.',
-			)
+			throw new ManagerAlreadyExistsError(email)
 		}
 
-		const hashedPassword = await hash(password, 8)
+		const hashedPassword = await this.hashGenerator.hash(password, 8)
 
 		const manager = Manager.create({
 			name,

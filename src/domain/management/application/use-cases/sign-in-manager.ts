@@ -1,8 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common'
-import { JwtService } from '@nestjs/jwt'
-import { compare } from 'bcryptjs'
+import { Injectable } from '@nestjs/common'
 import { type Either, right } from '@/core/either'
+import { Encrypter } from '../cryptography/encrypter'
+import { HashComparer } from '../cryptography/hash-comparer'
 import { ManagersRepository } from '../repositories/managers-repository'
+import { WrongCredentialsError } from './errors/wrong-credentials-error'
 
 interface SignInManagerInput {
 	email: string
@@ -10,7 +11,7 @@ interface SignInManagerInput {
 }
 
 type SignInManagerOutput = Either<
-	UnauthorizedException,
+	WrongCredentialsError,
 	{
 		access_token: string
 	}
@@ -20,7 +21,8 @@ type SignInManagerOutput = Either<
 export class SignInManagerUseCase {
 	constructor(
 		private managersRepository: ManagersRepository,
-		private jwt: JwtService,
+		private hashComparer: HashComparer,
+		private encrypter: Encrypter,
 	) {}
 
 	async execute({
@@ -30,16 +32,21 @@ export class SignInManagerUseCase {
 		const user = await this.managersRepository.findByEmail(email)
 
 		if (!user) {
-			throw new UnauthorizedException('User credentials do not match.')
+			throw new WrongCredentialsError()
 		}
 
-		const isPasswordValid = await compare(password, user.password)
+		const isPasswordValid = await this.hashComparer.compare(
+			password,
+			user.password,
+		)
 
 		if (!isPasswordValid) {
-			throw new UnauthorizedException('User credentials do not match.')
+			throw new WrongCredentialsError()
 		}
 
-		const accessToken = this.jwt.sign({ sub: user.id.toString() })
+		const accessToken = await this.encrypter.encrypt({
+			sub: user.id.toString(),
+		})
 
 		return right({
 			access_token: accessToken,
