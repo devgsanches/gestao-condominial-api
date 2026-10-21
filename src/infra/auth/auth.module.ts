@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
+import { APP_GUARD } from '@nestjs/core'
 import { JwtModule } from '@nestjs/jwt'
 import { PassportModule } from '@nestjs/passport'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
-import { InMemoryManagersRepository } from '@/test/repositories/in-memory-managers-repository'
 import { AuthService } from './auth.service'
-import { MANAGERS_REPOSITORY } from './constants'
 import { JwtStrategy } from './jwt.strategy'
+import { JwtAuthGuard } from './jwt-auth.guard'
 import { LocalStrategy } from './local.strategy'
 
 @Module({
@@ -21,11 +21,14 @@ import { LocalStrategy } from './local.strategy'
 		}),
 	],
 	providers: [
+		JwtStrategy,
+		{
+			provide: APP_GUARD,
+			useClass: JwtAuthGuard,
+		},
+		PrismaService,
 		AuthService,
 		LocalStrategy,
-		JwtStrategy,
-		{ provide: MANAGERS_REPOSITORY, useClass: InMemoryManagersRepository },
-		PrismaService,
 	],
 	exports: [AuthService, JwtModule],
 })

@@ -7,12 +7,14 @@ import {
 } from '@nestjs/common'
 import { WrongCredentialsError } from '@/domain/management/application/use-cases/errors/wrong-credentials-error'
 import { SignInManagerUseCase } from '@/domain/management/application/use-cases/sign-in-manager'
+import { Public } from '@/infra/auth/public'
 import { AuthenticateRequestDTO } from '@/infra/http/dtos/authenticate.dto'
 
 @Controller({
 	version: '1',
 	path: 'sessions',
 })
+@Public()
 export class AuthenticateController {
 	constructor(private signInManager: SignInManagerUseCase) {}
 
