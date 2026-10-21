@@ -1,4 +1,11 @@
-import { Body, Controller, HttpCode, Post, UseGuards } from '@nestjs/common'
+import {
+	BadRequestException,
+	Body,
+	Controller,
+	HttpCode,
+	Post,
+	UseGuards,
+} from '@nestjs/common'
 import { CreateAddressUseCase } from '@/domain/management/application/use-cases/create-address'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { CreateAddressRequestDTO } from '@/infra/http/dtos/create-address.dto'
@@ -25,7 +32,7 @@ export class CreateAddressController {
 			country,
 		} = body
 
-		await this.createAddress.execute({
+		const response = await this.createAddress.execute({
 			zipCode,
 			street,
 			number,
@@ -35,5 +42,9 @@ export class CreateAddressController {
 			state,
 			country,
 		})
+
+		if (response.isLeft()) {
+			throw new BadRequestException()
+		}
 	}
 }
