@@ -4,11 +4,10 @@ import {
 	Controller,
 	HttpCode,
 	Post,
-	UseGuards,
 } from '@nestjs/common'
 import { CreateAddressUseCase } from '@/domain/management/application/use-cases/create-address'
-import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { CreateAddressRequestDTO } from '@/infra/http/dtos/create-address.dto'
+import { AddressPresenter } from '../presenters/address-presenter'
 
 @Controller({
 	version: '1',
@@ -45,5 +44,9 @@ export class CreateAddressController {
 		if (response.isLeft()) {
 			throw new BadRequestException()
 		}
+
+		const { address } = response.result
+
+		return AddressPresenter.toHTTP(address)
 	}
 }
