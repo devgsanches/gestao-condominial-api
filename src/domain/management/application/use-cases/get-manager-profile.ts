@@ -1,27 +1,30 @@
-import { NotFoundException } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { type Either, left, right } from '@/core/either'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { Condominium } from '../../enterprise/entities/condominium'
+import type { CondominiumWithAddress } from '../interfaces/condominium'
 import { CondominiumsRepository } from '../repositories/condominiums-repository'
 import { ManagersRepository } from '../repositories/managers-repository'
+import { ManagerNotFoundError } from './errors/manager-not-found'
 
 interface GetManagerProfileInput {
 	managerId: UniqueEntityId
 }
 
-interface ManagerProfile {
+export interface ManagerProfile {
+	id: string
 	name: string
 	email: string
-	condominiums: Condominium[]
+	condominiums: CondominiumWithAddress[]
 }
 
 type GetManagerProfileOutput = Either<
-	NotFoundException,
+	ManagerNotFoundError,
 	{
 		manager: ManagerProfile
 	}
 >
 
+@Injectable()
 export class GetManagerProfileUseCase {
 	constructor(
 		private managerRepository: ManagersRepository,
@@ -34,17 +37,20 @@ export class GetManagerProfileUseCase {
 		const manager = await this.managerRepository.findById(managerId)
 
 		if (!manager) {
-			return left(new NotFoundException('Manager not found'))
+			return left(new ManagerNotFoundError())
 		}
 
-		const condominiums =
-			await this.condominiumRepository.findManyByManagerId(managerId)
+		const condominiumsWithAddress =
+			await this.condominiumRepository.findManyWithAddressByManagerId(
+				managerId,
+			)
 
 		return right({
 			manager: {
+				id: manager.id.toString(),
 				name: manager.name,
 				email: manager.email,
-				condominiums: condominiums,
+				condominiums: condominiumsWithAddress,
 			},
 		})
 	}

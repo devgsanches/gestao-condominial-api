@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import type { CondominiumWithAddress } from '@/domain/management/application/interfaces/condominium'
 import { CondominiumsRepository } from '@/domain/management/application/repositories/condominiums-repository'
 import { Condominium } from '@/domain/management/enterprise/entities/condominium'
 import { PrismaCondominiumMapper } from '../mappers/prisma-condominium-mapper'
@@ -59,6 +60,38 @@ export class PrismaCondominiumsRepository implements CondominiumsRepository {
 		)
 
 		return condominiumsToDomain
+	}
+
+	async findManyWithAddressByManagerId(
+		managerId: UniqueEntityId,
+	): Promise<CondominiumWithAddress[]> {
+		const condominiums = await this.prisma.condominium.findMany({
+			where: {
+				managerId: managerId.toValue(),
+			},
+			include: {
+				address: {
+					select: {
+						id: true,
+						city: true,
+					},
+				},
+			},
+		})
+
+		// mapper para casar com a interface
+		const condominiumsWithAddress = condominiums.map((condominium) => ({
+			id: condominium.id,
+			name: condominium.name,
+			address: {
+				id: condominium.address.id,
+				city: condominium.address.city,
+			},
+			createdAt: condominium.createdAt,
+			updatedAt: condominium.updatedAt,
+		}))
+
+		return condominiumsWithAddress
 	}
 
 	async findByManagerId(
