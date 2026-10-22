@@ -70,8 +70,8 @@ model Condominium {
   managerId String @map("manager_id")
   addressId String @unique @map("address_id")
 
-  manager User @relation(fields: [managerId], references: [id])
-  address Address @relation(fields: [addressId], references: [id])
+  manager User @relation(fields: [managerId], references: [id], onDelete: Cascade)
+  address Address @relation(fields: [addressId], references: [id], onDelete: Cascade)
 
   appointments Appointment[]
   maintenances Maintenance[]
@@ -92,7 +92,7 @@ model Appointment {
   scheduledAt    DateTime        @map("scheduled_at")
   canceledAt     DateTime?       @map("canceled_at")
 
-  condominium Condominium @relation(fields: [condominiumId], references: [id])
+  condominium Condominium @relation(fields: [condominiumId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -109,7 +109,7 @@ model Maintenance {
   description   String
   canceledAt    DateTime?               @map("canceled_at")
 
-  condominium Condominium @relation(fields: [condominiumId], references: [id])
+  condominium Condominium @relation(fields: [condominiumId], references: [id], onDelete: Cascade)
   contract    Contract?
 
   createdAt DateTime @default(now()) @map("created_at")
@@ -128,7 +128,7 @@ model Contract {
   startVigencyDate DateTime @map("start_vigency_date")
   endVigencyDate   DateTime @map("end_vigency_date")
 
-  maintenance Maintenance          @relation(fields: [maintenanceId], references: [id])
+  maintenance Maintenance          @relation(fields: [maintenanceId], references: [id], onDelete: Cascade)
   attachments ContractAttachment[]
 
   createdAt DateTime @default(now()) @map("created_at")
@@ -154,8 +154,8 @@ model CondominiumFinance {
   condominiumId String @map("condominium_id")
   financeId     String @map("finance_id")
 
-  condominium Condominium @relation(fields: [condominiumId], references: [id])
-  finance     Finance     @relation(fields: [financeId], references: [id])
+  condominium Condominium @relation(fields: [condominiumId], references: [id], onDelete: Cascade)
+  finance     Finance     @relation(fields: [financeId], references: [id], onDelete: Cascade)
 
   @@map("condominium_finance")
 }
@@ -175,8 +175,8 @@ model ContractAttachment {
   contractId   String @map("contract_id")
   attachmentId String @map("attachment_id")
 
-  contract   Contract   @relation(fields: [contractId], references: [id])
-  attachment Attachment @relation(fields: [attachmentId], references: [id])
+  contract   Contract   @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  attachment Attachment @relation(fields: [attachmentId], references: [id], onDelete: Cascade)
 
   @@map("contracts_attachments")
 }
