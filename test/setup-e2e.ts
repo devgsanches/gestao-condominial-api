@@ -17,23 +17,54 @@ function generateUniqueDatabaseURL(schemaId: string) {
 	return url.toString()
 }
 
+function createPrismaClient(connectionString: string) {
+	const schema = new URL(connectionString).searchParams.get('schema')
+
+	return new PrismaClient({
+		adapter: new PrismaPg(
+			{ connectionString },
+			{ schema: schema ?? undefined },
+		),
+	})
+}
+
+const originalDatabaseURL = process.env.DATABASE_URL
 const schemaId = randomUUID()
 const databaseURL = generateUniqueDatabaseURL(schemaId)
 
-const prisma = new PrismaClient({
-	adapter: new PrismaPg({ connectionString: databaseURL }),
-})
+// Precisa ser no carregamento do módulo: o ConfigModule.forRoot do AppModule
+// captura o DATABASE_URL no import, antes dos hooks beforeAll.
+process.env.DATABASE_URL = databaseURL
+
+async function dropTestSchema() {
+	if (!originalDatabaseURL) {
+		return
+	}
+
+	const adminUrl = new URL(originalDatabaseURL)
+	adminUrl.searchParams.set('schema', 'public')
+
+	const admin = createPrismaClient(adminUrl.toString())
+
+	try {
+		await admin.$executeRawUnsafe(`DROP SCHEMA IF EXISTS "${schemaId}" CASCADE`)
+	} finally {
+		await admin.$disconnect()
+	}
+}
 
 beforeAll(async () => {
-	process.env.DATABASE_URL = databaseURL
-
-	execSync('pnpm prisma migrate deploy --config prisma7.config.ts', {
-		env: process.env,
-		stdio: 'ignore',
-	})
+	try {
+		execSync('pnpm prisma db push --config prisma7.config.ts', {
+			env: process.env,
+			stdio: 'pipe',
+		})
+	} catch (error) {
+		await dropTestSchema()
+		throw error
+	}
 })
 
 afterAll(async () => {
-	await prisma.$executeRawUnsafe(`DROP SCHEMA IF EXISTS "${schemaId}" CASCADE`)
-	await prisma.$disconnect()
+	await dropTestSchema()
 })
