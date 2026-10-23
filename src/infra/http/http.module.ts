@@ -36,6 +36,7 @@ import { HealthCheckController } from './controllers/health-check.controller'
 import { ScheduleController } from './controllers/schedule.controller'
 import { UpdateCondominiumController } from './controllers/update-condominium.controller'
 import { UpdateMaintenanceController } from './controllers/update-maintenance.controller'
+import { UploadAttachmentController } from './controllers/upload-attachment.controller'
 
 @Module({
 	imports: [DatabaseModule, CryptographyModule],
@@ -55,6 +56,7 @@ import { UpdateMaintenanceController } from './controllers/update-maintenance.co
 		ScheduleController,
 		CreateMaintenanceController,
 		CreateContractController,
+		UploadAttachmentController,
 		UpdateMaintenanceController,
 		CancelMaintenanceController,
 		CancelAppointmentController,
