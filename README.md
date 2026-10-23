@@ -39,10 +39,10 @@ Construída com **Node.js**, **TypeScript**, **NestJS** e **Prisma**, seguindo *
 
 ### Autenticação e perfil
 - [x] Deve ser possível autenticar um síndico com e-mail e senha;
-- [ ] Deve ser possível obter o perfil do síndico autenticado;
+- [x] Deve ser possível obter o perfil do síndico autenticado;
 
 ### Autorização
-- [ ] TODAS as rotas devem ser autenticadas (exceto, a de login)
+- [x] TODAS as rotas devem ser autenticadas (exceto, a de login)
 
 ### Condomínios
 - [x] Deve ser possível que um síndico cadastre um condomínio;
@@ -74,10 +74,10 @@ Construída com **Node.js**, **TypeScript**, **NestJS** e **Prisma**, seguindo *
 
 ## ⚙️ Requisitos Não-Funcionais
 
-- [ ] A senha do usuário deve ser armazenada com hash (bcrypt);
-- [ ] Os dados devem ser persistidos em PostgreSQL;
+- [x] A senha do usuário deve ser armazenada com hash (bcrypt);
+- [x] Os dados devem ser persistidos em PostgreSQL;
 - [ ] Todas as listagens devem ser paginadas com **20 itens por página**;
-- [ ] O usuário deve ser identificado por um JWT;
+- [x] O usuário deve ser identificado por um JWT;
 
 ---
 
