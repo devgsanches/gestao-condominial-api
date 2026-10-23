@@ -1,4 +1,4 @@
-import { NotFoundException } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { type Either, left, right } from '@/core/either'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Condominium } from '../../enterprise/entities/condominium'
@@ -15,6 +15,7 @@ type FetchCondominiumsByManagerOutput = Either<
 	}
 >
 
+@Injectable()
 export class FetchCondominiumsByManagerUseCase {
 	constructor(private condominiumRepository: CondominiumsRepository) {}
 

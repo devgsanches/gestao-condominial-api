@@ -1,4 +1,8 @@
-import { NotFoundException, UnauthorizedException } from '@nestjs/common'
+import {
+	Injectable,
+	NotFoundException,
+	UnauthorizedException,
+} from '@nestjs/common'
 import { type Either, left, right } from '@/core/either'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Condominium } from '../../enterprise/entities/condominium'
@@ -17,6 +21,7 @@ type UpdateCondominiumOutput = Either<
 	}
 >
 
+@Injectable()
 export class UpdateCondominiumUseCase {
 	constructor(private condominiumRepository: CondominiumsRepository) {}
 

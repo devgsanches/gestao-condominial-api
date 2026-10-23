@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { type Either, left, right } from '@/core/either'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import { DatabaseError } from '@/core/errors/errors/database-error'
 import { Condominium } from '../../enterprise/entities/condominium'
 import { Slug } from '../../enterprise/entities/value-objects/slug'
 import { CondominiumsRepository } from '../repositories/condominiums-repository'
@@ -17,7 +18,11 @@ interface CreateCondominiumInput {
 }
 
 type CreateCondominiumOutput = Either<
-	NotAManagerError | CondominiumAlreadyExistsError | MaxCondominiumsReachedError | AddressAlreadyInUseError,
+	| NotAManagerError
+	| CondominiumAlreadyExistsError
+	| MaxCondominiumsReachedError
+	| AddressAlreadyInUseError
+	| DatabaseError,
 	{
 		condominium: Condominium
 	}
@@ -62,15 +67,23 @@ export class CreateCondominiumUseCase {
 			return left(new MaxCondominiumsReachedError())
 		}
 
-		const condominium = Condominium.create({
-			managerId,
-			addressId,
-			name,
-			slug: Slug.createFromText(name),
-		})
+		try {
+			const condominium = Condominium.create({
+				managerId,
+				addressId,
+				name,
+				slug: Slug.createFromText(name),
+			})
 
-		await this.condominiumRepository.create(condominium)
+			await this.condominiumRepository.create(condominium)
 
-		return right({ condominium })
+			return right({ condominium })
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				return left(new DatabaseError(error.message))
+			}
+
+			return left(new DatabaseError())
+		}
 	}
 }

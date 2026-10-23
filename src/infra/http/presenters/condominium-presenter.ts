@@ -6,15 +6,25 @@ import { Meeting } from '@/domain/management/enterprise/entities/meeting'
 export class CondominiumPresenter {
 	static toHTTP(condominium: Condominium) {
 		return {
-			condominium: {
-				id: condominium.id.toString(),
-				name: condominium.name,
-				slug: condominium.slug.value,
-				managerId: condominium.managerId.toString(),
-				addressId: condominium.addressId.toString(),
-				created_at: condominium.createdAt,
-				updated_at: condominium.updatedAt,
-			},
+			condominium: CondominiumPresenter.toHTTPItem(condominium),
+		}
+	}
+
+	static toHTTPList(condominiums: Condominium[]) {
+		return {
+			condominiums: condominiums.map(CondominiumPresenter.toHTTPItem),
+		}
+	}
+
+	private static toHTTPItem(condominium: Condominium) {
+		return {
+			id: condominium.id.toString(),
+			name: condominium.name,
+			slug: condominium.slug.value,
+			managerId: condominium.managerId.toString(),
+			addressId: condominium.addressId.toString(),
+			created_at: condominium.createdAt,
+			updated_at: condominium.updatedAt,
 		}
 	}
 

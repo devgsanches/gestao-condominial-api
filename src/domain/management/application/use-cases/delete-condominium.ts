@@ -1,4 +1,8 @@
-import { NotFoundException, UnauthorizedException } from '@nestjs/common'
+import {
+	Injectable,
+	NotFoundException,
+	UnauthorizedException,
+} from '@nestjs/common'
 import { type Either, left, right } from '@/core/either'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { AddressesRepository } from '../repositories/addresses-repository'
@@ -14,6 +18,7 @@ type DeleteCondominiumOutput = Either<
 	null
 >
 
+@Injectable()
 export class DeleteCondominiumUseCase {
 	constructor(
 		private condominiumRepository: CondominiumsRepository,
@@ -38,10 +43,8 @@ export class DeleteCondominiumUseCase {
 			return left(new NotFoundException())
 		}
 
-		await Promise.all([
-			this.addressesRepository.delete(condominium.addressId),
-			this.condominiumRepository.delete(condominium.id),
-		])
+		await this.condominiumRepository.delete(condominium.id)
+		await this.addressesRepository.delete(condominium.addressId)
 
 		return right(null)
 	}

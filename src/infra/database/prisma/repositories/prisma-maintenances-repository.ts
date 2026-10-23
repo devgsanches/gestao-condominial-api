@@ -72,7 +72,12 @@ export class PrismaMaintenancesRepository implements MaintenancesRepository {
 			where.type = typeToPrismaMap[filters.type]
 		}
 
-		const maintenances = await this.prisma.maintenance.findMany({ where })
+		const maintenances = await this.prisma.maintenance.findMany({
+			where: {
+				...where,
+				canceledAt: null,
+			},
+		})
 
 		return maintenances.map(PrismaMaintenanceMapper.toDomain)
 	}

@@ -1,9 +1,13 @@
-import { NotFoundException, UnauthorizedException } from '@nestjs/common'
+import {
+	Injectable,
+	NotFoundException,
+	UnauthorizedException,
+} from '@nestjs/common'
 import { type Either, left, right } from '@/core/either'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { MaintenancesRepository } from '../repositories/maintenances-repository'
-import { CondominiumsRepository } from '../repositories/condominiums-repository'
 import { Maintenance } from '../../enterprise/entities/maintenance'
+import { CondominiumsRepository } from '../repositories/condominiums-repository'
+import { MaintenancesRepository } from '../repositories/maintenances-repository'
 
 export enum MaintenanceType {
 	GENERAL = 'general',
@@ -12,16 +16,17 @@ export enum MaintenanceType {
 
 interface FetchMaintenancesInput {
 	type?: MaintenanceType
-  title?: string
+	title?: string
 	managerId: UniqueEntityId
 	condominiumId: UniqueEntityId
 }
 
 type FetchMaintenancesOutput = Either<
 	UnauthorizedException | NotFoundException,
-	| { maintenances: Maintenance[] }
+	{ maintenances: Maintenance[] }
 >
 
+@Injectable()
 export class FetchMaintenancesUseCase {
 	constructor(
 		private condominiumRepository: CondominiumsRepository,
@@ -32,12 +37,12 @@ export class FetchMaintenancesUseCase {
 		managerId,
 		condominiumId,
 		type,
-    title,
+		title,
 	}: FetchMaintenancesInput): Promise<FetchMaintenancesOutput> {
 		const condominium = await this.condominiumRepository.findById(condominiumId)
 
 		if (!condominium) {
-			return left(new NotFoundException())
+			return left(new NotFoundException('Condominium not found.'))
 		}
 
 		const isCondominiumManager = condominium.managerId.equals(managerId)
@@ -46,13 +51,14 @@ export class FetchMaintenancesUseCase {
 			return left(new UnauthorizedException())
 		}
 
-		const maintenances = await this.maintenancesRepository.findManyByCondominiumId({
-      condominiumId,
-      filters: {
-        title,
-        type,
-      },
-    })
+		const maintenances =
+			await this.maintenancesRepository.findManyByCondominiumId({
+				condominiumId,
+				filters: {
+					title,
+					type,
+				},
+			})
 
 		return right({ maintenances })
 	}
