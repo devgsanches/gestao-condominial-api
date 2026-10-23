@@ -1,5 +1,6 @@
 import {
 	BadRequestException,
+	Injectable,
 	NotFoundException,
 	UnauthorizedException,
 } from '@nestjs/common'
@@ -26,11 +27,12 @@ interface ScheduleMeetingInput {
 }
 
 type ScheduleMeetingOutput = Either<
-	UnauthorizedException | NotFoundException,
+	UnauthorizedException | NotFoundException | BadRequestException,
 	| { meeting: Meeting; assembly?: never }
 	| { assembly: Assembly; meeting?: never }
 >
 
+@Injectable()
 export class ScheduleMeetingUseCase {
 	constructor(
 		private condominiumRepository: CondominiumsRepository,
@@ -60,9 +62,7 @@ export class ScheduleMeetingUseCase {
 		const scheduleDate = new Date(scheduledAt)
 		const today = new Date()
 
-		const isScheduleDateIsValid = compareAsc(scheduleDate, today)
-
-		if (!isScheduleDateIsValid) {
+		if (compareAsc(scheduleDate, today) <= 0) {
 			return left(
 				new BadRequestException(
 					'Schedule date is in the past. Please, select a date in the future.',
@@ -76,7 +76,7 @@ export class ScheduleMeetingUseCase {
 			const meeting = Meeting.create({
 				condominiumId,
 				title,
-				description,	
+				description,
 				scheduledAt,
 			})
 

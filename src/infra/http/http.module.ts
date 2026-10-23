@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common'
+import { CancelAppointmentsUseCase } from '@/domain/management/application/use-cases/cancel-appointment'
 import { CancelMaintenanceUseCase } from '@/domain/management/application/use-cases/cancel-maintenance'
 import { CreateAddressUseCase } from '@/domain/management/application/use-cases/create-address'
 import { CreateCondominiumUseCase } from '@/domain/management/application/use-cases/create-condominium'
@@ -11,12 +12,14 @@ import { FetchMaintenancesUseCase } from '@/domain/management/application/use-ca
 import { GetCondominiumUseCase } from '@/domain/management/application/use-cases/get-condominium'
 import { GetManagerProfileUseCase } from '@/domain/management/application/use-cases/get-manager-profile'
 import { RegisterManagerUseCase } from '@/domain/management/application/use-cases/register-manager'
+import { ScheduleMeetingUseCase } from '@/domain/management/application/use-cases/schedule-meeting'
 import { SignInManagerUseCase } from '@/domain/management/application/use-cases/sign-in-manager'
 import { UpdateCondominiumUseCase } from '@/domain/management/application/use-cases/update-condominium'
 import { UpdateMaintenanceUseCase } from '@/domain/management/application/use-cases/update-maintenance'
 import { CryptographyModule } from '../cryptography/cryptography.module'
 import { DatabaseModule } from '../database/database.module'
 import { AuthenticateController } from './controllers/authenticate.controller'
+import { CancelAppointmentController } from './controllers/cancel-appointment.controller'
 import { CancelMaintenanceController } from './controllers/cancel-maintenance.controller'
 import { CreateAccountController } from './controllers/create-account.controller'
 import { CreateAddressController } from './controllers/create-address.controller'
@@ -30,6 +33,7 @@ import { FetchMaintenancesController } from './controllers/fetch-maintenances.co
 import { GetCondominiumController } from './controllers/get-condominium.controller'
 import { GetManagerProfileController } from './controllers/get-manager-profile.controller'
 import { HealthCheckController } from './controllers/health-check.controller'
+import { ScheduleController } from './controllers/schedule.controller'
 import { UpdateCondominiumController } from './controllers/update-condominium.controller'
 import { UpdateMaintenanceController } from './controllers/update-maintenance.controller'
 
@@ -48,10 +52,12 @@ import { UpdateMaintenanceController } from './controllers/update-maintenance.co
 		DeleteCondominiumController,
 		FetchMaintenancesController,
 		FetchAppointmentsController,
+		ScheduleController,
 		CreateMaintenanceController,
 		CreateContractController,
 		UpdateMaintenanceController,
 		CancelMaintenanceController,
+		CancelAppointmentController,
 	],
 	providers: [
 		RegisterManagerUseCase,
@@ -65,10 +71,12 @@ import { UpdateMaintenanceController } from './controllers/update-maintenance.co
 		DeleteCondominiumUseCase,
 		FetchMaintenancesUseCase,
 		FetchAppointmentsUseCase,
+		ScheduleMeetingUseCase,
 		CreateMaintenanceUseCase,
 		CreateContractUseCase,
 		UpdateMaintenanceUseCase,
 		CancelMaintenanceUseCase,
+		CancelAppointmentsUseCase,
 	],
 })
 export class HttpModule {}

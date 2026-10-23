@@ -171,6 +171,53 @@ describe('Fetch appointments (E2E)', () => {
 		await app.close()
 	})
 
+	test('[GET] /v1/condominium/:condominiumId/appointments', async () => {
+		const response = await request(app.getHttpServer())
+			.get(`/v1/condominium/${condominiumId}/appointments`)
+			.set('Authorization', `Bearer ${accessToken}`)
+
+		expect(response.statusCode).toBe(200)
+		expect(response.body.canceled).toHaveLength(2)
+		expect(response.body.canceled).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					id: canceledMeetingId,
+					type: 'meeting',
+				}),
+				expect.objectContaining({
+					id: canceledAssemblyId,
+					type: 'assembly',
+				}),
+			]),
+		)
+		expect(response.body.completed).toHaveLength(2)
+		expect(response.body.completed).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					id: completedMeetingId,
+					type: 'meeting',
+				}),
+				expect.objectContaining({
+					id: completedAssemblyId,
+					type: 'assembly',
+				}),
+			]),
+		)
+		expect(response.body.upcoming).toHaveLength(2)
+		expect(response.body.upcoming).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					id: upcomingMeetingId,
+					type: 'meeting',
+				}),
+				expect.objectContaining({
+					id: upcomingAssemblyId,
+					type: 'assembly',
+				}),
+			]),
+		)
+	})
+
 	test('[GET] /v1/condominium/:condominiumId/appointments?type=meeting', async () => {
 		const response = await request(app.getHttpServer())
 			.get(`/v1/condominium/${condominiumId}/appointments`)

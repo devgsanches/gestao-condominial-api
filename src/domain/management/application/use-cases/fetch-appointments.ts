@@ -18,7 +18,7 @@ export interface GroupedAppointments<T extends Meeting | Assembly> {
 }
 
 interface FetchAppointmentsInput {
-	type: ScheduleType
+	type?: ScheduleType
 	managerId: UniqueEntityId
 	condominiumId: UniqueEntityId
 }
@@ -79,9 +79,20 @@ export class FetchAppointmentsUseCase {
 			return left(new UnauthorizedException())
 		}
 
-		const isAssembly = type === ScheduleType.ASSEMBLY
+		if (!type) {
+			const [meetings, assemblies] = await Promise.all([
+				this.appointmentsRepository.findManyMeetingsByCondominiumId(
+					condominiumId,
+				),
+				this.appointmentsRepository.findManyAssembliesByCondominiumId(
+					condominiumId,
+				),
+			])
 
-		if (!isAssembly) {
+			return right(groupAppointments([...meetings, ...assemblies]))
+		}
+
+		if (type === ScheduleType.MEETING) {
 			const meetings =
 				await this.appointmentsRepository.findManyMeetingsByCondominiumId(
 					condominiumId,

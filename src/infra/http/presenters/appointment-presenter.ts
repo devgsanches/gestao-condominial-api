@@ -4,6 +4,12 @@ import { Meeting } from '@/domain/management/enterprise/entities/meeting'
 
 // biome-ignore lint/complexity/noStaticOnlyClass: mapper utilitário com métodos estáticos
 export class AppointmentPresenter {
+	static toHTTP(appointment: Meeting | Assembly) {
+		return {
+			appointment: AppointmentPresenter.toHTTPItem(appointment),
+		}
+	}
+
 	static toHTTPGrouped(appointments: GroupedAppointments<Meeting | Assembly>) {
 		return {
 			canceled: appointments.canceled.map(AppointmentPresenter.toHTTPItem),

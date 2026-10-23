@@ -1,19 +1,29 @@
-import { NotFoundException, UnauthorizedException } from '@nestjs/common'
+import {
+	Injectable,
+	NotFoundException,
+	UnauthorizedException,
+} from '@nestjs/common'
 import { type Either, left, right } from '@/core/either'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import { Assembly } from '../../enterprise/entities/assembly'
+import { Meeting } from '../../enterprise/entities/meeting'
 import { AppointmentsRepository } from '../repositories/appointments-repository'
 import { CondominiumsRepository } from '../repositories/condominiums-repository'
 
 interface CancelAppointmentsInput {
 	managerId: UniqueEntityId
+	condominiumId: UniqueEntityId
 	appointmentId: UniqueEntityId
 }
 
 type CancelAppointmentsOutput = Either<
 	UnauthorizedException | NotFoundException,
-	null
+	{
+		appointment: Meeting | Assembly
+	}
 >
 
+@Injectable()
 export class CancelAppointmentsUseCase {
 	constructor(
 		private condominiumRepository: CondominiumsRepository,
@@ -22,12 +32,16 @@ export class CancelAppointmentsUseCase {
 
 	async execute({
 		managerId,
+		condominiumId,
 		appointmentId,
 	}: CancelAppointmentsInput): Promise<CancelAppointmentsOutput> {
-		const condominium =
-			await this.condominiumRepository.findByManagerId(managerId)
+		const condominium = await this.condominiumRepository.findById(condominiumId)
 
-		const isCondominiumManager = condominium?.managerId.equals(managerId)
+		if (!condominium) {
+			return left(new NotFoundException())
+		}
+
+		const isCondominiumManager = condominium.managerId.equals(managerId)
 
 		if (!isCondominiumManager) {
 			return left(new UnauthorizedException())
@@ -36,7 +50,7 @@ export class CancelAppointmentsUseCase {
 		const appointment =
 			await this.appointmentsRepository.findById(appointmentId)
 
-		if (!appointment) {
+		if (!appointment?.condominiumId.equals(condominiumId)) {
 			return left(new NotFoundException())
 		}
 
@@ -44,6 +58,6 @@ export class CancelAppointmentsUseCase {
 
 		await this.appointmentsRepository.update(appointment)
 
-		return right(null)
+		return right({ appointment })
 	}
 }

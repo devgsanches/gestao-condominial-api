@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker'
-import { UnauthorizedException } from '@nestjs/common'
+import { BadRequestException, UnauthorizedException } from '@nestjs/common'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { makeCondominium } from '@/test/factories/make-condominium'
 import { makeManager } from '@/test/factories/make-manager'
@@ -145,6 +145,33 @@ describe('ScheduleMeetingUseCase', () => {
 		expect(response.isRight()).toBe(false)
 		if (response.isLeft()) {
 			expect(response.reason).toBeInstanceOf(UnauthorizedException)
+		}
+	})
+
+	it('should not be possible for a manager to schedule a meeting in the past.', async () => {
+		const manager = makeManager({
+			name: 'Guilherme Sanches',
+		})
+
+		const condominium = makeCondominium({
+			managerId: manager.id,
+		})
+
+		await inMemoryCondominiumsRepository.create(condominium)
+
+		const response = await sut.execute({
+			managerId: manager.id,
+			condominiumId: condominium.id,
+			type: ScheduleType.MEETING,
+			title: 'Reunião Teste',
+			description: 'Descrição da reunião teste',
+			scheduledAt: faker.date.past(),
+		})
+
+		expect(response.isLeft()).toBe(true)
+		expect(response.isRight()).toBe(false)
+		if (response.isLeft()) {
+			expect(response.reason).toBeInstanceOf(BadRequestException)
 		}
 	})
 })
