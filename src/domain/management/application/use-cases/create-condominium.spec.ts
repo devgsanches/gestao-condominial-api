@@ -1,24 +1,30 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { makeManager } from '@/test/factories/make-manager'
 import { InMemoryCondominiumsRepository } from '@/test/repositories/in-memory-condominiums-repository'
+import { InMemoryManagersRepository } from '@/test/repositories/in-memory-managers-repository'
 import { CreateCondominiumUseCase } from './create-condominium'
-
-// @TODO: Add coverage and test all possible errors
 
 describe('CreateCondominiumUseCase', () => {
 	let inMemoryCondominiumsRepository: InMemoryCondominiumsRepository
+	let inMemoryManagersRepository: InMemoryManagersRepository
 	let sut: CreateCondominiumUseCase
 
 	beforeEach(() => {
 		inMemoryCondominiumsRepository = new InMemoryCondominiumsRepository()
+		inMemoryManagersRepository = new InMemoryManagersRepository()
 
-		sut = new CreateCondominiumUseCase(inMemoryCondominiumsRepository) // system under test
+		sut = new CreateCondominiumUseCase(
+			inMemoryCondominiumsRepository,
+			inMemoryManagersRepository,
+		)
 	})
 
 	it('should be possible for a manager to create a condominium.', async () => {
 		const manager = makeManager({
 			name: 'Guilherme Sanches',
 		})
+
+		await inMemoryManagersRepository.create(manager)
 
 		const response = await sut.execute({
 			managerId: manager.id,

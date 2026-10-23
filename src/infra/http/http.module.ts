@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common'
 import { CreateAddressUseCase } from '@/domain/management/application/use-cases/create-address'
 import { CreateCondominiumUseCase } from '@/domain/management/application/use-cases/create-condominium'
+import { GetCondominiumUseCase } from '@/domain/management/application/use-cases/get-condominium'
 import { GetManagerProfileUseCase } from '@/domain/management/application/use-cases/get-manager-profile'
 import { RegisterManagerUseCase } from '@/domain/management/application/use-cases/register-manager'
 import { SignInManagerUseCase } from '@/domain/management/application/use-cases/sign-in-manager'
@@ -10,6 +11,7 @@ import { AuthenticateController } from './controllers/authenticate.controller'
 import { CreateAccountController } from './controllers/create-account.controller'
 import { CreateAddressController } from './controllers/create-address.controller'
 import { CreateCondominiumController } from './controllers/create-condominium.controller'
+import { GetCondominiumController } from './controllers/get-condominium.controller'
 import { GetManagerProfileController } from './controllers/get-manager-profile.controller'
 import { HealthCheckController } from './controllers/health-check.controller'
 
@@ -22,6 +24,7 @@ import { HealthCheckController } from './controllers/health-check.controller'
 		GetManagerProfileController,
 		CreateAddressController,
 		CreateCondominiumController,
+		GetCondominiumController,
 	],
 	providers: [
 		RegisterManagerUseCase,
@@ -29,6 +32,7 @@ import { HealthCheckController } from './controllers/health-check.controller'
 		GetManagerProfileUseCase,
 		CreateAddressUseCase,
 		CreateCondominiumUseCase,
+		GetCondominiumUseCase,
 	],
 })
 export class HttpModule {}

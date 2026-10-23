@@ -1,42 +1,125 @@
-import { NotFoundException, UnauthorizedException } from '@nestjs/common'
+import {
+	Injectable,
+	NotFoundException,
+	UnauthorizedException,
+} from '@nestjs/common'
 import { type Either, left, right } from '@/core/either'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import { Address } from '../../enterprise/entities/address'
+import { Assembly } from '../../enterprise/entities/assembly'
 import { Condominium } from '../../enterprise/entities/condominium'
+import { Maintenance } from '../../enterprise/entities/maintenance'
+import { Meeting } from '../../enterprise/entities/meeting'
+import { AddressesRepository } from '../repositories/addresses-repository'
+import { AppointmentsRepository } from '../repositories/appointments-repository'
 import { CondominiumsRepository } from '../repositories/condominiums-repository'
+import { ContractsRepository } from '../repositories/contracts-repository'
+import { MaintenancesRepository } from '../repositories/maintenances-repository'
 
 interface GetCondominiumInput {
 	managerId: UniqueEntityId
 	condominiumId: UniqueEntityId
 }
 
+export type GetCondominiumDashboard = {
+	condominium: Condominium
+	address: Address
+	activeMaintenancesCount: number
+	periodicWithoutContractCount: number
+	scheduledAppointmentsCount: number
+	nextAppointment: Meeting | Assembly | null
+	periodicWithoutContract: Maintenance[]
+}
+
 type GetCondominiumOutput = Either<
 	NotFoundException | UnauthorizedException,
-	{
-		condominium: Condominium
-	}
+	GetCondominiumDashboard
 >
 
+@Injectable()
 export class GetCondominiumUseCase {
-	constructor(private condominiumRepository: CondominiumsRepository) {}
+	constructor(
+		private condominiumRepository: CondominiumsRepository,
+		private addressesRepository: AddressesRepository,
+		private maintenancesRepository: MaintenancesRepository,
+		private contractsRepository: ContractsRepository,
+		private appointmentsRepository: AppointmentsRepository,
+	) {}
 
-	// managerId virá a partir da autenticação do síndico - rota estará protegida
 	async execute({
 		managerId,
 		condominiumId,
 	}: GetCondominiumInput): Promise<GetCondominiumOutput> {
 		const condominium = await this.condominiumRepository.findById(condominiumId)
 
-		const isCondominiumManager = condominium?.managerId.equals(managerId)
-
-		// somente o síndico do condomínio pode acessar o condomínio
-		if (!isCondominiumManager) {
-			return left(new UnauthorizedException())
-		}
-
 		if (!condominium) {
 			return left(new NotFoundException())
 		}
 
-		return right({ condominium })
+		if (!condominium.managerId.equals(managerId)) {
+			return left(new UnauthorizedException())
+		}
+
+		const address = await this.addressesRepository.findById(
+			condominium.addressId,
+		)
+
+		if (!address) {
+			return left(new NotFoundException())
+		}
+
+		const maintenances =
+			await this.maintenancesRepository.findManyByCondominiumId({
+				condominiumId,
+				filters: {},
+			})
+
+		const activeMaintenances = maintenances.filter(
+			(maintenance) => !maintenance.canceledAt,
+		)
+
+		const periodicWithoutContract: Maintenance[] = []
+
+		for (const maintenance of activeMaintenances) {
+			if (maintenance.type !== 'periodic') {
+				continue
+			}
+
+			const contract = await this.contractsRepository.findByMaintenanceId(
+				maintenance.id,
+			)
+
+			if (!contract) {
+				periodicWithoutContract.push(maintenance)
+			}
+		}
+
+		const now = new Date()
+
+		const [meetings, assemblies] = await Promise.all([
+			this.appointmentsRepository.findManyMeetingsByCondominiumId(
+				condominiumId,
+			),
+			this.appointmentsRepository.findManyAssembliesByCondominiumId(
+				condominiumId,
+			),
+		])
+
+		const scheduledAppointments = [...meetings, ...assemblies]
+			.filter(
+				(appointment) =>
+					!appointment.canceledAt && appointment.scheduledAt >= now,
+			)
+			.sort((a, b) => a.scheduledAt.getTime() - b.scheduledAt.getTime())
+
+		return right({
+			condominium,
+			address,
+			activeMaintenancesCount: activeMaintenances.length,
+			periodicWithoutContractCount: periodicWithoutContract.length,
+			periodicWithoutContract,
+			scheduledAppointmentsCount: scheduledAppointments.length,
+			nextAppointment: scheduledAppointments[0] ?? null,
+		})
 	}
 }

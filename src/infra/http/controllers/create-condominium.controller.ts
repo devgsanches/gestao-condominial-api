@@ -16,6 +16,7 @@ import { NotAManagerError } from '@/domain/management/application/use-cases/erro
 import { CurrentUser } from '@/infra/auth/current-user-decorator'
 import { UserPayload } from '@/infra/auth/jwt.strategy'
 import { CreateCondominiumRequestDTO } from '@/infra/http/dtos/create-condominium'
+import { CondominiumPresenter } from '../presenters/condominium-presenter'
 
 @Controller({
 	version: '1',
@@ -39,8 +40,6 @@ export class CreateCondominiumController {
 		})
 
 		if (response.isLeft()) {
-			console.log('teste')
-
 			const error = response.reason
 
 			switch (error.constructor) {
@@ -56,5 +55,7 @@ export class CreateCondominiumController {
 					throw new BadRequestException(error.message)
 			}
 		}
+
+		return CondominiumPresenter.toHTTP(response.result.condominium)
 	}
 }
