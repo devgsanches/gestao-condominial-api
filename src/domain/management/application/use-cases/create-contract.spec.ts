@@ -1,6 +1,7 @@
-import { BadRequestException } from '@nestjs/common'
+import { BadRequestException, ConflictException } from '@nestjs/common'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { makeCondominium } from '@/test/factories/make-condominium'
+import { makeContract } from '@/test/factories/make-contract'
 import { makeMaintenance } from '@/test/factories/make-maintenance'
 import { makeManager } from '@/test/factories/make-manager'
 import { InMemoryCondominiumsRepository } from '@/test/repositories/in-memory-condominiums-repository'
@@ -114,6 +115,47 @@ describe('CreateContractUseCase', () => {
 		expect(response.isRight()).toBe(false)
 		if (response.isLeft()) {
 			expect(response.reason).toBeInstanceOf(BadRequestException)
+		}
+	})
+
+	it('should not be possible to create a contract when the maintenance already has one.', async () => {
+		const manager = makeManager({
+			name: 'Guilherme Sanches',
+		})
+
+		const condominium = makeCondominium({
+			managerId: manager.id,
+		})
+
+		await inMemoryCondominiumsRepository.create(condominium)
+
+		const maintenance = makeMaintenance({
+			condominiumId: condominium.id,
+			type: MaintenanceType.PERIODIC,
+		})
+
+		await inMemoryMaintenancesRepository.create(maintenance)
+
+		const existingContract = makeContract({
+			maintenanceId: maintenance.id,
+		})
+
+		await inMemoryContractsRepository.create(existingContract)
+
+		const response = await sut.execute({
+			managerId: manager.id,
+			condominiumId: condominium.id,
+			maintenanceId: maintenance.id,
+			title: 'Contrato duplicado',
+			description: 'Não deve ser criado',
+			startVigencyDate: new Date(),
+			endVigencyDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
+		})
+
+		expect(response.isLeft()).toBe(true)
+		expect(response.isRight()).toBe(false)
+		if (response.isLeft()) {
+			expect(response.reason).toBeInstanceOf(ConflictException)
 		}
 	})
 })

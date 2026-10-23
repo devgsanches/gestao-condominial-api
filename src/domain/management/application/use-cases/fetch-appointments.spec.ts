@@ -8,7 +8,11 @@ import { InMemoryCondominiumsRepository } from '@/test/repositories/in-memory-co
 import { FetchAppointmentsUseCase } from './fetch-appointments'
 import { ScheduleType } from './schedule-meeting'
 
-// @TODO: Add coverage and test all possible errors
+function daysFromNow(days: number) {
+	const date = new Date()
+	date.setDate(date.getDate() + days)
+	return date
+}
 
 describe('FetchAppointmentsUseCase', () => {
 	let inMemoryCondominiumsRepository: InMemoryCondominiumsRepository
@@ -23,10 +27,10 @@ describe('FetchAppointmentsUseCase', () => {
 		sut = new FetchAppointmentsUseCase(
 			inMemoryCondominiumsRepository,
 			inMemoryAppointmentsRepository,
-		) // system under test
+		)
 	})
 
-	it('should be able to fetch meetings by condominium.', async () => {
+	it('should group meetings into canceled, completed and upcoming ordered by closest date.', async () => {
 		const manager = makeManager({
 			name: 'Guilherme Sanches',
 		})
@@ -37,13 +41,35 @@ describe('FetchAppointmentsUseCase', () => {
 
 		await inMemoryCondominiumsRepository.create(condominium)
 
-		for (let i = 1; i <= 3; i++) {
-			const appointment = makeAppointment('meeting', {
-				condominiumId: condominium.id,
-			})
+		const canceledMeeting = makeAppointment('meeting', {
+			condominiumId: condominium.id,
+			title: 'Reunião cancelada',
+			scheduledAt: daysFromNow(3),
+			canceledAt: new Date(),
+		})
 
-			await inMemoryAppointmentsRepository.create(appointment)
-		}
+		const completedMeeting = makeAppointment('meeting', {
+			condominiumId: condominium.id,
+			title: 'Reunião passada',
+			scheduledAt: daysFromNow(-2),
+		})
+
+		const laterUpcomingMeeting = makeAppointment('meeting', {
+			condominiumId: condominium.id,
+			title: 'Reunião mais distante',
+			scheduledAt: daysFromNow(20),
+		})
+
+		const closerUpcomingMeeting = makeAppointment('meeting', {
+			condominiumId: condominium.id,
+			title: 'Reunião próxima',
+			scheduledAt: daysFromNow(6),
+		})
+
+		await inMemoryAppointmentsRepository.create(canceledMeeting)
+		await inMemoryAppointmentsRepository.create(completedMeeting)
+		await inMemoryAppointmentsRepository.create(laterUpcomingMeeting)
+		await inMemoryAppointmentsRepository.create(closerUpcomingMeeting)
 
 		const response = await sut.execute({
 			type: ScheduleType.MEETING,
@@ -54,32 +80,15 @@ describe('FetchAppointmentsUseCase', () => {
 		expect(response.isRight()).toBe(true)
 		expect(response.isLeft()).toBe(false)
 		if (response.isRight()) {
-			expect(response.result.meetings).toHaveLength(3)
-			expect(response.result.meetings).toEqual(
-				expect.arrayContaining([
-					expect.objectContaining({
-						id: expect.any(UniqueEntityId),
-						condominiumId: condominium.id,
-						title: expect.any(String),
-						description: expect.any(String),
-						createdAt: expect.any(Date),
-					}),
-					expect.objectContaining({
-						id: expect.any(UniqueEntityId),
-						condominiumId: condominium.id,
-						title: expect.any(String),
-						description: expect.any(String),
-						createdAt: expect.any(Date),
-					}),
-					expect.objectContaining({
-						id: expect.any(UniqueEntityId),
-						condominiumId: condominium.id,
-						title: expect.any(String),
-						description: expect.any(String),
-						createdAt: expect.any(Date),
-					}),
-				]),
-			)
+			expect(response.result.canceled).toHaveLength(1)
+			expect(response.result.canceled[0].id).toEqual(canceledMeeting.id)
+
+			expect(response.result.completed).toHaveLength(1)
+			expect(response.result.completed[0].id).toEqual(completedMeeting.id)
+
+			expect(response.result.upcoming).toHaveLength(2)
+			expect(response.result.upcoming[0].id).toEqual(closerUpcomingMeeting.id)
+			expect(response.result.upcoming[1].id).toEqual(laterUpcomingMeeting.id)
 		}
 	})
 
@@ -94,14 +103,6 @@ describe('FetchAppointmentsUseCase', () => {
 
 		await inMemoryCondominiumsRepository.create(condominium)
 
-		for (let i = 1; i <= 3; i++) {
-			const appointment = makeAppointment('meeting', {
-				condominiumId: condominium.id,
-			})
-
-			await inMemoryAppointmentsRepository.create(appointment)
-		}
-
 		const response = await sut.execute({
 			type: ScheduleType.MEETING,
 			managerId: manager.id,
@@ -115,7 +116,7 @@ describe('FetchAppointmentsUseCase', () => {
 		}
 	})
 
-	it('should be able to fetch assemblies by condominium.', async () => {
+	it('should group assemblies into canceled, completed and upcoming ordered by closest date.', async () => {
 		const manager = makeManager({
 			name: 'Guilherme Sanches',
 		})
@@ -126,13 +127,28 @@ describe('FetchAppointmentsUseCase', () => {
 
 		await inMemoryCondominiumsRepository.create(condominium)
 
-		for (let i = 1; i <= 3; i++) {
-			const appointment = makeAppointment('assembly', {
-				condominiumId: condominium.id,
-			})
+		const canceledAssembly = makeAppointment('assembly', {
+			condominiumId: condominium.id,
+			title: 'Assembleia cancelada',
+			scheduledAt: daysFromNow(3),
+			canceledAt: new Date(),
+		})
 
-			await inMemoryAppointmentsRepository.create(appointment)
-		}
+		const completedAssembly = makeAppointment('assembly', {
+			condominiumId: condominium.id,
+			title: 'Assembleia passada',
+			scheduledAt: daysFromNow(-2),
+		})
+
+		const upcomingAssembly = makeAppointment('assembly', {
+			condominiumId: condominium.id,
+			title: 'Assembleia próxima',
+			scheduledAt: daysFromNow(6),
+		})
+
+		await inMemoryAppointmentsRepository.create(canceledAssembly)
+		await inMemoryAppointmentsRepository.create(completedAssembly)
+		await inMemoryAppointmentsRepository.create(upcomingAssembly)
 
 		const response = await sut.execute({
 			type: ScheduleType.ASSEMBLY,
@@ -143,32 +159,14 @@ describe('FetchAppointmentsUseCase', () => {
 		expect(response.isRight()).toBe(true)
 		expect(response.isLeft()).toBe(false)
 		if (response.isRight()) {
-			expect(response.result.assemblies).toHaveLength(3)
-			expect(response.result.assemblies).toEqual(
-				expect.arrayContaining([
-					expect.objectContaining({
-						id: expect.any(UniqueEntityId),
-						condominiumId: condominium.id,
-						title: expect.any(String),
-						description: expect.any(String),
-						createdAt: expect.any(Date),
-					}),
-					expect.objectContaining({
-						id: expect.any(UniqueEntityId),
-						condominiumId: condominium.id,
-						title: expect.any(String),
-						description: expect.any(String),
-						createdAt: expect.any(Date),
-					}),
-					expect.objectContaining({
-						id: expect.any(UniqueEntityId),
-						condominiumId: condominium.id,
-						title: expect.any(String),
-						description: expect.any(String),
-						createdAt: expect.any(Date),
-					}),
-				]),
-			)
+			expect(response.result.canceled).toHaveLength(1)
+			expect(response.result.canceled[0].id).toEqual(canceledAssembly.id)
+
+			expect(response.result.completed).toHaveLength(1)
+			expect(response.result.completed[0].id).toEqual(completedAssembly.id)
+
+			expect(response.result.upcoming).toHaveLength(1)
+			expect(response.result.upcoming[0].id).toEqual(upcomingAssembly.id)
 		}
 	})
 
@@ -182,14 +180,6 @@ describe('FetchAppointmentsUseCase', () => {
 		})
 
 		await inMemoryCondominiumsRepository.create(condominium)
-
-		for (let i = 1; i <= 3; i++) {
-			const appointment = makeAppointment('assembly', {
-				condominiumId: condominium.id,
-			})
-
-			await inMemoryAppointmentsRepository.create(appointment)
-		}
 
 		const response = await sut.execute({
 			type: ScheduleType.ASSEMBLY,

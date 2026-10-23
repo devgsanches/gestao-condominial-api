@@ -1,4 +1,8 @@
-import { NotFoundException, UnauthorizedException } from '@nestjs/common'
+import {
+	Injectable,
+	NotFoundException,
+	UnauthorizedException,
+} from '@nestjs/common'
 import { type Either, left, right } from '@/core/either'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Assembly } from '../../enterprise/entities/assembly'
@@ -6,6 +10,12 @@ import { Meeting } from '../../enterprise/entities/meeting'
 import { AppointmentsRepository } from '../repositories/appointments-repository'
 import { CondominiumsRepository } from '../repositories/condominiums-repository'
 import { ScheduleType } from './schedule-meeting'
+
+export interface GroupedAppointments<T extends Meeting | Assembly> {
+	canceled: T[]
+	completed: T[]
+	upcoming: T[]
+}
 
 interface FetchAppointmentsInput {
 	type: ScheduleType
@@ -15,10 +25,37 @@ interface FetchAppointmentsInput {
 
 type FetchAppointmentsOutput = Either<
 	UnauthorizedException | NotFoundException,
-	| { meetings: Meeting[]; assemblies?: never }
-	| { assemblies: Assembly[]; meetings?: never }
+	GroupedAppointments<Meeting | Assembly>
 >
 
+function groupAppointments<T extends Meeting | Assembly>(
+	appointments: T[],
+): GroupedAppointments<T> {
+	const now = new Date()
+	const canceled: T[] = []
+	const completed: T[] = []
+	const upcoming: T[] = []
+
+	for (const appointment of appointments) {
+		if (appointment.canceledAt) {
+			canceled.push(appointment)
+			continue
+		}
+
+		if (appointment.scheduledAt < now) {
+			completed.push(appointment)
+			continue
+		}
+
+		upcoming.push(appointment)
+	}
+
+	upcoming.sort((a, b) => a.scheduledAt.getTime() - b.scheduledAt.getTime())
+
+	return { canceled, completed, upcoming }
+}
+
+@Injectable()
 export class FetchAppointmentsUseCase {
 	constructor(
 		private condominiumRepository: CondominiumsRepository,
@@ -50,7 +87,7 @@ export class FetchAppointmentsUseCase {
 					condominiumId,
 				)
 
-			return right({ meetings })
+			return right(groupAppointments(meetings))
 		}
 
 		const assemblies =
@@ -58,6 +95,6 @@ export class FetchAppointmentsUseCase {
 				condominiumId,
 			)
 
-		return right({ assemblies })
+		return right(groupAppointments(assemblies))
 	}
 }

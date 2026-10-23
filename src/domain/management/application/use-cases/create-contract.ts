@@ -1,5 +1,7 @@
 import {
 	BadRequestException,
+	ConflictException,
+	Injectable,
 	NotFoundException,
 	UnauthorizedException,
 } from '@nestjs/common'
@@ -23,12 +25,16 @@ interface CreateContractInput {
 }
 
 type CreateContractOutput = Either<
-	NotFoundException | UnauthorizedException | BadRequestException,
+	| NotFoundException
+	| UnauthorizedException
+	| BadRequestException
+	| ConflictException,
 	{
 		contract: Contract
 	}
 >
 
+@Injectable()
 export class CreateContractUseCase {
 	constructor(
 		private condominiumRepository: CondominiumsRepository,
@@ -70,6 +76,17 @@ export class CreateContractUseCase {
 
 		if (!isMaintenanceValid) {
 			return left(new BadRequestException('Maintenance is not valid'))
+		}
+
+		const contractAlreadyExists =
+			await this.contractRepository.findByMaintenanceId(maintenanceId)
+
+		if (contractAlreadyExists) {
+			return left(
+				new ConflictException(
+					'A contract already exists for this maintenance.',
+				),
+			)
 		}
 
 		const contract = Contract.create({
