@@ -163,7 +163,7 @@ model CondominiumFinance {
 model Attachment {
   id    String @id @default(uuid())
   title String
-  link  String
+  url  String
 
   contracts ContractAttachment[]
 
