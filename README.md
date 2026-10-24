@@ -127,6 +127,11 @@ npm run test:e2e   # end-to-end
 
 ## 📁 Estrutura
 
+# Core
+- Camada de domínio > apenas contratos
+
+- Camada de infra > implementação em si + replace no database.module.ts, de: contrato > equivalente a > feat na camada de infra
+
 ​```
 src/
 ├── core/            # entidades base, Either, erros genéricos
