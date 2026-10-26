@@ -141,3 +141,5 @@ src/
 │       └── enterprise/    # entidades e value objects
 └── infra/           # NestJS: http, database (Prisma), auth
 ​```
+
+@TODO: add .nvmrc file and define node version on package.json (current LTS version)
