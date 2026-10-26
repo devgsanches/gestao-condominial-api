@@ -16,8 +16,10 @@ import { ScheduleMeetingUseCase } from '@/domain/management/application/use-case
 import { SignInManagerUseCase } from '@/domain/management/application/use-cases/sign-in-manager'
 import { UpdateCondominiumUseCase } from '@/domain/management/application/use-cases/update-condominium'
 import { UpdateMaintenanceUseCase } from '@/domain/management/application/use-cases/update-maintenance'
+import { UploadAndCreateAttachmentUseCase } from '@/domain/management/application/use-cases/upload-and-create-attachment'
 import { CryptographyModule } from '../cryptography/cryptography.module'
 import { DatabaseModule } from '../database/database.module'
+import { StorageModule } from '../storage/storage.module'
 import { AuthenticateController } from './controllers/authenticate.controller'
 import { CancelAppointmentController } from './controllers/cancel-appointment.controller'
 import { CancelMaintenanceController } from './controllers/cancel-maintenance.controller'
@@ -39,7 +41,7 @@ import { UpdateMaintenanceController } from './controllers/update-maintenance.co
 import { UploadAttachmentController } from './controllers/upload-attachment.controller'
 
 @Module({
-	imports: [DatabaseModule, CryptographyModule],
+	imports: [DatabaseModule, CryptographyModule, StorageModule],
 	controllers: [
 		HealthCheckController,
 		CreateAccountController,
@@ -79,6 +81,7 @@ import { UploadAttachmentController } from './controllers/upload-attachment.cont
 		UpdateMaintenanceUseCase,
 		CancelMaintenanceUseCase,
 		CancelAppointmentsUseCase,
+		UploadAndCreateAttachmentUseCase,
 	],
 })
 export class HttpModule {}
