@@ -3,6 +3,7 @@ import { AddressesRepository } from '@/domain/management/application/repositorie
 import { AppointmentsRepository } from '@/domain/management/application/repositories/appointments-repository'
 import { AttachmentsRepository } from '@/domain/management/application/repositories/attachments-repository'
 import { CondominiumsRepository } from '@/domain/management/application/repositories/condominiums-repository'
+import { ContractAttachmentsRepository } from '@/domain/management/application/repositories/contract-attachments-repository'
 import { ContractsRepository } from '@/domain/management/application/repositories/contracts-repository'
 import { MaintenancesRepository } from '@/domain/management/application/repositories/maintenances-repository'
 import { ManagersRepository } from '@/domain/management/application/repositories/managers-repository'
@@ -11,6 +12,7 @@ import { PrismaAddressesRepository } from './prisma/repositories/prisma-addresse
 import { PrismaAppointmentsRepository } from './prisma/repositories/prisma-appointments-repository'
 import { PrismaAttachmentsRepository } from './prisma/repositories/prisma-attachments-repository'
 import { PrismaCondominiumsRepository } from './prisma/repositories/prisma-condominiums-repository'
+import { PrismaContractAttachmentsRepository } from './prisma/repositories/prisma-contract-attachments-repository'
 import { PrismaContractsRepository } from './prisma/repositories/prisma-contracts-repository'
 import { PrismaMaintenancesRepository } from './prisma/repositories/prisma-maintenances-repository'
 import { PrismaManagersRepository } from './prisma/repositories/prisma-managers-repository'
@@ -46,6 +48,10 @@ import { PrismaManagersRepository } from './prisma/repositories/prisma-managers-
 			provide: AttachmentsRepository,
 			useClass: PrismaAttachmentsRepository,
 		},
+		{
+			provide: ContractAttachmentsRepository,
+			useClass: PrismaContractAttachmentsRepository,
+		},
 	],
 	exports: [
 		PrismaService,
@@ -56,6 +62,7 @@ import { PrismaManagersRepository } from './prisma/repositories/prisma-managers-
 		AppointmentsRepository,
 		AddressesRepository,
 		AttachmentsRepository,
+		ContractAttachmentsRepository,
 	],
 })
 export class DatabaseModule {}
