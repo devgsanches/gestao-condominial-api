@@ -1,9 +1,18 @@
-import 'dotenv/config'
-
 import { execSync } from 'node:child_process'
 import { randomUUID } from 'node:crypto'
 import { PrismaPg } from '@prisma/adapter-pg'
+import { config } from 'dotenv'
 import { PrismaClient } from '../generated/prisma/client'
+
+// Override to AWS_BUCKET_NAME env for test environment
+config({
+	path: '.env',
+	override: true,
+})
+config({
+	path: '.env.test',
+	override: true,
+})
 
 function generateUniqueDatabaseURL(schemaId: string) {
 	if (!process.env.DATABASE_URL) {
