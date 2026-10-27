@@ -1,10 +1,11 @@
-import { NotFoundException } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { type Either, left, right } from '@/core/either'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Contract } from '../../enterprise/entities/contract'
 import { ContractAttachment } from '../../enterprise/entities/contract-attachment'
 import { ContractAttachmentList } from '../../enterprise/entities/contract-attachment-list'
 import { ContractsRepository } from '../repositories/contracts-repository'
+import { ContractNotFoundError } from './errors/contract-not-found-error'
 
 interface AttachContractDocumentUseCaseRequest {
 	contractId: UniqueEntityId
@@ -12,12 +13,13 @@ interface AttachContractDocumentUseCaseRequest {
 }
 
 type AttachContractDocumentUseCaseResponse = Either<
-	NotFoundException,
+	ContractNotFoundError,
 	{
 		contract: Contract
 	}
 >
 
+@Injectable()
 export class AttachContractDocumentUseCase {
 	constructor(private contractsRepository: ContractsRepository) {}
 
@@ -31,11 +33,12 @@ export class AttachContractDocumentUseCase {
 			ContractAttachment.create({
 				attachmentId,
 				contractId,
+				createdAt: new Date(),
 			}),
 		)
 
 		if (!contract) {
-			return left(new NotFoundException('Contract not found'))
+			return left(new ContractNotFoundError())
 		}
 
 		contract.attachments = new ContractAttachmentList(contractAttachments)

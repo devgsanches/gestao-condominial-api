@@ -176,6 +176,8 @@ model ContractAttachment {
   id           String @id @default(uuid())
   contractId   String @map("contract_id")
   attachmentId String @map("attachment_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
 
   contract   Contract   @relation(fields: [contractId], references: [id], onDelete: Cascade)
   attachment Attachment @relation(fields: [attachmentId], references: [id], onDelete: Cascade)

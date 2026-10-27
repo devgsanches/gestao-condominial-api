@@ -4,6 +4,7 @@ import {
 	ConflictException,
 	Controller,
 	HttpCode,
+	NotFoundException,
 	Post,
 	UnauthorizedException,
 } from '@nestjs/common'
@@ -43,7 +44,7 @@ export class CreateCondominiumController {
 			const error = response.reason
 
 			switch (error.constructor) {
-				case NotAManagerError:
+				case NotFoundException:
 					throw new UnauthorizedException(error.message)
 				case CondominiumAlreadyExistsError:
 					throw new ConflictException(error.message)

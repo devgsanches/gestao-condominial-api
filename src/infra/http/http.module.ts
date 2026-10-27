@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common'
+import { AttachContractDocumentUseCase } from '@/domain/management/application/use-cases/attach-contract-document'
 import { CancelAppointmentsUseCase } from '@/domain/management/application/use-cases/cancel-appointment'
 import { CancelMaintenanceUseCase } from '@/domain/management/application/use-cases/cancel-maintenance'
 import { CreateAddressUseCase } from '@/domain/management/application/use-cases/create-address'
@@ -27,6 +28,7 @@ import { CreateAccountController } from './controllers/create-account.controller
 import { CreateAddressController } from './controllers/create-address.controller'
 import { CreateCondominiumController } from './controllers/create-condominium.controller'
 import { CreateContractController } from './controllers/create-contract.controller'
+import { CreateContractAttachmentController } from './controllers/create-contract-attachment'
 import { CreateMaintenanceController } from './controllers/create-maintenance.controller'
 import { DeleteCondominiumController } from './controllers/delete-condominium.controller'
 import { FetchAppointmentsController } from './controllers/fetch-appointments.controller'
@@ -59,6 +61,7 @@ import { UploadAttachmentController } from './controllers/upload-attachment.cont
 		CreateMaintenanceController,
 		CreateContractController,
 		UploadAttachmentController,
+		CreateContractAttachmentController,
 		UpdateMaintenanceController,
 		CancelMaintenanceController,
 		CancelAppointmentController,
@@ -82,6 +85,7 @@ import { UploadAttachmentController } from './controllers/upload-attachment.cont
 		CancelMaintenanceUseCase,
 		CancelAppointmentsUseCase,
 		UploadAndCreateAttachmentUseCase,
+		AttachContractDocumentUseCase,
 	],
 })
 export class HttpModule {}
