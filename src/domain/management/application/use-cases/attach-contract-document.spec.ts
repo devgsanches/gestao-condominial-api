@@ -7,18 +7,25 @@ import { InMemoryCondominiumsRepository } from '@/test/repositories/in-memory-co
 import { InMemoryContractAttachmentsRepository } from '@/test/repositories/in-memory-contract-attachments'
 import { InMemoryContractsRepository } from '@/test/repositories/in-memory-contracts-repository'
 import { InMemoryMaintenancesRepository } from '@/test/repositories/in-memory-maintenances-repository'
+import { ContractAttachment } from '../../enterprise/entities/contract-attachment'
+import { ContractAttachmentList } from '../../enterprise/entities/contract-attachment-list'
 import { AttachContractDocumentUseCase } from './attach-contract-document'
 import { MaintenanceType } from './fetch-maintenances'
 
 describe('AttachContractDocument UseCase', () => {
 	let inMemoryContractsRepository: InMemoryContractsRepository
+	let inMemoryContractAttachmentsRepository: InMemoryContractAttachmentsRepository
 	let inMemoryCondominiumsRepository: InMemoryCondominiumsRepository
 	let inMemoryMaintenancesRepository: InMemoryMaintenancesRepository
 
 	let sut: AttachContractDocumentUseCase
 
 	beforeEach(() => {
-		inMemoryContractsRepository = new InMemoryContractsRepository(new InMemoryContractAttachmentsRepository())
+		inMemoryContractAttachmentsRepository =
+			new InMemoryContractAttachmentsRepository()
+		inMemoryContractsRepository = new InMemoryContractsRepository(
+			inMemoryContractAttachmentsRepository,
+		)
 
 		inMemoryCondominiumsRepository = new InMemoryCondominiumsRepository()
 
@@ -89,5 +96,71 @@ describe('AttachContractDocument UseCase', () => {
 				}),
 			])
 		}
+	})
+
+	it('should persist only attachments that are not already linked to the contract', async () => {
+		const maintenance = makeMaintenance({
+			type: MaintenanceType.PERIODIC,
+		})
+
+		const contractId = new UniqueEntityId('contract-1')
+		const firstAttachment = ContractAttachment.create(
+			{
+				attachmentId: new UniqueEntityId('attachment-1'),
+				contractId,
+				createdAt: new Date(),
+			},
+			new UniqueEntityId('pivot-1'),
+		)
+		const secondAttachment = ContractAttachment.create(
+			{
+				attachmentId: new UniqueEntityId('attachment-2'),
+				contractId,
+				createdAt: new Date(),
+			},
+			new UniqueEntityId('pivot-2'),
+		)
+
+		const contract = makeContract(
+			{
+				maintenanceId: maintenance.id,
+				attachments: new ContractAttachmentList([
+					firstAttachment,
+					secondAttachment,
+				]),
+			},
+			contractId,
+		)
+
+		await inMemoryContractsRepository.create(contract)
+		inMemoryContractAttachmentsRepository.items.push(
+			firstAttachment,
+			secondAttachment,
+		)
+
+		const response = await sut.execute({
+			contractId,
+			attachmentsIds: [
+				new UniqueEntityId('attachment-1'),
+				new UniqueEntityId('attachment-2'),
+				new UniqueEntityId('attachment-3'),
+			],
+		})
+
+		expect(response.isRight()).toBe(true)
+		expect(inMemoryContractAttachmentsRepository.items).toHaveLength(3)
+		expect(inMemoryContractAttachmentsRepository.items).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					attachmentId: new UniqueEntityId('attachment-1'),
+				}),
+				expect.objectContaining({
+					attachmentId: new UniqueEntityId('attachment-2'),
+				}),
+				expect.objectContaining({
+					attachmentId: new UniqueEntityId('attachment-3'),
+				}),
+			]),
+		)
 	})
 })

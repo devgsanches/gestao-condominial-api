@@ -31,8 +31,6 @@ export class PrismaContractsRepository implements ContractsRepository {
 			data,
 		})
 
-		console.log(contract.attachments.getNewItems())
-
 		await this.contractAttachmentsRepository.createMany(
 			contract.attachments.getNewItems(),
 		)
@@ -46,6 +44,9 @@ export class PrismaContractsRepository implements ContractsRepository {
 		const contract = await this.prisma.contract.findUnique({
 			where: {
 				id: id.toValue(),
+			},
+			include: {
+				attachments: true,
 			},
 		})
 
@@ -62,6 +63,9 @@ export class PrismaContractsRepository implements ContractsRepository {
 		const contract = await this.prisma.contract.findUnique({
 			where: {
 				maintenanceId: maintenanceId.toValue(),
+			},
+			include: {
+				attachments: true,
 			},
 		})
 

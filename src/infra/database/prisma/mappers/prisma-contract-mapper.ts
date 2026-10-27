@@ -1,12 +1,21 @@
-import { Contract as PrismaContract, Prisma } from '@generated/prisma/client'
+import { Prisma } from '@generated/prisma/client'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Contract } from '@/domain/management/enterprise/entities/contract'
 import { ContractAttachmentList } from '@/domain/management/enterprise/entities/contract-attachment-list'
 import { Slug } from '@/domain/management/enterprise/entities/value-objects/slug'
+import { PrismaContractAttachmentMapper } from './contract-attachment-mapper'
+
+type PrismaContractWithAttachments = Prisma.ContractGetPayload<{
+	include: { attachments: true }
+}>
 
 // biome-ignore lint/complexity/noStaticOnlyClass: mapper utilitário com métodos estáticos
 export class PrismaContractMapper {
-	static toDomain(raw: PrismaContract): Contract {
+	static toDomain(raw: PrismaContractWithAttachments): Contract {
+		const attachments = raw.attachments.map((attachment) =>
+			PrismaContractAttachmentMapper.toDomain(attachment),
+		)
+
 		return Contract.create(
 			{
 				maintenanceId: new UniqueEntityId(raw.maintenanceId),
@@ -16,7 +25,7 @@ export class PrismaContractMapper {
 				isValid: raw.isValid,
 				startVigencyDate: new Date(raw.startVigencyDate),
 				endVigencyDate: new Date(raw.endVigencyDate),
-				attachments: new ContractAttachmentList([]),
+				attachments: new ContractAttachmentList(attachments),
 				createdAt: new Date(raw.createdAt),
 				updatedAt: raw.updatedAt ?? undefined,
 			},
