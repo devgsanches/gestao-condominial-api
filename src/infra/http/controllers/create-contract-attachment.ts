@@ -10,8 +10,6 @@ import {
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { AttachContractDocumentUseCase } from '@/domain/management/application/use-cases/attach-contract-document'
 import { ContractNotFoundError } from '@/domain/management/application/use-cases/errors/contract-not-found-error'
-import { CurrentUser } from '@/infra/auth/current-user-decorator'
-import { UserPayload } from '@/infra/auth/jwt.strategy'
 import { CreateContractAttachmentRequestDTO } from '../dtos/create-contract-attachment.dto'
 import { ContractPresenter } from '../presenters/contract-presenter'
 
@@ -29,7 +27,6 @@ export class CreateContractAttachmentController {
 	async handle(
 		@Body() body: CreateContractAttachmentRequestDTO,
 		@Param('contractId') contractId: string,
-		@CurrentUser() user: UserPayload,
 	) {
 		const { attachmentsIds } = body
 

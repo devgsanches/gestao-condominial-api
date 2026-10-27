@@ -41,7 +41,7 @@ export class AttachContractDocumentUseCase {
 			}),
 		)
 
-		contract.attachments = new ContractAttachmentList(contractAttachments)
+		contract.attachments.update(contractAttachments)
 
 		await this.contractsRepository.save(contract)
 

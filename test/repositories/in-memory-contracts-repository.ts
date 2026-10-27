@@ -15,9 +15,13 @@ export class InMemoryContractsRepository implements ContractsRepository {
 	}
 
 	async save(contract: Contract) {
-		await this.contractAttachmentsRepository.createMany(contract.attachments.getNewItems())
+		await this.contractAttachmentsRepository.createMany(
+			contract.attachments.getNewItems(),
+		)
 
-		await this.contractAttachmentsRepository.deleteMany(contract.attachments.getRemovedItems())
+		await this.contractAttachmentsRepository.deleteMany(
+			contract.attachments.getRemovedItems(),
+		)
 
 		const contractIndex = this.items.findIndex((item) =>
 			item.id.equals(contract.id),

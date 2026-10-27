@@ -31,6 +31,8 @@ export class PrismaContractsRepository implements ContractsRepository {
 			data,
 		})
 
+		console.log(contract.attachments.getNewItems())
+
 		await this.contractAttachmentsRepository.createMany(
 			contract.attachments.getNewItems(),
 		)
