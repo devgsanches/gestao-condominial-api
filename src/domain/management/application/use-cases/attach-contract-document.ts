@@ -1,10 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { type Either, left, right } from '@/core/either'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Contract } from '../../enterprise/entities/contract'
 import { ContractAttachment } from '../../enterprise/entities/contract-attachment'
 import { ContractAttachmentList } from '../../enterprise/entities/contract-attachment-list'
-import { ContractAttachmentsRepository } from '../repositories/contract-attachments-repository'
 import { ContractsRepository } from '../repositories/contracts-repository'
 import { ContractNotFoundError } from './errors/contract-not-found-error'
 
@@ -22,10 +21,7 @@ type AttachContractDocumentUseCaseResponse = Either<
 
 @Injectable()
 export class AttachContractDocumentUseCase {
-	constructor(
-		private contractsRepository: ContractsRepository,
-		private contractAttachmentsRepository: ContractAttachmentsRepository,
-	) {}
+	constructor(private contractsRepository: ContractsRepository) {}
 
 	async execute({
 		contractId,
@@ -46,11 +42,6 @@ export class AttachContractDocumentUseCase {
 		)
 
 		contract.attachments = new ContractAttachmentList(contractAttachments)
-
-		// save on DB
-		contractAttachments.forEach(async (contractAttachment) => {
-			await this.contractAttachmentsRepository.create(contractAttachment)
-		})
 
 		await this.contractsRepository.save(contract)
 

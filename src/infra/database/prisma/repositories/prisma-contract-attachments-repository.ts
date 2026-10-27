@@ -10,11 +10,25 @@ export class PrismaContractAttachmentsRepository
 {
 	constructor(private readonly prisma: PrismaService) {}
 
-	async create(contractAttachment: ContractAttachment): Promise<void> {
-		const data = PrismaContractAttachmentMapper.toPrisma(contractAttachment)
+	async createMany(attachments: ContractAttachment[]): Promise<void> {
+		const data = attachments.map((attachment) =>
+			PrismaContractAttachmentMapper.toPrisma(attachment),
+		)
 
-		await this.prisma.contractAttachment.create({
+		await this.prisma.contractAttachment.createMany({
 			data,
+		})
+	}
+
+	async deleteMany(attachments: ContractAttachment[]): Promise<void> {
+		const attachmentIds = attachments.map((attachment) =>
+			attachment.id.toString(),
+		)
+
+		await this.prisma.contractAttachment.deleteMany({
+			where: {
+				id: { in: attachmentIds },
+			},
 		})
 	}
 }

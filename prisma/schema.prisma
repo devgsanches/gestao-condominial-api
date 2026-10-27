@@ -129,6 +129,7 @@ model Contract {
   endVigencyDate   DateTime @map("end_vigency_date")
 
   maintenance Maintenance          @relation(fields: [maintenanceId], references: [id], onDelete: Cascade)
+
   attachments ContractAttachment[]
 
   createdAt DateTime @default(now()) @map("created_at")

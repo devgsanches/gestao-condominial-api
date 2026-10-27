@@ -4,6 +4,7 @@ import { makeContract } from '@/test/factories/make-contract'
 import { makeMaintenance } from '@/test/factories/make-maintenance'
 import { makeManager } from '@/test/factories/make-manager'
 import { InMemoryCondominiumsRepository } from '@/test/repositories/in-memory-condominiums-repository'
+import { InMemoryContractAttachmentsRepository } from '@/test/repositories/in-memory-contract-attachments'
 import { InMemoryContractsRepository } from '@/test/repositories/in-memory-contracts-repository'
 import { InMemoryMaintenancesRepository } from '@/test/repositories/in-memory-maintenances-repository'
 import { AttachContractDocumentUseCase } from './attach-contract-document'
@@ -17,8 +18,10 @@ describe('AttachContractDocument UseCase', () => {
 	let sut: AttachContractDocumentUseCase
 
 	beforeEach(() => {
-		inMemoryContractsRepository = new InMemoryContractsRepository()
+		inMemoryContractsRepository = new InMemoryContractsRepository(new InMemoryContractAttachmentsRepository())
+
 		inMemoryCondominiumsRepository = new InMemoryCondominiumsRepository()
+
 		inMemoryMaintenancesRepository = new InMemoryMaintenancesRepository()
 		sut = new AttachContractDocumentUseCase(inMemoryContractsRepository) // system under test
 	})

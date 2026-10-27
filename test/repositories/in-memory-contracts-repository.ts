@@ -1,8 +1,13 @@
 import type { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import { ContractAttachmentsRepository } from '@/domain/management/application/repositories/contract-attachments-repository'
 import type { ContractsRepository } from '@/domain/management/application/repositories/contracts-repository'
 import type { Contract } from '@/domain/management/enterprise/entities/contract'
 
 export class InMemoryContractsRepository implements ContractsRepository {
+	constructor(
+		private contractAttachmentsRepository: ContractAttachmentsRepository,
+	) {}
+
 	public items: Contract[] = []
 
 	async create(contract: Contract) {
@@ -10,7 +15,13 @@ export class InMemoryContractsRepository implements ContractsRepository {
 	}
 
 	async save(contract: Contract) {
-		const contractIndex = this.items.findIndex((item) => item.id.equals(contract.id))
+		await this.contractAttachmentsRepository.createMany(contract.attachments.getNewItems())
+
+		await this.contractAttachmentsRepository.deleteMany(contract.attachments.getRemovedItems())
+
+		const contractIndex = this.items.findIndex((item) =>
+			item.id.equals(contract.id),
+		)
 
 		this.items[contractIndex] = contract
 	}

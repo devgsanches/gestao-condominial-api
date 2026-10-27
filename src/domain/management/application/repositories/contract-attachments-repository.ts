@@ -2,5 +2,6 @@ import { ContractAttachment } from '../../enterprise/entities/contract-attachmen
 // import type { IPaginationParams } from '@/core/repositories/pagination-params'
 
 export abstract class ContractAttachmentsRepository {
-	abstract create(contractAttachment: ContractAttachment): Promise<void>
+	abstract createMany(attachments: ContractAttachment[]): Promise<void>
+	abstract deleteMany(attachments: ContractAttachment[]): Promise<void>
 }

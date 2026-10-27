@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import { ContractAttachmentsRepository } from '@/domain/management/application/repositories/contract-attachments-repository'
 import { ContractsRepository } from '@/domain/management/application/repositories/contracts-repository'
 import { Contract } from '@/domain/management/enterprise/entities/contract'
 import { PrismaContractMapper } from '../mappers/prisma-contract-mapper'
@@ -7,7 +8,10 @@ import { PrismaService } from '../prisma.service'
 
 @Injectable()
 export class PrismaContractsRepository implements ContractsRepository {
-	constructor(private readonly prisma: PrismaService) {}
+	constructor(
+		private readonly prisma: PrismaService,
+		private readonly contractAttachmentsRepository: ContractAttachmentsRepository,
+	) {}
 
 	async create(contract: Contract): Promise<void> {
 		const contractPrisma = PrismaContractMapper.toPrisma(contract)
@@ -20,16 +24,20 @@ export class PrismaContractsRepository implements ContractsRepository {
 	}
 
 	async save(contract: Contract): Promise<void> {
-		const contractPrisma = PrismaContractMapper.toPrisma(contract)
+		const data = PrismaContractMapper.toPrisma(contract)
 
 		await this.prisma.contract.update({
-			where: {
-				id: contract.id.toValue(),
-			},
-			data: {
-				...contractPrisma,
-			},
+			where: { id: contract.id.toValue() },
+			data,
 		})
+
+		await this.contractAttachmentsRepository.createMany(
+			contract.attachments.getNewItems(),
+		)
+
+		await this.contractAttachmentsRepository.deleteMany(
+			contract.attachments.getRemovedItems(),
+		)
 	}
 
 	async findById(id: UniqueEntityId): Promise<Contract | null> {

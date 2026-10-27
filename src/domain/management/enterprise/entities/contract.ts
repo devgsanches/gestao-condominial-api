@@ -1,4 +1,4 @@
-import { Entity } from '@/core/entities/entity'
+import { AggregateRoot } from '@/core/entities/aggregate-root'
 import type { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Optional } from '@/core/types/optional'
 import { ContractAttachmentList } from './contract-attachment-list'
@@ -17,7 +17,7 @@ export interface ContractProps {
 	updatedAt?: Date
 }
 
-export class Contract extends Entity<ContractProps> {
+export class Contract extends AggregateRoot<ContractProps> {
 	get maintenanceId(): UniqueEntityId {
 		return this.props.maintenanceId
 	}
