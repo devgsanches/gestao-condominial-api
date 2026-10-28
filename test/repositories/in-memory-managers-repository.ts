@@ -17,6 +17,14 @@ export class InMemoryManagersRepository implements ManagersRepository {
 		this.items.push(manager)
 	}
 
+	async save(manager: Manager) {
+		const managerIndex = this.items.findIndex((item) =>
+			item.id.equals(manager.id),
+		)
+
+		this.items[managerIndex] = manager
+	}
+
 	async findById(id: UniqueEntityId) {
 		const manager = this.items.find((item) => item.id.equals(id))
 
