@@ -8,6 +8,7 @@ export interface ManagerProps {
 	email: string
 	password: string
 	role: UserRole
+	avatarUrl?: string | null
 	createdAt: Date
 	updatedAt?: Date | null
 }
@@ -27,6 +28,14 @@ export class Manager extends Entity<ManagerProps> {
 
 	get role(): UserRole {
 		return this.props.role
+	}
+
+	get avatarUrl(): string | null | undefined {
+		return this.props.avatarUrl
+	}
+
+	set avatarUrl(url: string) {
+		this.props.avatarUrl = url
 	}
 
 	get createdAt(): Date {

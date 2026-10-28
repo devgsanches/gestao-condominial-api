@@ -22,6 +22,15 @@ export class PrismaManagersRepository implements ManagersRepository {
 		})
 	}
 
+	async save(manager: Manager): Promise<void> {
+		const managerPrisma = PrismaManagerMapper.toPrisma(manager)
+
+		await this.prisma.user.update({
+			where: { id: manager.id.toString() },
+			data: { ...managerPrisma },
+		})
+	}
+
 	async findById(id: UniqueEntityId): Promise<Manager | null> {
 		const manager = await this.prisma.user.findUnique({
 			where: {

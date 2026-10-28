@@ -6,6 +6,7 @@ import { CreateAddressUseCase } from '@/domain/management/application/use-cases/
 import { CreateCondominiumUseCase } from '@/domain/management/application/use-cases/create-condominium'
 import { CreateContractUseCase } from '@/domain/management/application/use-cases/create-contract'
 import { CreateMaintenanceUseCase } from '@/domain/management/application/use-cases/create-maintenance'
+import { CreateManagerAvatarUseCase } from '@/domain/management/application/use-cases/create-manager-avatar'
 import { DeleteCondominiumUseCase } from '@/domain/management/application/use-cases/delete-condominium'
 import { FetchAppointmentsUseCase } from '@/domain/management/application/use-cases/fetch-appointments'
 import { FetchCondominiumsByManagerUseCase } from '@/domain/management/application/use-cases/fetch-condominiums-by-manager'
@@ -28,8 +29,9 @@ import { CreateAccountController } from './controllers/create-account.controller
 import { CreateAddressController } from './controllers/create-address.controller'
 import { CreateCondominiumController } from './controllers/create-condominium.controller'
 import { CreateContractController } from './controllers/create-contract.controller'
-import { CreateContractAttachmentController } from './controllers/create-contract-attachment'
+import { CreateContractAttachmentController } from './controllers/create-contract-attachment.controller'
 import { CreateMaintenanceController } from './controllers/create-maintenance.controller'
+import { CreateManagerAvatarController } from './controllers/create-manager-avatar.controller'
 import { DeleteCondominiumController } from './controllers/delete-condominium.controller'
 import { FetchAppointmentsController } from './controllers/fetch-appointments.controller'
 import { FetchCondominiumsController } from './controllers/fetch-condominiums.controller'
@@ -49,6 +51,7 @@ import { UploadAttachmentController } from './controllers/upload-attachment.cont
 		CreateAccountController,
 		AuthenticateController,
 		GetManagerProfileController,
+		CreateManagerAvatarController,
 		CreateAddressController,
 		CreateCondominiumController,
 		FetchCondominiumsController,
@@ -70,6 +73,7 @@ import { UploadAttachmentController } from './controllers/upload-attachment.cont
 		RegisterManagerUseCase,
 		SignInManagerUseCase,
 		GetManagerProfileUseCase,
+		CreateManagerAvatarUseCase,
 		CreateAddressUseCase,
 		CreateCondominiumUseCase,
 		FetchCondominiumsByManagerUseCase,

@@ -10,6 +10,8 @@ export class PrismaManagerMapper {
 				name: raw.name,
 				email: raw.email,
 				password: raw.password,
+				role: raw.role,
+				avatarUrl: raw.avatarUrl,
 				createdAt: new Date(raw.createdAt),
 				updatedAt: raw.updatedAt,
 			},
@@ -24,6 +26,7 @@ export class PrismaManagerMapper {
 			email: manager.email,
 			password: manager.password,
 			role: manager.role,
+			avatarUrl: manager.avatarUrl,
 			createdAt: manager.createdAt,
 			updatedAt: manager.updatedAt ?? undefined,
 		}
