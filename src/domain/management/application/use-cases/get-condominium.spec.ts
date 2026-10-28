@@ -29,9 +29,7 @@ describe('GetCondominiumUseCase', () => {
 
 	beforeEach(() => {
 		inMemoryAddressesRepository = new InMemoryAddressesRepository()
-		inMemoryCondominiumsRepository = new InMemoryCondominiumsRepository(
-			inMemoryAddressesRepository,
-		)
+		inMemoryCondominiumsRepository = new InMemoryCondominiumsRepository()
 		inMemoryMaintenancesRepository = new InMemoryMaintenancesRepository()
 		inMemoryContractsRepository = new InMemoryContractsRepository()
 		inMemoryAppointmentsRepository = new InMemoryAppointmentsRepository()

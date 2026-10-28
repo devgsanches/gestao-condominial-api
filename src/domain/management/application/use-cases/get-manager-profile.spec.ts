@@ -18,16 +18,14 @@ describe('GetManagerProfileUseCaseUseCase', () => {
 	let sut: GetManagerProfileUseCase
 
 	beforeEach(() => {
-		inMemoryManagersRepository = new InMemoryManagersRepository()
 		inMemoryAddressesRepository = new InMemoryAddressesRepository()
-		inMemoryCondominiumsRepository = new InMemoryCondominiumsRepository(
+		inMemoryCondominiumsRepository = new InMemoryCondominiumsRepository()
+		inMemoryManagersRepository = new InMemoryManagersRepository(
+			inMemoryCondominiumsRepository,
 			inMemoryAddressesRepository,
 		)
 
-		sut = new GetManagerProfileUseCase(
-			inMemoryManagersRepository,
-			inMemoryCondominiumsRepository,
-		) // system under test
+		sut = new GetManagerProfileUseCase(inMemoryManagersRepository)
 	})
 
 	it('should be able to get a manager profile', async () => {
@@ -77,41 +75,39 @@ describe('GetManagerProfileUseCaseUseCase', () => {
 		expect(response.isRight()).toBe(true)
 
 		if (response.isRight()) {
-			const { manager } = response.result
+			const manager = response.result
 
-			expect(manager).toMatchObject(
-				expect.objectContaining({
-					id: 'mock-id',
-					name: 'Guilherme Sanches',
-					email: 'guilherme@example.com',
-				}),
-			)
+			expect(manager.managerId.toString()).toBe('mock-id')
+			expect(manager.name).toBe('Guilherme Sanches')
+			expect(manager.email).toBe('guilherme@example.com')
 			expect(manager.condominiums).toHaveLength(3)
 			expect(manager.condominiums).toEqual(
 				expect.arrayContaining([
 					expect.objectContaining({
 						name: 'Condomínio 1',
-						address: {
-							id: new UniqueEntityId('address-1'),
+						address: expect.objectContaining({
 							city: 'Cidade 1',
-						},
+						}),
 					}),
 					expect.objectContaining({
 						name: 'Condomínio 2',
-						address: {
-							id: new UniqueEntityId('address-2'),
+						address: expect.objectContaining({
 							city: 'Cidade 2',
-						},
+						}),
 					}),
 					expect.objectContaining({
 						name: 'Condomínio 3',
-						address: {
-							id: new UniqueEntityId('address-3'),
+						address: expect.objectContaining({
 							city: 'Cidade 3',
-						},
+						}),
 					}),
 				]),
 			)
+			expect(
+				manager.condominiums.map((condominium) =>
+					condominium.address.id.toString(),
+				),
+			).toEqual(expect.arrayContaining(['address-1', 'address-2', 'address-3']))
 		}
 	})
 

@@ -1,4 +1,6 @@
 import { makeManager } from '@/test/factories/make-manager'
+import { InMemoryAddressesRepository } from '@/test/repositories/in-memory-addresses-repository'
+import { InMemoryCondominiumsRepository } from '@/test/repositories/in-memory-condominiums-repository'
 import { InMemoryManagersRepository } from '@/test/repositories/in-memory-managers-repository'
 import { RegisterManagerUseCase } from './register-manager'
 
@@ -9,7 +11,10 @@ describe.skip('RegisterManagerUseCaseUseCase', () => {
 	let sut: RegisterManagerUseCase
 
 	beforeEach(() => {
-		inMemoryManagersRepository = new InMemoryManagersRepository()
+		inMemoryManagersRepository = new InMemoryManagersRepository(
+			new InMemoryCondominiumsRepository(),
+			new InMemoryAddressesRepository(),
+		)
 
 		sut = new RegisterManagerUseCase(inMemoryManagersRepository) // system under test
 	})
