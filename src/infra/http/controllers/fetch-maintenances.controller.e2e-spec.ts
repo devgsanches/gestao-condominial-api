@@ -107,10 +107,12 @@ describe('Fetch maintenances (E2E)', () => {
 			},
 		})
 
-		const session = await request(app.getHttpServer()).post('/v1/sessions').send({
-			email: 'fetch-maintenances@example.com',
-			password: '123456',
-		})
+		const session = await request(app.getHttpServer())
+			.post('/v1/sessions')
+			.send({
+				email: 'fetch-maintenances@example.com',
+				password: '123456',
+			})
 
 		accessToken = session.body.access_token
 	})
@@ -128,17 +130,17 @@ describe('Fetch maintenances (E2E)', () => {
 		expect(response.body.maintenances).toHaveLength(3)
 	})
 
-	test('[GET] /v1/condominium/:condominiumId/maintenances?type=periodic', async () => {
+	test('[GET] /v1/condominium/:condominiumId/maintenances?type=PERIODIC', async () => {
 		const response = await request(app.getHttpServer())
 			.get(`/v1/condominium/${condominiumId}/maintenances`)
-			.query({ type: 'periodic' })
+			.query({ type: 'PERIODIC' })
 			.set('Authorization', `Bearer ${accessToken}`)
 
 		expect(response.statusCode).toBe(200)
 		expect(response.body.maintenances).toHaveLength(2)
 		expect(
 			response.body.maintenances.every(
-				(maintenance: { type: string }) => maintenance.type === 'periodic',
+				(maintenance: { type: string }) => maintenance.type === 'PERIODIC',
 			),
 		).toBe(true)
 	})

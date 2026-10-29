@@ -5,8 +5,10 @@
 @condominiumId = {{createCondominium.response.body.condominium.id}}
 @maintenanceId = {{createMaintenance.response.body.maintenance.id}}
 @contractId = {{createContract.response.body.contract.id}}
-@appointmentId = {{scheduleMeeting.response.body.meeting.id}}
-@attachmentId = 00000000-0000-0000-0000-000000000010
+@appointmentId = {{scheduleMeeting.response.body.appointment.id}}
+@attachmentId = {{uploadAttachment.response.body.attachmentId}}
+
+###
 
 # Health
 
@@ -15,7 +17,7 @@ GET {{baseUrl}}
 
 ###
 
-# Accounts routes
+# Accounts
 
 # @name createAccount
 POST {{baseUrl}}/v1/accounts
@@ -41,12 +43,23 @@ Content-Type: application/json
 ###
 
 # @name getManagerProfile
-GET {{baseUrl}}/v1/accounts/profile
+GET {{baseUrl}}/v1/accounts/manager/profile
 Authorization: Bearer {{authToken}}
 
 ###
 
-# Addresses routes
+# @name createManagerAvatar
+POST {{baseUrl}}/v1/accounts/manager/profile
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+	"attachmentId": "{{attachmentId}}"
+}
+
+###
+
+# Addresses
 
 # @name createAddress
 POST {{baseUrl}}/v1/addresses
@@ -66,7 +79,7 @@ Authorization: Bearer {{authToken}}
 
 ###
 
-# Condominiums routes
+# Condominiums
 
 # @name createCondominium
 POST {{baseUrl}}/v1/condominium
@@ -80,7 +93,7 @@ Authorization: Bearer {{authToken}}
 
 ###
 
-# @name fetchCondominiumsByManager
+# @name fetchCondominiums
 GET {{baseUrl}}/v1/condominium
 Authorization: Bearer {{authToken}}
 
@@ -88,6 +101,12 @@ Authorization: Bearer {{authToken}}
 
 # @name getCondominium
 GET {{baseUrl}}/v1/condominium/{{condominiumId}}
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name getCondominiumDashboard
+GET {{baseUrl}}/v1/condominium/{{condominiumId}}/dashboard
 Authorization: Bearer {{authToken}}
 
 ###
@@ -109,7 +128,7 @@ Authorization: Bearer {{authToken}}
 
 ###
 
-# Maintenances routes
+# Maintenances
 
 # @name createMaintenance
 POST {{baseUrl}}/v1/condominium/{{condominiumId}}/maintenances
@@ -117,7 +136,7 @@ Content-Type: application/json
 Authorization: Bearer {{authToken}}
 
 {
-	"type": "periodic",
+	"type": "PERIODIC",
 	"periodicity": "month",
 	"title": "Manutenção do elevador",
 	"description": "Revisão mensal do elevador social"
@@ -126,13 +145,25 @@ Authorization: Bearer {{authToken}}
 ###
 
 # @name fetchMaintenances
-GET {{baseUrl}}/v1/condominium/{{condominiumId}}/maintenances?type=periodic&title=elevador
+GET {{baseUrl}}/v1/condominium/{{condominiumId}}/maintenances
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name fetchMaintenancesByType
+GET {{baseUrl}}/v1/condominium/{{condominiumId}}/maintenances?type=PERIODIC
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name fetchMaintenancesByTitle
+GET {{baseUrl}}/v1/condominium/{{condominiumId}}/maintenances?title=elevador
 Authorization: Bearer {{authToken}}
 
 ###
 
 # @name updateMaintenance
-PATCH {{baseUrl}}/v1/condominium/{{condominiumId}}/maintenances/{{maintenanceId}}
+PUT {{baseUrl}}/v1/condominium/{{condominiumId}}/maintenances/{{maintenanceId}}
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
 
@@ -149,7 +180,7 @@ Authorization: Bearer {{authToken}}
 
 ###
 
-# Contracts routes
+# Contracts
 
 # @name createContract
 POST {{baseUrl}}/v1/condominium/{{condominiumId}}/maintenances/{{maintenanceId}}/contracts
@@ -176,7 +207,24 @@ Authorization: Bearer {{authToken}}
 
 ###
 
-# Appointments routes
+# Attachments
+
+# @name uploadAttachment
+POST {{baseUrl}}/v1/attachments
+Authorization: Bearer {{authToken}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="sample-upload.png"
+Content-Type: image/png
+
+< ./test/e2e/sample-upload.png
+--boundary--
+
+###
+
+# Appointments
+# A listagem devolve { canceled, completed, upcoming }
 
 # @name scheduleMeeting
 POST {{baseUrl}}/v1/condominium/{{condominiumId}}/appointments
@@ -206,18 +254,24 @@ Authorization: Bearer {{authToken}}
 
 ###
 
-# @name fetchMeetings
+# @name fetchAppointments
+GET {{baseUrl}}/v1/condominium/{{condominiumId}}/appointments
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name fetchAppointmentsByType
 GET {{baseUrl}}/v1/condominium/{{condominiumId}}/appointments?type=meeting
 Authorization: Bearer {{authToken}}
 
 ###
 
-# @name fetchAssemblies
-GET {{baseUrl}}/v1/condominium/{{condominiumId}}/appointments?type=assembly
+# @name fetchAppointmentsByTitle
+GET {{baseUrl}}/v1/condominium/{{condominiumId}}/appointments?title=Reunião
 Authorization: Bearer {{authToken}}
 
 ###
 
 # @name cancelAppointment
-PATCH {{baseUrl}}/v1/appointments/{{appointmentId}}/cancel
+PATCH {{baseUrl}}/v1/condominium/{{condominiumId}}/appointments/{{appointmentId}}/cancel
 Authorization: Bearer {{authToken}}

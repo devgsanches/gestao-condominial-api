@@ -34,6 +34,7 @@ export class MaintenancePresenter {
 			type: maintenance.type,
 			periodicity: maintenance.periodicity,
 			title: maintenance.title,
+			description: maintenance.description,
 			canceledAt: maintenance.canceledAt,
 			created_at: maintenance.createdAt,
 			updated_at: maintenance.updatedAt,

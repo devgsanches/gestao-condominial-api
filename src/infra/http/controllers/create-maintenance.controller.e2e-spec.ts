@@ -71,10 +71,12 @@ describe('Create maintenance (E2E)', () => {
 
 		condominiumId = condominium.id
 
-		const session = await request(app.getHttpServer()).post('/v1/sessions').send({
-			email: 'create-maintenance@example.com',
-			password: '123456',
-		})
+		const session = await request(app.getHttpServer())
+			.post('/v1/sessions')
+			.send({
+				email: 'create-maintenance@example.com',
+				password: '123456',
+			})
 
 		accessToken = session.body.access_token
 	})
@@ -99,7 +101,7 @@ describe('Create maintenance (E2E)', () => {
 				condominiumId,
 				title: 'Troca de lampadas',
 				description: 'Substituicao das lampadas do hall',
-				type: 'general',
+				type: 'GENERAL',
 				periodicity: null,
 			}),
 		})
@@ -121,7 +123,7 @@ describe('Create maintenance (E2E)', () => {
 			.send({
 				title: 'Manutencao do elevador',
 				description: 'Revisao mensal do elevador social e de servico',
-				type: 'periodic',
+				type: 'PERIODIC',
 				periodicity: 'month',
 			})
 
@@ -132,7 +134,7 @@ describe('Create maintenance (E2E)', () => {
 				condominiumId,
 				title: 'Manutencao do elevador',
 				description: 'Revisao mensal do elevador social e de servico',
-				type: 'periodic',
+				type: 'PERIODIC',
 				periodicity: 'month',
 			}),
 		})
