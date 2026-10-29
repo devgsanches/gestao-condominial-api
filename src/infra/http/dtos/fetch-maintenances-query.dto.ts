@@ -1,6 +1,6 @@
+import { MaintenanceType } from '@generated/prisma/enums'
 import { ApiPropertyOptional } from '@nestjs/swagger'
 import { IsEnum, IsOptional, IsString } from 'class-validator'
-import { MaintenanceType } from '@/domain/management/application/use-cases/fetch-maintenances'
 
 export class FetchMaintenancesQueryDTO {
 	@ApiPropertyOptional({

@@ -1,7 +1,8 @@
+import type { MaintenanceType } from '@generated/prisma/enums'
 import type { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import type { MaintenancesRepository } from '@/domain/management/application/repositories/maintenances-repository'
-import { MaintenanceType } from '@/domain/management/application/use-cases/fetch-maintenances'
 import type { Maintenance } from '@/domain/management/enterprise/entities/maintenance'
+import { MaintenanceWithContract } from '@/domain/management/enterprise/entities/value-objects/maintenance-with-contract'
 
 export class InMemoryMaintenancesRepository implements MaintenancesRepository {
 	public items: Maintenance[] = []
@@ -29,6 +30,33 @@ export class InMemoryMaintenancesRepository implements MaintenancesRepository {
 			.filter((i) => i.condominiumId.equals(condominiumId))
 			.filter((i) => (filters.title ? i.title.includes(filters.title) : true))
 			.filter((i) => (filters.type ? i.type === filters.type : true))
+	}
+
+	async findManyWithContractByCondominiumId({
+		condominiumId,
+		filters,
+	}: {
+		condominiumId: UniqueEntityId
+		filters: { title?: string; type?: MaintenanceType }
+	}) {
+		const maintenances = await this.findManyByCondominiumId({
+			condominiumId,
+			filters,
+		})
+
+		return maintenances.map((maintenance) =>
+			MaintenanceWithContract.create({
+				maintenanceId: maintenance.id,
+				condominiumId: maintenance.condominiumId,
+				type: maintenance.type,
+				periodicity: maintenance.periodicity,
+				contractId: null,
+				title: maintenance.title,
+				canceledAt: maintenance.canceledAt,
+				createdAt: maintenance.createdAt,
+				updatedAt: maintenance.updatedAt,
+			}),
+		)
 	}
 
 	async findById(id: UniqueEntityId) {

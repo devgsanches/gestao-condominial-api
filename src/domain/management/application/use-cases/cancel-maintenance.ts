@@ -1,3 +1,4 @@
+import { MaintenanceType } from '@generated/prisma/enums'
 import {
 	Injectable,
 	NotFoundException,
@@ -56,9 +57,9 @@ export class CancelMaintenanceUseCase {
 
 		maintenance.canceledAt = new Date()
 
-    await this.maintenanceRepository.save(maintenance)
+		await this.maintenanceRepository.save(maintenance)
 
-		const isPeriodicMaintenance = maintenance.type === 'periodic'
+		const isPeriodicMaintenance = maintenance.type === MaintenanceType.PERIODIC
 
 		if (isPeriodicMaintenance) {
 			const contract =

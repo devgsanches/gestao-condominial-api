@@ -1,3 +1,4 @@
+import { MaintenanceType } from '@generated/prisma/enums'
 import {
 	BadRequestException,
 	ConflictException,
@@ -12,7 +13,6 @@ import { ContractAttachmentList } from '../../enterprise/entities/contract-attac
 import { CondominiumsRepository } from '../repositories/condominiums-repository'
 import { ContractsRepository } from '../repositories/contracts-repository'
 import { MaintenancesRepository } from '../repositories/maintenances-repository'
-import { MaintenanceType } from './fetch-maintenances'
 
 interface CreateContractInput {
 	managerId: UniqueEntityId

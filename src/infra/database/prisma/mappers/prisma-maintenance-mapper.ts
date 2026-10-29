@@ -7,14 +7,9 @@ import {
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Maintenance } from '@/domain/management/enterprise/entities/maintenance'
 
-const typeToDoaminMap: Record<PrismaMaintenanceType, 'general' | 'periodic'> = {
-	GENERAL: 'general',
-	PERIODIC: 'periodic',
-}
-
 const typeToPrismaMap: Record<string, PrismaMaintenanceType> = {
-	general: 'GENERAL',
-	periodic: 'PERIODIC',
+	GENERAL: 'GENERAL',
+	PERIODIC: 'PERIODIC',
 }
 
 const periodicityToDomainMap: Record<
@@ -38,7 +33,7 @@ export class PrismaMaintenanceMapper {
 		return Maintenance.create(
 			{
 				condominiumId: new UniqueEntityId(raw.condominiumId),
-				type: typeToDoaminMap[raw.type],
+				type: raw.type,
 				periodicity: raw.periodicity
 					? periodicityToDomainMap[raw.periodicity]
 					: null,

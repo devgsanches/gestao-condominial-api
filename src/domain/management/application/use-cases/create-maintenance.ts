@@ -1,3 +1,4 @@
+import { MaintenanceType } from '@generated/prisma/enums'
 import {
 	Injectable,
 	NotFoundException,
@@ -12,7 +13,7 @@ import { MaintenancesRepository } from '../repositories/maintenances-repository'
 interface CreateMaintenanceInput {
 	managerId: UniqueEntityId
 	condominiumId: UniqueEntityId
-	type?: 'general' | 'periodic'
+	type?: 'GENERAL' | 'PERIODIC'
 	periodicity?: 'month' | 'trimester' | 'semester' | null
 	title: string
 	description: string
@@ -35,7 +36,7 @@ export class CreateMaintenanceUseCase {
 	async execute({
 		managerId,
 		condominiumId,
-		type = 'general',
+		type = MaintenanceType.GENERAL,
 		periodicity = null,
 		title,
 		description,
@@ -55,7 +56,7 @@ export class CreateMaintenanceUseCase {
 		const maintenance = Maintenance.create({
 			condominiumId,
 			type,
-			periodicity: type === 'general' ? null : periodicity,
+			periodicity: type === MaintenanceType.GENERAL ? null : periodicity,
 			title,
 			description,
 		})

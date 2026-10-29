@@ -1,3 +1,4 @@
+import { MaintenanceType } from '@generated/prisma/enums'
 import {
 	Injectable,
 	NotFoundException,
@@ -81,7 +82,7 @@ export class GetCondominiumUseCase {
 		const periodicWithoutContract: Maintenance[] = []
 
 		for (const maintenance of activeMaintenances) {
-			if (maintenance.type !== 'periodic') {
+			if (maintenance.type !== MaintenanceType.PERIODIC) {
 				continue
 			}
 

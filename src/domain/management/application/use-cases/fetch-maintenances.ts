@@ -1,3 +1,4 @@
+import { MaintenanceType } from '@generated/prisma/enums'
 import {
 	Injectable,
 	NotFoundException,
@@ -5,14 +6,9 @@ import {
 } from '@nestjs/common'
 import { type Either, left, right } from '@/core/either'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { Maintenance } from '../../enterprise/entities/maintenance'
+import { MaintenanceWithContract } from '../../enterprise/entities/value-objects/maintenance-with-contract'
 import { CondominiumsRepository } from '../repositories/condominiums-repository'
 import { MaintenancesRepository } from '../repositories/maintenances-repository'
-
-export enum MaintenanceType {
-	GENERAL = 'general',
-	PERIODIC = 'periodic',
-}
 
 interface FetchMaintenancesInput {
 	type?: MaintenanceType
@@ -23,7 +19,7 @@ interface FetchMaintenancesInput {
 
 type FetchMaintenancesOutput = Either<
 	UnauthorizedException | NotFoundException,
-	{ maintenances: Maintenance[] }
+	{ maintenances: MaintenanceWithContract[] }
 >
 
 @Injectable()
@@ -52,7 +48,7 @@ export class FetchMaintenancesUseCase {
 		}
 
 		const maintenances =
-			await this.maintenancesRepository.findManyByCondominiumId({
+			await this.maintenancesRepository.findManyWithContractByCondominiumId({
 				condominiumId,
 				filters: {
 					title,

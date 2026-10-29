@@ -1,16 +1,12 @@
-import { MaintenanceType as PrismaMaintenanceType } from '@generated/prisma/client'
+import { MaintenanceType } from '@generated/prisma/client'
 import { Injectable } from '@nestjs/common'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { MaintenancesRepository } from '@/domain/management/application/repositories/maintenances-repository'
-import { MaintenanceType } from '@/domain/management/application/use-cases/fetch-maintenances'
 import { Maintenance } from '@/domain/management/enterprise/entities/maintenance'
+import { MaintenanceWithContract } from '@/domain/management/enterprise/entities/value-objects/maintenance-with-contract'
 import { PrismaMaintenanceMapper } from '../mappers/prisma-maintenance-mapper'
+import { PrismaMaintenanceWithContractMapper } from '../mappers/prisma-maintenance-with-contract-mapper'
 import { PrismaService } from '../prisma.service'
-
-const typeToPrismaMap: Record<string, PrismaMaintenanceType> = {
-	general: 'GENERAL',
-	periodic: 'PERIODIC',
-}
 
 @Injectable()
 export class PrismaMaintenancesRepository implements MaintenancesRepository {
@@ -69,7 +65,7 @@ export class PrismaMaintenancesRepository implements MaintenancesRepository {
 		}
 
 		if (filters.type) {
-			where.type = typeToPrismaMap[filters.type]
+			where.type = filters.type
 		}
 
 		const maintenances = await this.prisma.maintenance.findMany({
@@ -80,6 +76,43 @@ export class PrismaMaintenancesRepository implements MaintenancesRepository {
 		})
 
 		return maintenances.map(PrismaMaintenanceMapper.toDomain)
+	}
+
+	async findManyWithContractByCondominiumId({
+		condominiumId,
+		filters,
+	}: {
+		condominiumId: UniqueEntityId
+		filters: { title?: string; type?: MaintenanceType }
+	}): Promise<MaintenanceWithContract[]> {
+		const where: Record<string, unknown> = {
+			condominiumId: condominiumId.toValue(),
+		}
+
+		if (filters.title) {
+			where.title = { contains: filters.title, mode: 'insensitive' }
+		}
+
+		if (filters.type) {
+			where.type = filters.type
+		}
+
+		const maintenances = await this.prisma.maintenance.findMany({
+			where: {
+				...where,
+				canceledAt: null,
+			},
+			include: {
+				contract: {
+					select: {
+						id: true,
+					},
+				},
+			},
+		})
+
+		// call the mapper
+		return maintenances.map(PrismaMaintenanceWithContractMapper.toDomain)
 	}
 
 	async update(maintenance: Maintenance): Promise<Maintenance> {

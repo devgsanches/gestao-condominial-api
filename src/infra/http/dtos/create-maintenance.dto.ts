@@ -1,6 +1,6 @@
+import { MaintenanceType } from '@generated/prisma/enums'
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator'
-import { MaintenanceType } from '@/domain/management/application/use-cases/fetch-maintenances'
 
 export enum MaintenancePeriodicityDTO {
 	MONTH = 'month',

@@ -1,10 +1,11 @@
+import { MaintenanceType } from '@generated/prisma/enums'
 import { Entity } from '@/core/entities/entity'
 import type { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Optional } from '@/core/types/optional'
 
 export interface MaintenanceProps {
 	condominiumId: UniqueEntityId
-	type: 'general' | 'periodic'
+	type: MaintenanceType
 	periodicity: 'month' | 'trimester' | 'semester' | null
 	title: string
 	description: string
@@ -18,7 +19,7 @@ export class Maintenance extends Entity<MaintenanceProps> {
 		return this.props.condominiumId
 	}
 
-	get type(): 'general' | 'periodic' {
+	get type(): MaintenanceType {
 		return this.props.type
 	}
 
