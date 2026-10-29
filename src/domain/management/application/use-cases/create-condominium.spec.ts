@@ -1,6 +1,5 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { makeManager } from '@/test/factories/make-manager'
-import { InMemoryAddressesRepository } from '@/test/repositories/in-memory-addresses-repository'
 import { InMemoryCondominiumsRepository } from '@/test/repositories/in-memory-condominiums-repository'
 import { InMemoryManagersRepository } from '@/test/repositories/in-memory-managers-repository'
 import { CreateCondominiumUseCase } from './create-condominium'
@@ -12,10 +11,7 @@ describe('CreateCondominiumUseCase', () => {
 
 	beforeEach(() => {
 		inMemoryCondominiumsRepository = new InMemoryCondominiumsRepository()
-		inMemoryManagersRepository = new InMemoryManagersRepository(
-			inMemoryCondominiumsRepository,
-			new InMemoryAddressesRepository(),
-		)
+		inMemoryManagersRepository = new InMemoryManagersRepository()
 
 		sut = new CreateCondominiumUseCase(
 			inMemoryCondominiumsRepository,

@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { type Either, left, right } from '@/core/either'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { Condominium } from '../../enterprise/entities/condominium'
+import { CondominiumWithAddress } from '../../enterprise/entities/value-objects/condominium-with-address'
 import { CondominiumsRepository } from '../repositories/condominiums-repository'
 
 interface FetchCondominiumsByManagerInput {
@@ -11,7 +11,7 @@ interface FetchCondominiumsByManagerInput {
 type FetchCondominiumsByManagerOutput = Either<
 	NotFoundException,
 	{
-		condominiums: Condominium[]
+		condominiums: CondominiumWithAddress[]
 	}
 >
 
@@ -24,7 +24,7 @@ export class FetchCondominiumsByManagerUseCase {
 		managerId,
 	}: FetchCondominiumsByManagerInput): Promise<FetchCondominiumsByManagerOutput> {
 		const condominiums =
-			await this.condominiumRepository.findManyByManagerId(managerId)
+			await this.condominiumRepository.findManyWithAddressByManagerId(managerId)
 
 		if (!condominiums) {
 			return left(new NotFoundException())

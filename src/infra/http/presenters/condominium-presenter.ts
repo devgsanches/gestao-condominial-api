@@ -1,6 +1,7 @@
 import { GetCondominiumDashboard } from '@/domain/management/application/use-cases/get-condominium'
 import { Condominium } from '@/domain/management/enterprise/entities/condominium'
 import { Meeting } from '@/domain/management/enterprise/entities/meeting'
+import { CondominiumWithAddress } from '@/domain/management/enterprise/entities/value-objects/condominium-with-address'
 
 // biome-ignore lint/complexity/noStaticOnlyClass: mapper utilitário com métodos estáticos
 export class CondominiumPresenter {
@@ -10,9 +11,20 @@ export class CondominiumPresenter {
 		}
 	}
 
-	static toHTTPList(condominiums: Condominium[]) {
+	static toHTTPList(condominiums: CondominiumWithAddress[]) {
 		return {
-			condominiums: condominiums.map(CondominiumPresenter.toHTTPItem),
+			condominiums: condominiums.map((condominiumWithAddress) => {
+				const { addressId: _, ...condominium } =
+					CondominiumPresenter.toHTTPItem(condominiumWithAddress.condominium)
+
+				return {
+					...condominium,
+					address: {
+						id: condominiumWithAddress.address.id.toString(),
+						city: condominiumWithAddress.address.city,
+					},
+				}
+			}),
 		}
 	}
 

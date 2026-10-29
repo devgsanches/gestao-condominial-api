@@ -16,6 +16,8 @@ describe('Fetch condominiums (E2E)', () => {
 	let accessToken: string
 	let firstCondominiumId: string
 	let secondCondominiumId: string
+	let firstAddressId: string
+	let secondAddressId: string
 
 	beforeAll(async () => {
 		const moduleRef = await Test.createTestingModule({
@@ -123,11 +125,15 @@ describe('Fetch condominiums (E2E)', () => {
 
 		firstCondominiumId = firstCondominium.id
 		secondCondominiumId = secondCondominium.id
+		firstAddressId = firstAddress.id
+		secondAddressId = secondAddress.id
 
-		const session = await request(app.getHttpServer()).post('/v1/sessions').send({
-			email: 'fetch-condominiums@example.com',
-			password: '123456',
-		})
+		const session = await request(app.getHttpServer())
+			.post('/v1/sessions')
+			.send({
+				email: 'fetch-condominiums@example.com',
+				password: '123456',
+			})
 
 		accessToken = session.body.access_token
 	})
@@ -149,11 +155,19 @@ describe('Fetch condominiums (E2E)', () => {
 					id: firstCondominiumId,
 					name: 'Residencial Fetch One',
 					slug: 'residencial-fetch-one',
+					address: {
+						id: firstAddressId,
+						city: 'Santos',
+					},
 				}),
 				expect.objectContaining({
 					id: secondCondominiumId,
 					name: 'Residencial Fetch Two',
 					slug: 'residencial-fetch-two',
+					address: {
+						id: secondAddressId,
+						city: 'Santos',
+					},
 				}),
 			]),
 		)
@@ -164,5 +178,11 @@ describe('Fetch condominiums (E2E)', () => {
 				}),
 			]),
 		)
+		expect(
+			response.body.condominiums.every(
+				(condominium: { addressId?: string }) =>
+					condominium.addressId === undefined,
+			),
+		).toBe(true)
 	})
 })

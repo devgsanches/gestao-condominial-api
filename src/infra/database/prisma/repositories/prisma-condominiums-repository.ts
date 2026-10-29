@@ -3,8 +3,10 @@ import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { CondominiumsRepository } from '@/domain/management/application/repositories/condominiums-repository'
 import { Condominium } from '@/domain/management/enterprise/entities/condominium'
 import { CondominiumDashboard } from '@/domain/management/enterprise/entities/value-objects/condominium-dashboard'
+import { CondominiumWithAddress } from '@/domain/management/enterprise/entities/value-objects/condominium-with-address'
 import { PrismaCondominiumDashboardMapper } from '../mappers/prisma-condominium-dashboard'
 import { PrismaCondominiumMapper } from '../mappers/prisma-condominium-mapper'
+import { PrismaCondominiumWithAddressMapper } from '../mappers/prisma-condominium-with-address-mapper'
 import { PrismaService } from '../prisma.service'
 
 @Injectable()
@@ -61,6 +63,21 @@ export class PrismaCondominiumsRepository implements CondominiumsRepository {
 		)
 
 		return condominiumsToDomain
+	}
+
+	async findManyWithAddressByManagerId(
+		managerId: UniqueEntityId,
+	): Promise<CondominiumWithAddress[]> {
+		const condominiums = await this.prisma.condominium.findMany({
+			where: {
+				managerId: managerId.toValue(),
+			},
+			include: {
+				address: true,
+			},
+		})
+
+		return condominiums.map(PrismaCondominiumWithAddressMapper.toDomain)
 	}
 
 	async findByManagerId(

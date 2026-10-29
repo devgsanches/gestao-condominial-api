@@ -1,9 +1,7 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Attachment } from '@/domain/management/enterprise/entities/attachment'
 import { makeManager } from '@/test/factories/make-manager'
-import { InMemoryAddressesRepository } from '@/test/repositories/in-memory-addresses-repository'
 import { InMemoryAttachmentsRepository } from '@/test/repositories/in-memory-attachments-repository'
-import { InMemoryCondominiumsRepository } from '@/test/repositories/in-memory-condominiums-repository'
 import { InMemoryManagersRepository } from '@/test/repositories/in-memory-managers-repository'
 import { CreateManagerAvatarUseCase } from './create-manager-avatar'
 import { AttachmentNotFoundError } from './errors/attachment-not-found-error'
@@ -17,10 +15,7 @@ describe('CreateManagerAvatar UseCase', () => {
 	let sut: CreateManagerAvatarUseCase
 
 	beforeEach(() => {
-		inMemoryManagersRepository = new InMemoryManagersRepository(
-			new InMemoryCondominiumsRepository(),
-			new InMemoryAddressesRepository(),
-		)
+		inMemoryManagersRepository = new InMemoryManagersRepository()
 		inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
 
 		sut = new CreateManagerAvatarUseCase(

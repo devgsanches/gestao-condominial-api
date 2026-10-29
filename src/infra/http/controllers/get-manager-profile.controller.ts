@@ -10,7 +10,7 @@ import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { ManagerNotFoundError } from '@/domain/management/application/use-cases/errors/manager-not-found'
 import { GetManagerProfileUseCase } from '@/domain/management/application/use-cases/get-manager-profile'
 import { CurrentUser } from '@/infra/auth/current-user-decorator'
-import { ManagerWithCondominiumsPresenter } from '../presenters/manager-with-condominiums-presenter'
+import { ManagerProfilePresenter } from '../presenters/manager-profile-presenter'
 
 @Controller({
 	version: '1',
@@ -37,8 +37,6 @@ export class GetManagerProfileController {
 			}
 		}
 
-		const managerWithCondominiums = response.result
-
-		return ManagerWithCondominiumsPresenter.toHTTP(managerWithCondominiums)
+		return ManagerProfilePresenter.toHTTP(response.result)
 	}
 }

@@ -1,9 +1,13 @@
 import type { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import type { CondominiumsRepository } from '@/domain/management/application/repositories/condominiums-repository'
 import type { Condominium } from '@/domain/management/enterprise/entities/condominium'
+import { CondominiumWithAddress } from '@/domain/management/enterprise/entities/value-objects/condominium-with-address'
+import type { InMemoryAddressesRepository } from './in-memory-addresses-repository'
 
 export class InMemoryCondominiumsRepository implements CondominiumsRepository {
 	public items: Condominium[] = []
+
+	constructor(private addressesRepository?: InMemoryAddressesRepository) {}
 
 	async create(condominium: Condominium) {
 		this.items.push(condominium)
@@ -63,6 +67,34 @@ export class InMemoryCondominiumsRepository implements CondominiumsRepository {
 		}
 
 		return condominiums
+	}
+
+	async findManyWithAddressByManagerId(
+		managerId: UniqueEntityId,
+	): Promise<CondominiumWithAddress[]> {
+		const condominiums = this.items.filter((item) =>
+			item.managerId.equals(managerId),
+		)
+
+		return condominiums.map((condominium) => {
+			const address = this.addressesRepository?.items.find((item) =>
+				item.id.equals(condominium.addressId),
+			)
+
+			if (!address) {
+				throw new Error(
+					`Address with ID "${condominium.addressId.toString()}" does not exist.`,
+				)
+			}
+
+			return CondominiumWithAddress.create({
+				condominium,
+				address: {
+					id: address.id,
+					city: address.city,
+				},
+			})
+		})
 	}
 
 	async update(

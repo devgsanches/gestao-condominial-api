@@ -14,6 +14,7 @@ describe('Get manager profile (E2E)', () => {
 	let app: INestApplication
 	let prisma: PrismaService
 	let accessToken: string
+	let managerId: string
 
 	beforeAll(async () => {
 		const moduleRef = await Test.createTestingModule({
@@ -47,26 +48,7 @@ describe('Get manager profile (E2E)', () => {
 			},
 		})
 
-		const address = await prisma.address.create({
-			data: {
-				zipCode: '11060-001',
-				street: 'Av. Ana Costa',
-				number: 480,
-				neighborhood: 'Gonzaga',
-				city: 'Santos',
-				state: 'SP',
-				country: 'Brasil',
-			},
-		})
-
-		await prisma.condominium.create({
-			data: {
-				name: 'Residencial Profile',
-				slug: 'residencial-profile',
-				managerId: manager.id,
-				addressId: address.id,
-			},
-		})
+		managerId = manager.id
 
 		const session = await request(app.getHttpServer())
 			.post('/v1/sessions')
@@ -89,18 +71,12 @@ describe('Get manager profile (E2E)', () => {
 
 		expect(response.statusCode).toBe(200)
 		expect(response.body).toEqual({
-			manager: expect.objectContaining({
-				name: 'John Doe',
-				email: 'get-manager-profile@example.com',
-				condominiums: expect.arrayContaining([
-					expect.objectContaining({
-						name: 'Residencial Profile',
-						address: expect.objectContaining({
-							city: 'Santos',
-						}),
-					}),
-				]),
-			}),
+			managerId,
+			name: 'John Doe',
+			email: 'get-manager-profile@example.com',
+			createdAt: expect.any(String),
+			updatedAt: expect.any(String),
 		})
+		expect(response.body).not.toHaveProperty('condominiums')
 	})
 })
