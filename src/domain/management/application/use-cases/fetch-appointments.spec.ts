@@ -81,14 +81,22 @@ describe('FetchAppointmentsUseCase', () => {
 		expect(response.isLeft()).toBe(false)
 		if (response.isRight()) {
 			expect(response.result.canceled).toHaveLength(1)
-			expect(response.result.canceled[0].id).toEqual(canceledMeeting.id)
+			expect(response.result.canceled[0].appointmentId).toEqual(
+				canceledMeeting.id,
+			)
 
 			expect(response.result.completed).toHaveLength(1)
-			expect(response.result.completed[0].id).toEqual(completedMeeting.id)
+			expect(response.result.completed[0].appointmentId).toEqual(
+				completedMeeting.id,
+			)
 
 			expect(response.result.upcoming).toHaveLength(2)
-			expect(response.result.upcoming[0].id).toEqual(closerUpcomingMeeting.id)
-			expect(response.result.upcoming[1].id).toEqual(laterUpcomingMeeting.id)
+			expect(response.result.upcoming[0].appointmentId).toEqual(
+				closerUpcomingMeeting.id,
+			)
+			expect(response.result.upcoming[1].appointmentId).toEqual(
+				laterUpcomingMeeting.id,
+			)
 		}
 	})
 
@@ -160,13 +168,19 @@ describe('FetchAppointmentsUseCase', () => {
 		expect(response.isLeft()).toBe(false)
 		if (response.isRight()) {
 			expect(response.result.canceled).toHaveLength(1)
-			expect(response.result.canceled[0].id).toEqual(canceledAssembly.id)
+			expect(response.result.canceled[0].appointmentId).toEqual(
+				canceledAssembly.id,
+			)
 
 			expect(response.result.completed).toHaveLength(1)
-			expect(response.result.completed[0].id).toEqual(completedAssembly.id)
+			expect(response.result.completed[0].appointmentId).toEqual(
+				completedAssembly.id,
+			)
 
 			expect(response.result.upcoming).toHaveLength(1)
-			expect(response.result.upcoming[0].id).toEqual(upcomingAssembly.id)
+			expect(response.result.upcoming[0].appointmentId).toEqual(
+				upcomingAssembly.id,
+			)
 		}
 	})
 
@@ -237,22 +251,70 @@ describe('FetchAppointmentsUseCase', () => {
 			expect(response.result.canceled).toHaveLength(2)
 			expect(response.result.canceled).toEqual(
 				expect.arrayContaining([
-					expect.objectContaining({ id: canceledMeeting.id }),
-					expect.objectContaining({ id: canceledAssembly.id }),
+					expect.objectContaining({ appointmentId: canceledMeeting.id }),
+					expect.objectContaining({ appointmentId: canceledAssembly.id }),
 				]),
 			)
 
 			expect(response.result.completed).toHaveLength(2)
 			expect(response.result.completed).toEqual(
 				expect.arrayContaining([
-					expect.objectContaining({ id: completedMeeting.id }),
-					expect.objectContaining({ id: completedAssembly.id }),
+					expect.objectContaining({ appointmentId: completedMeeting.id }),
+					expect.objectContaining({ appointmentId: completedAssembly.id }),
 				]),
 			)
 
 			expect(response.result.upcoming).toHaveLength(2)
-			expect(response.result.upcoming[0].id).toEqual(upcomingMeeting.id)
-			expect(response.result.upcoming[1].id).toEqual(upcomingAssembly.id)
+			expect(response.result.upcoming[0].appointmentId).toEqual(
+				upcomingMeeting.id,
+			)
+			expect(response.result.upcoming[1].appointmentId).toEqual(
+				upcomingAssembly.id,
+			)
+		}
+	})
+
+	it('should be possible for a manager to fetch an appointment by title at a condominium.', async () => {
+		const manager = makeManager({
+			name: 'Guilherme Sanches',
+		})
+
+		const condominium = makeCondominium({
+			managerId: manager.id,
+		})
+
+		await inMemoryCondominiumsRepository.create(condominium)
+
+		const matchingMeeting = makeAppointment('meeting', {
+			condominiumId: condominium.id,
+			title: 'Reunião do elevador',
+			scheduledAt: daysFromNow(4),
+		})
+
+		const otherMeeting = makeAppointment('meeting', {
+			condominiumId: condominium.id,
+			title: 'Reunião de obras',
+			scheduledAt: daysFromNow(8),
+		})
+
+		await inMemoryAppointmentsRepository.create(matchingMeeting)
+		await inMemoryAppointmentsRepository.create(otherMeeting)
+
+		const response = await sut.execute({
+			managerId: manager.id,
+			condominiumId: condominium.id,
+			title: 'elevador',
+		})
+
+		expect(response.isRight()).toBe(true)
+		expect(response.isLeft()).toBe(false)
+		if (response.isRight()) {
+			expect(response.result.upcoming).toHaveLength(1)
+			expect(response.result.upcoming[0].appointmentId).toEqual(
+				matchingMeeting.id,
+			)
+			expect(response.result.canceled).toHaveLength(0)
+			expect(response.result.completed).toHaveLength(0)
 		}
 	})
 

@@ -33,6 +33,7 @@ export class FetchAppointmentsController {
 			managerId: new UniqueEntityId(user.id),
 			condominiumId: new UniqueEntityId(condominiumId),
 			type: query.type,
+			title: query.title,
 		})
 
 		if (response.isLeft()) {

@@ -251,6 +251,25 @@ describe('Fetch appointments (E2E)', () => {
 		)
 	})
 
+	test('[GET] /v1/condominium/:condominiumId/appointments?title=Reuniao cancelada', async () => {
+		const response = await request(app.getHttpServer())
+			.get(`/v1/condominium/${condominiumId}/appointments`)
+			.query({ title: 'Reuniao cancelada' })
+			.set('Authorization', `Bearer ${accessToken}`)
+
+		expect(response.statusCode).toBe(200)
+		expect(response.body.canceled).toHaveLength(1)
+		expect(response.body.canceled[0]).toEqual(
+			expect.objectContaining({
+				id: canceledMeetingId,
+				type: 'meeting',
+				title: 'Reuniao cancelada',
+			}),
+		)
+		expect(response.body.completed).toHaveLength(0)
+		expect(response.body.upcoming).toHaveLength(0)
+	})
+
 	test('[GET] /v1/condominium/:condominiumId/appointments?type=assembly', async () => {
 		const response = await request(app.getHttpServer())
 			.get(`/v1/condominium/${condominiumId}/appointments`)

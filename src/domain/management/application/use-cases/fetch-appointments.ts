@@ -5,13 +5,12 @@ import {
 } from '@nestjs/common'
 import { type Either, left, right } from '@/core/either'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { Assembly } from '../../enterprise/entities/assembly'
-import { Meeting } from '../../enterprise/entities/meeting'
+import { AppointmentWithType } from '../../enterprise/entities/value-objects/appointment-with-type'
 import { AppointmentsRepository } from '../repositories/appointments-repository'
 import { CondominiumsRepository } from '../repositories/condominiums-repository'
 import { ScheduleType } from './schedule-meeting'
 
-export interface GroupedAppointments<T extends Meeting | Assembly> {
+export interface GroupedAppointments<T> {
 	canceled: T[]
 	completed: T[]
 	upcoming: T[]
@@ -19,22 +18,23 @@ export interface GroupedAppointments<T extends Meeting | Assembly> {
 
 interface FetchAppointmentsInput {
 	type?: ScheduleType
+	title?: string
 	managerId: UniqueEntityId
 	condominiumId: UniqueEntityId
 }
 
 type FetchAppointmentsOutput = Either<
 	UnauthorizedException | NotFoundException,
-	GroupedAppointments<Meeting | Assembly>
+	GroupedAppointments<AppointmentWithType>
 >
 
-function groupAppointments<T extends Meeting | Assembly>(
-	appointments: T[],
-): GroupedAppointments<T> {
+function groupAppointments(
+	appointments: AppointmentWithType[],
+): GroupedAppointments<AppointmentWithType> {
 	const now = new Date()
-	const canceled: T[] = []
-	const completed: T[] = []
-	const upcoming: T[] = []
+	const canceled: AppointmentWithType[] = []
+	const completed: AppointmentWithType[] = []
+	const upcoming: AppointmentWithType[] = []
 
 	for (const appointment of appointments) {
 		if (appointment.canceledAt) {
@@ -66,6 +66,7 @@ export class FetchAppointmentsUseCase {
 		managerId,
 		condominiumId,
 		type,
+		title,
 	}: FetchAppointmentsInput): Promise<FetchAppointmentsOutput> {
 		const condominium = await this.condominiumRepository.findById(condominiumId)
 
@@ -79,33 +80,15 @@ export class FetchAppointmentsUseCase {
 			return left(new UnauthorizedException())
 		}
 
-		if (!type) {
-			const [meetings, assemblies] = await Promise.all([
-				this.appointmentsRepository.findManyMeetingsByCondominiumId(
-					condominiumId,
-				),
-				this.appointmentsRepository.findManyAssembliesByCondominiumId(
-					condominiumId,
-				),
-			])
-
-			return right(groupAppointments([...meetings, ...assemblies]))
-		}
-
-		if (type === ScheduleType.MEETING) {
-			const meetings =
-				await this.appointmentsRepository.findManyMeetingsByCondominiumId(
-					condominiumId,
-				)
-
-			return right(groupAppointments(meetings))
-		}
-
-		const assemblies =
-			await this.appointmentsRepository.findManyAssembliesByCondominiumId(
+		const appointments =
+			await this.appointmentsRepository.findManyByCondominiumId({
 				condominiumId,
-			)
+				filters: {
+					title,
+					type,
+				},
+			})
 
-		return right(groupAppointments(assemblies))
+		return right(groupAppointments(appointments))
 	}
 }

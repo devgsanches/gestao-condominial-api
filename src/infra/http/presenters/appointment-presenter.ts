@@ -1,6 +1,7 @@
 import { GroupedAppointments } from '@/domain/management/application/use-cases/fetch-appointments'
 import { Assembly } from '@/domain/management/enterprise/entities/assembly'
 import { Meeting } from '@/domain/management/enterprise/entities/meeting'
+import { AppointmentWithType } from '@/domain/management/enterprise/entities/value-objects/appointment-with-type'
 
 // biome-ignore lint/complexity/noStaticOnlyClass: mapper utilitário com métodos estáticos
 export class AppointmentPresenter {
@@ -10,11 +11,26 @@ export class AppointmentPresenter {
 		}
 	}
 
-	static toHTTPGrouped(appointments: GroupedAppointments<Meeting | Assembly>) {
+	static toHTTPGrouped(appointments: GroupedAppointments<AppointmentWithType>) {
 		return {
-			canceled: appointments.canceled.map(AppointmentPresenter.toHTTPItem),
-			completed: appointments.completed.map(AppointmentPresenter.toHTTPItem),
-			upcoming: appointments.upcoming.map(AppointmentPresenter.toHTTPItem),
+			canceled: appointments.canceled.map(AppointmentPresenter.toHTTPListItem),
+			completed: appointments.completed.map(
+				AppointmentPresenter.toHTTPListItem,
+			),
+			upcoming: appointments.upcoming.map(AppointmentPresenter.toHTTPListItem),
+		}
+	}
+
+	private static toHTTPListItem(appointment: AppointmentWithType) {
+		return {
+			id: appointment.appointmentId.toString(),
+			condominiumId: appointment.condominiumId.toString(),
+			type: appointment.type,
+			title: appointment.title,
+			scheduledAt: appointment.scheduledAt,
+			canceledAt: appointment.canceledAt ?? null,
+			created_at: appointment.createdAt,
+			updated_at: appointment.updatedAt,
 		}
 	}
 
