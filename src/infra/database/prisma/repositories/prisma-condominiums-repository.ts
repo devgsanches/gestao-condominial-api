@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { CondominiumsRepository } from '@/domain/management/application/repositories/condominiums-repository'
 import { Condominium } from '@/domain/management/enterprise/entities/condominium'
+import { CondominiumDashboard } from '@/domain/management/enterprise/entities/value-objects/condominium-dashboard'
+import { PrismaCondominiumDashboardMapper } from '../mappers/prisma-condominium-dashboard'
 import { PrismaCondominiumMapper } from '../mappers/prisma-condominium-mapper'
 import { PrismaService } from '../prisma.service'
 
@@ -91,6 +93,60 @@ export class PrismaCondominiumsRepository implements CondominiumsRepository {
 		}
 
 		return PrismaCondominiumMapper.toDomain(condominium)
+	}
+
+	async findDashboardbyCondominiumId(
+		condominiumId: UniqueEntityId,
+	): Promise<CondominiumDashboard | null> {
+		const dashboard = await this.prisma.condominium.findUnique({
+			where: {
+				id: condominiumId.toString(),
+			},
+			include: {
+				maintenances: {
+					where: {
+						canceledAt: null,
+					},
+					select: {
+						id: true,
+						type: true,
+						title: true,
+						description: true,
+						periodicity: true,
+						contract: { select: { id: true } },
+					},
+				},
+				appointments: {
+					where: {
+						condominiumId: condominiumId.toString(),
+						canceledAt: null,
+					},
+					select: {
+						id: true,
+						type: true,
+						title: true,
+						description: true,
+						scheduledAt: true,
+					},
+				},
+				address: {
+					select: {
+						id: true,
+						street: true,
+						number: true,
+						city: true,
+						state: true,
+					},
+				},
+			},
+		})
+
+		if (!dashboard) {
+			return null
+		}
+
+		// call the mapper
+		return PrismaCondominiumDashboardMapper.toDomain(dashboard)
 	}
 
 	async update(

@@ -9,6 +9,7 @@ import { CreateMaintenanceUseCase } from '@/domain/management/application/use-ca
 import { CreateManagerAvatarUseCase } from '@/domain/management/application/use-cases/create-manager-avatar'
 import { DeleteCondominiumUseCase } from '@/domain/management/application/use-cases/delete-condominium'
 import { FetchAppointmentsUseCase } from '@/domain/management/application/use-cases/fetch-appointments'
+import { FetchCondominiumDashboardUseCase } from '@/domain/management/application/use-cases/fetch-condominium-dashboard'
 import { FetchCondominiumsByManagerUseCase } from '@/domain/management/application/use-cases/fetch-condominiums-by-manager'
 import { FetchMaintenancesUseCase } from '@/domain/management/application/use-cases/fetch-maintenances'
 import { GetCondominiumUseCase } from '@/domain/management/application/use-cases/get-condominium'
@@ -34,6 +35,7 @@ import { CreateMaintenanceController } from './controllers/create-maintenance.co
 import { CreateManagerAvatarController } from './controllers/create-manager-avatar.controller'
 import { DeleteCondominiumController } from './controllers/delete-condominium.controller'
 import { FetchAppointmentsController } from './controllers/fetch-appointments.controller'
+import { FetchCondominiumDashboardController } from './controllers/fetch-condominium-dashboard.controller'
 import { FetchCondominiumsController } from './controllers/fetch-condominiums.controller'
 import { FetchMaintenancesController } from './controllers/fetch-maintenances.controller'
 import { GetCondominiumController } from './controllers/get-condominium.controller'
@@ -55,6 +57,7 @@ import { UploadAttachmentController } from './controllers/upload-attachment.cont
 		CreateAddressController,
 		CreateCondominiumController,
 		FetchCondominiumsController,
+		FetchCondominiumDashboardController,
 		GetCondominiumController,
 		UpdateCondominiumController,
 		DeleteCondominiumController,
@@ -77,6 +80,7 @@ import { UploadAttachmentController } from './controllers/upload-attachment.cont
 		CreateAddressUseCase,
 		CreateCondominiumUseCase,
 		FetchCondominiumsByManagerUseCase,
+		FetchCondominiumDashboardUseCase,
 		GetCondominiumUseCase,
 		UpdateCondominiumUseCase,
 		DeleteCondominiumUseCase,

@@ -1,5 +1,6 @@
 import type { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Condominium } from '../../enterprise/entities/condominium'
+import { CondominiumDashboard } from '../../enterprise/entities/value-objects/condominium-dashboard'
 
 // import type { IPaginationParams } from '@/core/repositories/pagination-params'
 
@@ -16,6 +17,9 @@ export abstract class CondominiumsRepository {
 	abstract findByAddressId(
 		addressId: UniqueEntityId,
 	): Promise<Condominium | null>
+	abstract findDashboardbyCondominiumId(
+		condominiumId: UniqueEntityId,
+	): Promise<CondominiumDashboard | null>
 	abstract update(
 		condominium: Pick<Condominium, 'name' | 'id'>,
 	): Promise<Condominium>
