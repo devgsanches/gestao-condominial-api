@@ -280,10 +280,27 @@ O objetivo é garantir três comportamentos no repositório:
 
 ### 1. Separe um banco do Redis para testes
 
-Em `.env.test`, use outro `REDIS_DB`, para os testes não apagarem o cache de desenvolvimento:
+O Redis tem vários bancos separados (de `0` a `15`) na mesma instância. Usamos um para cada ambiente:
+
+| Ambiente        | `REDIS_DB` | Onde é definido                         |
+| --------------- | ---------- | --------------------------------------- |
+| Desenvolvimento | `0`        | valor padrão em `src/infra/env/env.ts`  |
+| Testes E2E      | `1`        | `.env.test`                             |
 
 ```bash
+# .env.test
+AWS_BUCKET_NAME="gestao-condominial-bucket-test"
 REDIS_DB=1
+```
+
+**Como funciona:** o `test/setup-e2e.ts` carrega o `.env` e depois o `.env.test` com `override: true`. Assim, `REDIS_DB=1` substitui o padrão `0` antes da aplicação subir. Com isso, tanto o `RedisService` da aplicação quanto o cliente Redis do setup usam o banco `1`.
+
+**Por que separar:** o setup roda `flushdb()`, que apaga tudo do banco atual. Usando o banco `1`, os testes nunca apagam o cache de desenvolvimento (banco `0`), mesmo rodando no mesmo container.
+
+Para inspecionar as chaves geradas pelos testes:
+
+```bash
+docker exec -it gestao-condominial-cache redis-cli -n 1 KEYS '*'
 ```
 
 ### 2. Limpe o Redis no `test/setup-e2e.ts`
