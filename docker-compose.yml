@@ -1,7 +1,7 @@
 services:
   postgres:
     image: bitnami/postgresql:latest
-    container_name: postgres
+    container_name: gestao-condominial-db
     environment:
       POSTGRES_USER: app
       POSTGRES_PASSWORD: 1q2w3e4r
@@ -26,7 +26,15 @@ services:
     ports:
       - '1025:1025'
       - '8025:8025'
-
+  cache:
+    container_name: gestao-condominial-cache
+    # Para produção, usar imagem redis/bitnami
+    image: redis 
+    ports:
+      - 6379:6379
+    volumes:
+      - cache-data:/data 
 volumes:
   postgres-data:
   rabbitmq-data:
+  cache-data:

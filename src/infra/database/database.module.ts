@@ -8,6 +8,7 @@ import { ContractAttachmentsRepository } from '@/domain/management/application/r
 import { ContractsRepository } from '@/domain/management/application/repositories/contracts-repository'
 import { MaintenancesRepository } from '@/domain/management/application/repositories/maintenances-repository'
 import { ManagersRepository } from '@/domain/management/application/repositories/managers-repository'
+import { CacheModule } from '../cache/cache.module'
 import { PrismaService } from './prisma/prisma.service'
 import { PrismaAddressesRepository } from './prisma/repositories/prisma-addresses-repository'
 import { PrismaAppointmentsRepository } from './prisma/repositories/prisma-appointments-repository'
@@ -20,6 +21,7 @@ import { PrismaMaintenancesRepository } from './prisma/repositories/prisma-maint
 import { PrismaManagersRepository } from './prisma/repositories/prisma-managers-repository'
 
 @Module({
+	imports: [CacheModule],
 	providers: [
 		PrismaService,
 		{
