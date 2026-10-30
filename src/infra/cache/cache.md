@@ -269,3 +269,186 @@ src/infra/cache/
     ├── redis.service.ts          # conexão com o Redis (ioredis)
     └── redis-cache-repository.ts # implementação do contrato com Redis
 ```
+
+## Testes E2E do cache
+
+O objetivo é garantir três comportamentos no repositório:
+
+1. **Salva no cache** depois de buscar no banco.
+2. **Lê do cache** nas próximas chamadas, sem ir ao banco.
+3. **Apaga o cache** quando o dado é alterado.
+
+### 1. Separe um banco do Redis para testes
+
+Em `.env.test`, use outro `REDIS_DB`, para os testes não apagarem o cache de desenvolvimento:
+
+```bash
+REDIS_DB=1
+```
+
+### 2. Limpe o Redis no `test/setup-e2e.ts`
+
+Assim cada execução começa com o cache vazio. Adicione ao setup atual:
+
+```ts
+import { Redis } from 'ioredis'
+import { envSchema } from '@/infra/env/env'
+
+// depois dos config({ path: ... })
+const env = envSchema.parse(process.env)
+
+const redis = new Redis({
+	host: env.REDIS_HOST,
+	port: env.REDIS_PORT,
+	db: env.REDIS_DB,
+})
+
+beforeAll(async () => {
+	await redis.flushdb()
+	// ... prisma db push
+})
+
+afterAll(async () => {
+	await dropTestSchema()
+	await redis.quit()
+})
+```
+
+- `flushdb()` apaga só o banco escolhido em `REDIS_DB`, não o Redis inteiro.
+- `redis.quit()` fecha a conexão. Sem isso, o Vitest pode ficar travado no fim.
+- O `envSchema.parse` precisa vir **depois** do `config()`, para ler os valores do `.env.test`.
+
+### 3. Teste o repositório
+
+Crie `src/infra/database/prisma/repositories/prisma-condominiums-repository.e2e-spec.ts`. O teste chama o repositório direto, sem HTTP:
+
+```ts
+import { INestApplication } from '@nestjs/common'
+import { Test } from '@nestjs/testing'
+import { CondominiumsRepository } from '@/domain/management/application/repositories/condominiums-repository'
+import { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import { AppModule } from '@/infra/app.module'
+import { CacheModule } from '@/infra/cache/cache.module'
+import { CacheRepository } from '@/infra/cache/cache-repository'
+import { DatabaseModule } from '@/infra/database/database.module'
+import { PrismaService } from '@/infra/database/prisma/prisma.service'
+import { ManagerFactory } from '@/test/factories/make-manager'
+
+describe('Prisma Condominiums Repository (E2E)', () => {
+	let app: INestApplication
+	let prisma: PrismaService
+	let managerFactory: ManagerFactory
+	let cacheRepository: CacheRepository
+	let condominiumsRepository: CondominiumsRepository
+
+	beforeAll(async () => {
+		const moduleRef = await Test.createTestingModule({
+			imports: [AppModule, DatabaseModule, CacheModule],
+			providers: [ManagerFactory],
+		}).compile()
+
+		app = moduleRef.createNestApplication()
+
+		prisma = moduleRef.get(PrismaService)
+		managerFactory = moduleRef.get(ManagerFactory)
+		cacheRepository = moduleRef.get(CacheRepository)
+		condominiumsRepository = moduleRef.get(CondominiumsRepository)
+
+		await app.init()
+	})
+
+	afterAll(async () => {
+		await app.close()
+	})
+
+	async function makeCondominium() {
+		const manager = await managerFactory.makePrismaManager()
+
+		const address = await prisma.address.create({
+			data: {
+				zipCode: '11060-001',
+				street: 'Av. Ana Costa',
+				number: 480,
+				neighborhood: 'Gonzaga',
+				city: 'Santos',
+				state: 'SP',
+				country: 'Brasil',
+			},
+		})
+
+		return prisma.condominium.create({
+			data: {
+				name: 'Residencial Cache',
+				slug: `residencial-cache-${address.id}`,
+				managerId: manager.id.toString(),
+				addressId: address.id,
+			},
+		})
+	}
+
+	it('should cache condominium dashboard', async () => {
+		const condominium = await makeCondominium()
+
+		await condominiumsRepository.findDashboardbyCondominiumId(
+			new UniqueEntityId(condominium.id),
+		)
+
+		const cached = await cacheRepository.get(
+			`condominiums:${condominium.id}:dashboard`,
+		)
+
+		expect(cached).not.toBeNull()
+		expect(JSON.parse(cached!)).toMatchObject({ name: 'Residencial Cache' })
+	})
+
+	it('should return cached dashboard on subsequent calls', async () => {
+		const condominium = await makeCondominium()
+
+		await cacheRepository.set(
+			`condominiums:${condominium.id}:dashboard`,
+			JSON.stringify({
+				name: 'Nome vindo do cache',
+				maintenances: [],
+				appointments: [],
+				address: { street: 'Rua X', number: 1, city: 'Santos', state: 'SP' },
+			}),
+		)
+
+		const dashboard = await condominiumsRepository.findDashboardbyCondominiumId(
+			new UniqueEntityId(condominium.id),
+		)
+
+		expect(dashboard?.condominiumName).toBe('Nome vindo do cache')
+	})
+
+	it('should reset dashboard cache when updating the condominium', async () => {
+		const condominium = await makeCondominium()
+		const condominiumId = new UniqueEntityId(condominium.id)
+
+		await cacheRepository.set(
+			`condominiums:${condominium.id}:dashboard`,
+			JSON.stringify({ empty: true }),
+		)
+
+		await condominiumsRepository.update({
+			id: condominiumId,
+			name: 'Novo nome',
+			unitsCount: 10,
+		})
+
+		const cached = await cacheRepository.get(
+			`condominiums:${condominium.id}:dashboard`,
+		)
+
+		expect(cached).toBeNull()
+	})
+})
+```
+
+**Como cada teste funciona:**
+
+- **Salva no cache:** chama o repositório e confere se a chave apareceu no Redis com o dado do banco.
+- **Lê do cache:** grava um valor "falso" no Redis antes de chamar o repositório. Se o retorno for o nome falso, o repositório não foi ao banco. Como o dado do cache também passa pelo mapper, o valor falso precisa ter o formato que o mapper espera (`maintenances`, `appointments`, `address`).
+- **Apaga o cache:** grava qualquer valor, chama o `update` e confere se a chave sumiu.
+
+> **Dica:** quando os repositórios de **maintenances** e **appointments** também apagarem o cache do dashboard, crie um teste igual ao terceiro para cada um deles (ex.: criar uma manutenção e conferir se `condominiums:<ID>:dashboard` virou `null`).
