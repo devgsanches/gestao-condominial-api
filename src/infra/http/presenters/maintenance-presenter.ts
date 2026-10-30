@@ -1,5 +1,13 @@
 import { Maintenance } from '@/domain/management/enterprise/entities/maintenance'
+import { MaintenanceDetails } from '@/domain/management/enterprise/entities/value-objects/maintenance-details'
 import { MaintenanceWithContract } from '@/domain/management/enterprise/entities/value-objects/maintenance-with-contract'
+import { ContractPresenter, toContractStatus } from './contract-presenter'
+
+export interface PaginationMeta {
+	page: number
+	perPage: number
+	total: number
+}
 
 // biome-ignore lint/complexity/noStaticOnlyClass: mapper utilitário com métodos estáticos
 export class MaintenancePresenter {
@@ -9,7 +17,21 @@ export class MaintenancePresenter {
 		}
 	}
 
-	static toHTTPList(maintenances: MaintenanceWithContract[]) {
+	static toHTTPDetails(details: MaintenanceDetails) {
+		return {
+			maintenance: {
+				...MaintenancePresenter.toHTTPItem(details.maintenance),
+				contract: details.contract
+					? ContractPresenter.toHTTPItem(details.contract, details.attachments)
+					: null,
+			},
+		}
+	}
+
+	static toHTTPList(
+		maintenances: MaintenanceWithContract[],
+		meta: PaginationMeta,
+	) {
 		return {
 			maintenances: maintenances.map((maintenance) => ({
 				id: maintenance.maintenanceId.toString(),
@@ -19,11 +41,17 @@ export class MaintenancePresenter {
 				contractId: maintenance.contractId
 					? maintenance.contractId.toString()
 					: null,
+				contractStatus:
+					maintenance.contractIsValid === null
+						? null
+						: toContractStatus(maintenance.contractIsValid),
 				title: maintenance.title,
+				scheduledAt: maintenance.scheduledAt,
 				canceledAt: maintenance.canceledAt,
 				created_at: maintenance.createdAt,
 				updated_at: maintenance.updatedAt,
 			})),
+			meta,
 		}
 	}
 
@@ -35,6 +63,7 @@ export class MaintenancePresenter {
 			periodicity: maintenance.periodicity,
 			title: maintenance.title,
 			description: maintenance.description,
+			scheduledAt: maintenance.scheduledAt,
 			canceledAt: maintenance.canceledAt,
 			created_at: maintenance.createdAt,
 			updated_at: maintenance.updatedAt,

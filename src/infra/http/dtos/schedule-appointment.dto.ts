@@ -1,5 +1,11 @@
-import { ApiProperty } from '@nestjs/swagger'
-import { IsDateString, IsEnum, IsNotEmpty, IsString } from 'class-validator'
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
+import {
+	IsDateString,
+	IsEnum,
+	IsNotEmpty,
+	IsOptional,
+	IsString,
+} from 'class-validator'
 import { ScheduleType } from '@/domain/management/application/use-cases/schedule-meeting'
 
 export class ScheduleAppointmentRequestDTO {
@@ -30,4 +36,13 @@ export class ScheduleAppointmentRequestDTO {
 	})
 	@IsDateString()
 	scheduledAt: string
+
+	@ApiPropertyOptional({
+		description: 'Appointment location',
+		example: 'Salão de festas',
+	})
+	@IsOptional()
+	@IsString()
+	@IsNotEmpty()
+	location?: string
 }

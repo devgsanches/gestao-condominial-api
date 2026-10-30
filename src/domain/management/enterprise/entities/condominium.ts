@@ -8,6 +8,7 @@ export interface CondominiumProps {
 	addressId: UniqueEntityId
 	name: string
 	slug: Slug
+	unitsCount?: number | null
 	createdAt: Date
 	updatedAt?: Date
 }
@@ -31,6 +32,14 @@ export class Condominium extends Entity<CondominiumProps> {
 
 	get slug(): Slug {
 		return this.props.slug
+	}
+
+	get unitsCount(): number | null {
+		return this.props.unitsCount ?? null
+	}
+
+	set unitsCount(unitsCount: number | null) {
+		this.props.unitsCount = unitsCount
 	}
 
 	get createdAt(): Date {

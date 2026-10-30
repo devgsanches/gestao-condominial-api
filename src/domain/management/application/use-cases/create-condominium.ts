@@ -15,6 +15,7 @@ interface CreateCondominiumInput {
 	managerId: UniqueEntityId
 	addressId: UniqueEntityId
 	name: string
+	unitsCount?: number | null
 }
 
 type CreateCondominiumOutput = Either<
@@ -39,6 +40,7 @@ export class CreateCondominiumUseCase {
 		managerId,
 		addressId,
 		name,
+		unitsCount,
 	}: CreateCondominiumInput): Promise<CreateCondominiumOutput> {
 		const manager = await this.managersRepository.findById(managerId)
 
@@ -73,6 +75,7 @@ export class CreateCondominiumUseCase {
 				addressId,
 				name,
 				slug: Slug.createFromText(name),
+				unitsCount,
 			})
 
 			await this.condominiumRepository.create(condominium)

@@ -3,12 +3,15 @@ import {
 	Controller,
 	Get,
 	HttpCode,
+	HttpException,
 	NotFoundException,
 	Param,
 } from '@nestjs/common'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { FetchCondominiumDashboardUseCase } from '@/domain/management/application/use-cases/fetch-condominium-dashboard'
 import { CondominiumInformationNotFoundError } from '@/domain/management/application/use-cases/errors/condominium-information-not-found-error'
+import { FetchCondominiumDashboardUseCase } from '@/domain/management/application/use-cases/fetch-condominium-dashboard'
+import { CurrentUser } from '@/infra/auth/current-user-decorator'
+import { UserPayload } from '@/infra/auth/jwt.strategy'
 import { CondominiumDashboardPresenter } from '../presenters/condominium-dashboard-presenter'
 
 @Controller({
@@ -22,13 +25,21 @@ export class FetchCondominiumDashboardController {
 
 	@Get(':condominiumId/dashboard')
 	@HttpCode(200)
-	async handle(@Param('condominiumId') condominiumId: string) {
+	async handle(
+		@CurrentUser() user: UserPayload,
+		@Param('condominiumId') condominiumId: string,
+	) {
 		const response = await this.fetchCondominiumDashboard.execute({
+			managerId: new UniqueEntityId(user.id),
 			condominiumId: new UniqueEntityId(condominiumId),
 		})
 
 		if (response.isLeft()) {
 			const error = response.reason
+
+			if (error instanceof HttpException) {
+				throw error
+			}
 
 			switch (error.constructor) {
 				case CondominiumInformationNotFoundError:

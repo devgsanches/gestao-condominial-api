@@ -1,4 +1,8 @@
-import { UserRole } from '@generated/prisma/enums'
+import {
+	MaintenancePeriodicity,
+	MaintenanceType,
+	UserRole,
+} from '@generated/prisma/enums'
 import {
 	INestApplication,
 	ValidationPipe,
@@ -100,9 +104,36 @@ describe('Fetch condominiums (E2E)', () => {
 			data: {
 				name: 'Residencial Fetch One',
 				slug: 'residencial-fetch-one',
+				unitsCount: 48,
 				managerId: manager.id,
 				addressId: firstAddress.id,
 			},
+		})
+
+		await prisma.maintenance.createMany({
+			data: [
+				{
+					condominiumId: firstCondominium.id,
+					type: MaintenanceType.PERIODIC,
+					periodicity: MaintenancePeriodicity.MONTH,
+					title: 'Bombas',
+					description: 'Periódica sem contrato',
+				},
+				{
+					condominiumId: firstCondominium.id,
+					type: MaintenanceType.PERIODIC,
+					periodicity: MaintenancePeriodicity.MONTH,
+					title: 'Portões',
+					description: 'Periódica cancelada',
+					canceledAt: new Date(),
+				},
+				{
+					condominiumId: firstCondominium.id,
+					type: MaintenanceType.GENERAL,
+					title: 'Pintura',
+					description: 'Geral',
+				},
+			],
 		})
 
 		const secondCondominium = await prisma.condominium.create({
@@ -155,6 +186,8 @@ describe('Fetch condominiums (E2E)', () => {
 					id: firstCondominiumId,
 					name: 'Residencial Fetch One',
 					slug: 'residencial-fetch-one',
+					unitsCount: 48,
+					periodicWithoutContractCount: 1,
 					address: {
 						id: firstAddressId,
 						city: 'Santos',
@@ -164,6 +197,8 @@ describe('Fetch condominiums (E2E)', () => {
 					id: secondCondominiumId,
 					name: 'Residencial Fetch Two',
 					slug: 'residencial-fetch-two',
+					unitsCount: null,
+					periodicWithoutContractCount: 0,
 					address: {
 						id: secondAddressId,
 						city: 'Santos',

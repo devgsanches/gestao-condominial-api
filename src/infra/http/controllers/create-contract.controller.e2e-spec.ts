@@ -123,6 +123,9 @@ describe('Create contract (E2E)', () => {
 			.send({
 				title: 'Contrato de manutencao do elevador',
 				description: 'Contrato anual de manutencao preventiva',
+				supplierName: 'Elevadores Atlas',
+				supplierCnpj: '12.345.678/0001-90',
+				valueInCents: 150000,
 				startVigencyDate: '2026-01-01T00:00:00.000Z',
 				endVigencyDate: '2026-12-31T23:59:59.000Z',
 			})
@@ -133,9 +136,14 @@ describe('Create contract (E2E)', () => {
 				id: expect.any(String),
 				maintenanceId: periodicMaintenanceId,
 				title: 'Contrato de manutencao do elevador',
-				slug: 'contrato-de-manutencao-do-elevador',
+				slug: expect.stringContaining('contrato-de-manutencao-do-elevador'),
 				description: 'Contrato anual de manutencao preventiva',
+				supplierName: 'Elevadores Atlas',
+				supplierCnpj: '12345678000190',
+				valueInCents: 150000,
 				isValid: true,
+				status: 'valid',
+				attachments: [],
 				startVigencyDate: '2026-01-01T00:00:00.000Z',
 				endVigencyDate: '2026-12-31T23:59:59.000Z',
 			}),
@@ -159,6 +167,26 @@ describe('Create contract (E2E)', () => {
 			.send({
 				title: 'Contrato invalido',
 				description: 'Contrato nao deve ser criado para manutencao geral',
+				supplierName: 'Fornecedor',
+				supplierCnpj: '12345678000190',
+				valueInCents: 1000,
+				startVigencyDate: '2026-01-01T00:00:00.000Z',
+				endVigencyDate: '2026-12-31T23:59:59.000Z',
+			})
+
+		expect(response.statusCode).toBe(400)
+	})
+
+	test('[POST] /v1/condominium/:condominiumId/maintenances/:maintenanceId/contracts invalid supplier', async () => {
+		const response = await request(app.getHttpServer())
+			.post(
+				`/v1/condominium/${condominiumId}/maintenances/${periodicMaintenanceId}/contracts`,
+			)
+			.set('Authorization', `Bearer ${accessToken}`)
+			.send({
+				supplierName: 'Fornecedor',
+				supplierCnpj: '123',
+				valueInCents: 1000,
 				startVigencyDate: '2026-01-01T00:00:00.000Z',
 				endVigencyDate: '2026-12-31T23:59:59.000Z',
 			})

@@ -19,6 +19,8 @@ export class CondominiumPresenter {
 
 				return {
 					...condominium,
+					periodicWithoutContractCount:
+						condominiumWithAddress.periodicWithoutContractCount,
 					address: {
 						id: condominiumWithAddress.address.id.toString(),
 						city: condominiumWithAddress.address.city,
@@ -33,6 +35,7 @@ export class CondominiumPresenter {
 			id: condominium.id.toString(),
 			name: condominium.name,
 			slug: condominium.slug.value,
+			unitsCount: condominium.unitsCount,
 			managerId: condominium.managerId.toString(),
 			addressId: condominium.addressId.toString(),
 			created_at: condominium.createdAt,
@@ -45,16 +48,21 @@ export class CondominiumPresenter {
 			condominium: {
 				id: dashboard.condominium.id.toString(),
 				name: dashboard.condominium.name,
+				unitsCount: dashboard.condominium.unitsCount,
 			},
 			address: {
+				zipCode: dashboard.address.zipCode,
 				street: dashboard.address.street,
 				number: dashboard.address.number,
+				complement: dashboard.address.complement ?? null,
 				neighborhood: dashboard.address.neighborhood,
 				city: dashboard.address.city,
 				state: dashboard.address.state,
+				country: dashboard.address.country,
 			},
 			activeMaintenancesCount: dashboard.activeMaintenancesCount,
 			periodicWithoutContractCount: dashboard.periodicWithoutContractCount,
+			validContractsCount: dashboard.validContractsCount,
 			scheduledAppointmentsCount: dashboard.scheduledAppointmentsCount,
 			nextAppointment: dashboard.nextAppointment
 				? {
@@ -64,6 +72,7 @@ export class CondominiumPresenter {
 								? 'meeting'
 								: 'assembly',
 						title: dashboard.nextAppointment.title,
+						location: dashboard.nextAppointment.location,
 						scheduledAt: dashboard.nextAppointment.scheduledAt,
 					}
 				: null,

@@ -10,6 +10,7 @@ export interface CondominiumAddressSummary {
 export interface CondominiumWithAddressProps {
 	condominium: Condominium
 	address: CondominiumAddressSummary
+	periodicWithoutContractCount: number
 }
 
 export class CondominiumWithAddress extends ValueObject<CondominiumWithAddressProps> {
@@ -19,6 +20,10 @@ export class CondominiumWithAddress extends ValueObject<CondominiumWithAddressPr
 
 	get address() {
 		return this.props.address
+	}
+
+	get periodicWithoutContractCount() {
+		return this.props.periodicWithoutContractCount
 	}
 
 	static create(props: CondominiumWithAddressProps) {

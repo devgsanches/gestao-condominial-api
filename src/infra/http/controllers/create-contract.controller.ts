@@ -31,7 +31,15 @@ export class CreateContractController {
 		@Body() body: CreateContractRequestDTO,
 		@CurrentUser() user: UserPayload,
 	) {
-		const { title, description, startVigencyDate, endVigencyDate } = body
+		const {
+			title,
+			description,
+			supplierName,
+			supplierCnpj,
+			valueInCents,
+			startVigencyDate,
+			endVigencyDate,
+		} = body
 
 		const response = await this.createContract.execute({
 			managerId: new UniqueEntityId(user.id),
@@ -39,6 +47,9 @@ export class CreateContractController {
 			maintenanceId: new UniqueEntityId(maintenanceId),
 			title,
 			description,
+			supplierName,
+			supplierCnpj: supplierCnpj.replace(/\D/g, ''),
+			valueInCents,
 			startVigencyDate: new Date(startVigencyDate),
 			endVigencyDate: new Date(endVigencyDate),
 		})

@@ -12,7 +12,7 @@ export class InMemoryAppointmentsRepository implements AppointmentsRepository {
 	}
 
 	async findById(id: UniqueEntityId) {
-		const appointment = this.items.find((item) => item.id === id)
+		const appointment = this.items.find((item) => item.id.equals(id))
 
 		if (!appointment) {
 			return null
@@ -72,7 +72,7 @@ export class InMemoryAppointmentsRepository implements AppointmentsRepository {
 					condominiumId: appointment.condominiumId,
 					type: appointment instanceof Meeting ? 'meeting' : 'assembly',
 					title: appointment.title,
-					description: appointment.description,
+					location: appointment.location,
 					scheduledAt: appointment.scheduledAt,
 					canceledAt: appointment.canceledAt,
 					createdAt: appointment.createdAt,

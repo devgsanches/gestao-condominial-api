@@ -29,7 +29,7 @@ export class ScheduleController {
 		@Body() body: ScheduleAppointmentRequestDTO,
 		@CurrentUser() user: UserPayload,
 	) {
-		const { type, title, description, scheduledAt } = body
+		const { type, title, description, location, scheduledAt } = body
 
 		const response = await this.scheduleMeeting.execute({
 			managerId: new UniqueEntityId(user.id),
@@ -37,6 +37,7 @@ export class ScheduleController {
 			type,
 			title,
 			description,
+			location,
 			scheduledAt: new Date(scheduledAt),
 		})
 

@@ -8,7 +8,9 @@ export interface MaintenanceWithContractProps {
 	type: MaintenanceType
 	periodicity: 'month' | 'trimester' | 'semester' | null
 	contractId: UniqueEntityId | null
+	contractIsValid: boolean | null
 	title: string
+	scheduledAt: Date
 	canceledAt?: Date
 	createdAt: Date
 	updatedAt?: Date
@@ -35,8 +37,16 @@ export class MaintenanceWithContract extends ValueObject<MaintenanceWithContract
 		return this.props.contractId
 	}
 
+	get contractIsValid() {
+		return this.props.contractIsValid
+	}
+
 	get title() {
 		return this.props.title
+	}
+
+	get scheduledAt() {
+		return this.props.scheduledAt
 	}
 
 	get canceledAt() {

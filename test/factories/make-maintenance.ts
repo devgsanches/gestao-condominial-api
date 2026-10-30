@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import { MaintenanceType } from '@generated/prisma/enums'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import {
 	Maintenance,
@@ -12,7 +13,7 @@ export function makeMaintenance(
 	const maintenance = Maintenance.create(
 		{
 			condominiumId: new UniqueEntityId(),
-			type: 'general',
+			type: MaintenanceType.GENERAL,
 			periodicity: override.periodicity ?? null,
 			title: faker.lorem.sentence(),
 			description: faker.lorem.paragraph(),

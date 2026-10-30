@@ -93,6 +93,7 @@ describe('Schedule (E2E)', () => {
 				type: 'meeting',
 				title: 'Reuniao de sindicos',
 				description: 'Alinhamento mensal sobre manutencoes',
+				location: 'Salao de festas',
 				scheduledAt: '2026-11-15T19:00:00.000Z',
 			})
 
@@ -104,6 +105,7 @@ describe('Schedule (E2E)', () => {
 				type: 'meeting',
 				title: 'Reuniao de sindicos',
 				description: 'Alinhamento mensal sobre manutencoes',
+				location: 'Salao de festas',
 				scheduledAt: '2026-11-15T19:00:00.000Z',
 				canceledAt: null,
 			}),

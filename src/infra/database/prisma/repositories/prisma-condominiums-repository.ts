@@ -6,7 +6,10 @@ import { CondominiumDashboard } from '@/domain/management/enterprise/entities/va
 import { CondominiumWithAddress } from '@/domain/management/enterprise/entities/value-objects/condominium-with-address'
 import { PrismaCondominiumDashboardMapper } from '../mappers/prisma-condominium-dashboard'
 import { PrismaCondominiumMapper } from '../mappers/prisma-condominium-mapper'
-import { PrismaCondominiumWithAddressMapper } from '../mappers/prisma-condominium-with-address-mapper'
+import {
+	condominiumWithAddressInclude,
+	PrismaCondominiumWithAddressMapper,
+} from '../mappers/prisma-condominium-with-address-mapper'
 import { PrismaService } from '../prisma.service'
 
 @Injectable()
@@ -72,9 +75,8 @@ export class PrismaCondominiumsRepository implements CondominiumsRepository {
 			where: {
 				managerId: managerId.toValue(),
 			},
-			include: {
-				address: true,
-			},
+			include: condominiumWithAddressInclude,
+			orderBy: { createdAt: 'asc' },
 		})
 
 		return condominiums.map(PrismaCondominiumWithAddressMapper.toDomain)
@@ -137,6 +139,7 @@ export class PrismaCondominiumsRepository implements CondominiumsRepository {
 					where: {
 						condominiumId: condominiumId.toString(),
 						canceledAt: null,
+						scheduledAt: { gte: new Date() },
 					},
 					select: {
 						id: true,
@@ -167,7 +170,7 @@ export class PrismaCondominiumsRepository implements CondominiumsRepository {
 	}
 
 	async update(
-		condominium: Pick<Condominium, 'name' | 'id'>,
+		condominium: Pick<Condominium, 'name' | 'id' | 'unitsCount'>,
 	): Promise<Condominium> {
 		const updatedCondominium = await this.prisma.condominium.update({
 			where: {
@@ -175,6 +178,7 @@ export class PrismaCondominiumsRepository implements CondominiumsRepository {
 			},
 			data: {
 				name: condominium.name,
+				unitsCount: condominium.unitsCount,
 			},
 		})
 

@@ -5,20 +5,19 @@ import {
 	ContractProps,
 } from '@/domain/management/enterprise/entities/contract'
 import { ContractAttachmentList } from '@/domain/management/enterprise/entities/contract-attachment-list'
-import { Slug } from '@/domain/management/enterprise/entities/value-objects/slug'
 
 export function makeContract(
 	override: Partial<ContractProps> = {},
 	id?: UniqueEntityId,
 ) {
-	const title = faker.lorem.words(4)
-
 	const contract = Contract.create(
 		{
 			maintenanceId: new UniqueEntityId(),
-			title,
-			slug: Slug.createFromText(title),
+			title: faker.lorem.words(4),
 			description: faker.lorem.paragraph(),
+			supplierName: faker.company.name(),
+			supplierCnpj: faker.string.numeric(14),
+			valueInCents: faker.number.int({ min: 10_000, max: 500_000 }),
 			isValid: true,
 			startVigencyDate: faker.date.recent(),
 			endVigencyDate: faker.date.future(),

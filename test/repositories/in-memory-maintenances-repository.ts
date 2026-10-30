@@ -1,11 +1,24 @@
-import type { MaintenanceType } from '@generated/prisma/enums'
+import { MaintenanceType } from '@generated/prisma/enums'
 import type { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import type { MaintenancesRepository } from '@/domain/management/application/repositories/maintenances-repository'
+import type {
+	MaintenancesFilters,
+	MaintenancesRepository,
+	PaginationParams,
+} from '@/domain/management/application/repositories/maintenances-repository'
+import type { Attachment } from '@/domain/management/enterprise/entities/attachment'
 import type { Maintenance } from '@/domain/management/enterprise/entities/maintenance'
+import { MaintenanceDetails } from '@/domain/management/enterprise/entities/value-objects/maintenance-details'
 import { MaintenanceWithContract } from '@/domain/management/enterprise/entities/value-objects/maintenance-with-contract'
+import type { InMemoryAttachmentsRepository } from './in-memory-attachments-repository'
+import type { InMemoryContractsRepository } from './in-memory-contracts-repository'
 
 export class InMemoryMaintenancesRepository implements MaintenancesRepository {
 	public items: Maintenance[] = []
+
+	constructor(
+		private contractsRepository?: InMemoryContractsRepository,
+		private attachmentsRepository?: InMemoryAttachmentsRepository,
+	) {}
 
 	async create(maintenance: Maintenance) {
 		this.items.push(maintenance)
@@ -35,28 +48,55 @@ export class InMemoryMaintenancesRepository implements MaintenancesRepository {
 	async findManyWithContractByCondominiumId({
 		condominiumId,
 		filters,
+		pagination,
 	}: {
 		condominiumId: UniqueEntityId
-		filters: { title?: string; type?: MaintenanceType }
+		filters: MaintenancesFilters
+		pagination: PaginationParams
 	}) {
-		const maintenances = await this.findManyByCondominiumId({
-			condominiumId,
-			filters,
-		})
-
-		return maintenances.map((maintenance) =>
-			MaintenanceWithContract.create({
-				maintenanceId: maintenance.id,
-				condominiumId: maintenance.condominiumId,
-				type: maintenance.type,
-				periodicity: maintenance.periodicity,
-				contractId: null,
-				title: maintenance.title,
-				canceledAt: maintenance.canceledAt,
-				createdAt: maintenance.createdAt,
-				updatedAt: maintenance.updatedAt,
-			}),
+		const maintenances = (
+			await this.findManyByCondominiumId({ condominiumId, filters })
 		)
+			.map((maintenance) => {
+				const contract = this.contractsRepository?.items.find((item) =>
+					item.maintenanceId.equals(maintenance.id),
+				)
+
+				return MaintenanceWithContract.create({
+					maintenanceId: maintenance.id,
+					condominiumId: maintenance.condominiumId,
+					type: maintenance.type,
+					periodicity: maintenance.periodicity,
+					contractId: contract?.id ?? null,
+					contractIsValid: contract?.isValid ?? null,
+					title: maintenance.title,
+					scheduledAt: maintenance.scheduledAt,
+					canceledAt: maintenance.canceledAt,
+					createdAt: maintenance.createdAt,
+					updatedAt: maintenance.updatedAt,
+				})
+			})
+			.filter((maintenance) =>
+				filters.withoutContract
+					? maintenance.type === MaintenanceType.PERIODIC &&
+						!maintenance.canceledAt &&
+						!maintenance.contractId
+					: true,
+			)
+			.sort((a, b) => {
+				if (!a.canceledAt !== !b.canceledAt) {
+					return a.canceledAt ? 1 : -1
+				}
+
+				return b.createdAt.getTime() - a.createdAt.getTime()
+			})
+
+		const start = (pagination.page - 1) * pagination.perPage
+
+		return {
+			maintenances: maintenances.slice(start, start + pagination.perPage),
+			total: maintenances.length,
+		}
 	}
 
 	async findById(id: UniqueEntityId) {
@@ -67,6 +107,29 @@ export class InMemoryMaintenancesRepository implements MaintenancesRepository {
 		}
 
 		return maintenance
+	}
+
+	async findDetailsById(id: UniqueEntityId) {
+		const maintenance = await this.findById(id)
+
+		if (!maintenance) {
+			return null
+		}
+
+		const contract =
+			this.contractsRepository?.items.find((item) =>
+				item.maintenanceId.equals(maintenance.id),
+			) ?? null
+
+		const attachments = (contract?.attachments.currentItems ?? [])
+			.map((contractAttachment) =>
+				this.attachmentsRepository?.items.find((attachment) =>
+					attachment.id.equals(contractAttachment.attachmentId),
+				),
+			)
+			.filter((attachment): attachment is Attachment => !!attachment)
+
+		return MaintenanceDetails.create({ maintenance, contract, attachments })
 	}
 
 	async update(maintenance: Maintenance): Promise<Maintenance> {

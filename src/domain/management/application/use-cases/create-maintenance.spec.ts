@@ -1,3 +1,4 @@
+import { MaintenanceType } from '@generated/prisma/enums'
 import { NotFoundException, UnauthorizedException } from '@nestjs/common'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { makeCondominium } from '@/test/factories/make-condominium'
@@ -53,7 +54,7 @@ describe('CreateMaintenanceUseCase', () => {
 				condominiumId: expect.any(UniqueEntityId),
 				title: 'Título da manutenção',
 				description: 'Descrição da manutenção',
-				type: 'general',
+				type: MaintenanceType.GENERAL,
 				periodicity: null,
 			})
 		}
@@ -76,7 +77,7 @@ describe('CreateMaintenanceUseCase', () => {
 			condominiumId: condominium.id,
 			title: 'Título da manutenção',
 			description: 'Descrição da manutenção',
-			type: 'periodic',
+			type: MaintenanceType.PERIODIC,
 			periodicity: 'semester',
 		})
 
@@ -89,7 +90,7 @@ describe('CreateMaintenanceUseCase', () => {
 					condominiumId: expect.any(UniqueEntityId),
 					title: 'Título da manutenção',
 					description: 'Descrição da manutenção',
-					type: 'periodic',
+					type: MaintenanceType.PERIODIC,
 					periodicity: 'semester',
 				}),
 			})

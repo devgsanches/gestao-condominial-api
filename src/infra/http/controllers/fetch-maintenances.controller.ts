@@ -34,6 +34,8 @@ export class FetchMaintenancesController {
 			condominiumId: new UniqueEntityId(condominiumId),
 			type: query.type,
 			title: query.title,
+			withoutContract: query.withoutContract,
+			page: query.page,
 		})
 
 		if (response.isLeft()) {
@@ -49,6 +51,12 @@ export class FetchMaintenancesController {
 			}
 		}
 
-		return MaintenancePresenter.toHTTPList(response.result.maintenances)
+		const { maintenances, page, perPage, total } = response.result
+
+		return MaintenancePresenter.toHTTPList(maintenances, {
+			page,
+			perPage,
+			total,
+		})
 	}
 }

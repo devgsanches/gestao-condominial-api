@@ -77,6 +77,7 @@ describe('Get condominium (E2E)', () => {
 			data: {
 				name: 'Residencial Vila Nova E2E',
 				slug: 'residencial-vila-nova-e2e',
+				unitsCount: 120,
 				managerId: user.id,
 				addressId: address.id,
 			},
@@ -121,6 +122,9 @@ describe('Get condominium (E2E)', () => {
 				title: 'Contrato do elevador',
 				slug: 'contrato-do-elevador',
 				description: 'Contrato vigente',
+				supplierName: 'Elevadores Atlas',
+				supplierCnpj: '12345678000190',
+				valueInCents: 150000,
 				startVigencyDate: new Date(),
 				endVigencyDate: daysFromNow(365),
 			},
@@ -132,6 +136,7 @@ describe('Get condominium (E2E)', () => {
 				type: AppointmentType.MEETING,
 				title: 'Vistoria com a construtora',
 				description: 'Reunião futura',
+				location: 'Salão de festas',
 				scheduledAt: daysFromNow(6),
 			},
 		})
@@ -169,10 +174,12 @@ describe('Get condominium (E2E)', () => {
 			},
 		})
 
-		const session = await request(app.getHttpServer()).post('/v1/sessions').send({
-			email: 'get-condominium@example.com',
-			password: '123456',
-		})
+		const session = await request(app.getHttpServer())
+			.post('/v1/sessions')
+			.send({
+				email: 'get-condominium@example.com',
+				password: '123456',
+			})
 
 		accessToken = session.body.access_token
 	})
@@ -191,21 +198,27 @@ describe('Get condominium (E2E)', () => {
 			condominium: {
 				id: condominiumId,
 				name: 'Residencial Vila Nova E2E',
+				unitsCount: 120,
 			},
 			address: {
+				zipCode: '11060-001',
 				street: 'Av. Ana Costa',
 				number: 480,
+				complement: null,
 				neighborhood: 'Gonzaga',
 				city: 'Santos',
 				state: 'SP',
+				country: 'Brasil',
 			},
 			activeMaintenancesCount: 3,
 			periodicWithoutContractCount: 1,
+			validContractsCount: 1,
 			scheduledAppointmentsCount: 2,
 			nextAppointment: {
 				id: nextMeetingId,
 				type: 'meeting',
 				title: 'Vistoria com a construtora',
+				location: 'Salão de festas',
 				scheduledAt: expect.any(String),
 			},
 			periodicWithoutContract: [

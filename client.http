@@ -1,6 +1,7 @@
 # CMD + \ = split screen to view response on a side
 @baseUrl = http://localhost:3333
 @authToken = {{authenticate.response.body.access_token}}
+@firstAccessToken = {{verifyFirstAccessCode.response.body.access_token}}
 @addressId = {{createAddress.response.body.address.id}}
 @condominiumId = {{createCondominium.response.body.condominium.id}}
 @maintenanceId = {{createMaintenance.response.body.maintenance.id}}
@@ -17,11 +18,53 @@ GET {{baseUrl}}
 
 ###
 
+# Sessions
+
+# @name authenticate
+POST {{baseUrl}}/v1/sessions
+Content-Type: application/json
+
+{
+	"email": "claudia@email.com",
+	"password": "1q2w3e4r"
+}
+
+###
+
+# Primeiro acesso - 1. Envia um código de 4 dígitos por e-mail.
+# Resposta neutra (202) mesmo se o e-mail não existir; reenvio liberado a cada 60s.
+# Local: veja o e-mail no Mailpit em http://localhost:8025
+
+# @name requestFirstAccessCode
+POST {{baseUrl}}/v1/sessions/first-access
+Content-Type: application/json
+
+{
+	"email": "claudia@email.com"
+}
+
+###
+
+# Primeiro acesso - 2. Valida o código e devolve um access_token.
+# Expira em 15 min e bloqueia após 5 tentativas erradas.
+
+# @name verifyFirstAccessCode
+POST {{baseUrl}}/v1/sessions/first-access/verify
+Content-Type: application/json
+
+{
+	"email": "claudia@email.com",
+	"code": "0000"
+}
+
+###
+
 # Accounts
 
 # @name createAccount
 POST {{baseUrl}}/v1/accounts
 Content-Type: application/json
+Authorization: Bearer {{authToken}}
 
 {
 	"name": "John Doe",
@@ -31,12 +74,14 @@ Content-Type: application/json
 
 ###
 
-# @name authenticate
-POST {{baseUrl}}/v1/sessions
+# Primeiro acesso - 3. Define a senha com o token do passo anterior.
+
+# @name setManagerPassword
+PATCH {{baseUrl}}/v1/accounts/manager/password
 Content-Type: application/json
+Authorization: Bearer {{firstAccessToken}}
 
 {
-	"email": "claudia@email.com",
 	"password": "1q2w3e4r"
 }
 
@@ -88,16 +133,21 @@ Authorization: Bearer {{authToken}}
 
 {
 	"addressId": "{{addressId}}",
-	"name": "Residencial Jardim das Flores"
+	"name": "Residencial Jardim das Flores",
+	"unitsCount": 48
 }
 
 ###
+
+# Cada item traz unitsCount e periodicWithoutContractCount.
 
 # @name fetchCondominiums
 GET {{baseUrl}}/v1/condominium
 Authorization: Bearer {{authToken}}
 
 ###
+
+# Endereço completo, unitsCount, validContractsCount, próximo agendamento e periódicas sem contrato.
 
 # @name getCondominium
 GET {{baseUrl}}/v1/condominium/{{condominiumId}}
@@ -117,7 +167,8 @@ Content-Type: application/json
 Authorization: Bearer {{authToken}}
 
 {
-	"name": "Residencial Jardim das Flores Atualizado"
+	"name": "Residencial Jardim das Flores Atualizado",
+	"unitsCount": 52
 }
 
 ###
@@ -139,13 +190,23 @@ Authorization: Bearer {{authToken}}
 	"type": "PERIODIC",
 	"periodicity": "month",
 	"title": "Manutenção do elevador",
-	"description": "Revisão mensal do elevador social"
+	"description": "Revisão mensal do elevador social",
+	"scheduledAt": "2026-11-05T09:00:00.000Z"
 }
 
 ###
 
+# Paginada (20 por página), canceladas por último.
+# Resposta: { maintenances: [...contractStatus, scheduledAt], meta: { page, perPage, total } }
+
 # @name fetchMaintenances
 GET {{baseUrl}}/v1/condominium/{{condominiumId}}/maintenances
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name fetchMaintenancesPage2
+GET {{baseUrl}}/v1/condominium/{{condominiumId}}/maintenances?page=2
 Authorization: Bearer {{authToken}}
 
 ###
@@ -158,6 +219,22 @@ Authorization: Bearer {{authToken}}
 
 # @name fetchMaintenancesByTitle
 GET {{baseUrl}}/v1/condominium/{{condominiumId}}/maintenances?title=elevador
+Authorization: Bearer {{authToken}}
+
+###
+
+# Periódicas ativas sem contrato
+
+# @name fetchMaintenancesWithoutContract
+GET {{baseUrl}}/v1/condominium/{{condominiumId}}/maintenances?withoutContract=true
+Authorization: Bearer {{authToken}}
+
+###
+
+# Detalhe com contrato e documentos anexados
+
+# @name getMaintenance
+GET {{baseUrl}}/v1/condominium/{{condominiumId}}/maintenances/{{maintenanceId}}
 Authorization: Bearer {{authToken}}
 
 ###
@@ -181,6 +258,7 @@ Authorization: Bearer {{authToken}}
 ###
 
 # Contracts
+# Só para manutenções periódicas. title/description são opcionais; o CNPJ é salvo só com dígitos.
 
 # @name createContract
 POST {{baseUrl}}/v1/condominium/{{condominiumId}}/maintenances/{{maintenanceId}}/contracts
@@ -190,11 +268,16 @@ Authorization: Bearer {{authToken}}
 {
 	"title": "Contrato de manutenção do elevador",
 	"description": "Contrato anual de manutenção preventiva",
+	"supplierName": "Elevadores Atlas Ltda",
+	"supplierCnpj": "12.345.678/0001-90",
+	"valueInCents": 150000,
 	"startVigencyDate": "2026-01-01T00:00:00.000Z",
 	"endVigencyDate": "2026-12-31T23:59:59.000Z"
 }
 
 ###
+
+# Adiciona documentos sem remover os já vinculados. Resposta traz os anexos com title, url e createdAt.
 
 # @name attachContractDocument
 POST {{baseUrl}}/v1/contracts/{{contractId}}/attachments
@@ -235,6 +318,7 @@ Authorization: Bearer {{authToken}}
 	"type": "meeting",
 	"title": "Reunião de síndicos",
 	"description": "Alinhamento mensal sobre manutenções",
+	"location": "Salão de festas",
 	"scheduledAt": "2026-11-15T19:00:00.000Z"
 }
 
@@ -249,6 +333,7 @@ Authorization: Bearer {{authToken}}
 	"type": "assembly",
 	"title": "Assembleia ordinária",
 	"description": "Prestação de contas do condomínio",
+	"location": "Salão de festas",
 	"scheduledAt": "2026-12-10T19:00:00.000Z"
 }
 
@@ -268,6 +353,12 @@ Authorization: Bearer {{authToken}}
 
 # @name fetchAppointmentsByTitle
 GET {{baseUrl}}/v1/condominium/{{condominiumId}}/appointments?title=Reunião
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name getAppointment
+GET {{baseUrl}}/v1/condominium/{{condominiumId}}/appointments/{{appointmentId}}
 Authorization: Bearer {{authToken}}
 
 ###

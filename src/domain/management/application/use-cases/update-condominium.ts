@@ -12,6 +12,7 @@ interface UpdateCondominiumInput {
 	managerId: UniqueEntityId
 	condominiumId: UniqueEntityId
 	name: string
+	unitsCount?: number | null
 }
 
 type UpdateCondominiumOutput = Either<
@@ -30,6 +31,7 @@ export class UpdateCondominiumUseCase {
 		managerId,
 		condominiumId,
 		name,
+		unitsCount,
 	}: UpdateCondominiumInput): Promise<UpdateCondominiumOutput> {
 		const condominium = await this.condominiumRepository.findById(condominiumId)
 
@@ -47,6 +49,8 @@ export class UpdateCondominiumUseCase {
 		const condominiumUpdated = await this.condominiumRepository.update({
 			id: condominiumId,
 			name,
+			unitsCount:
+				unitsCount === undefined ? condominium.unitsCount : unitsCount,
 		})
 
 		return right({ condominium: condominiumUpdated })

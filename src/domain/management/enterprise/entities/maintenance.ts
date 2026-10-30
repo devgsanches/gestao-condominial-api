@@ -9,6 +9,7 @@ export interface MaintenanceProps {
 	periodicity: 'month' | 'trimester' | 'semester' | null
 	title: string
 	description: string
+	scheduledAt: Date
 	canceledAt?: Date
 	createdAt: Date
 	updatedAt?: Date
@@ -43,6 +44,10 @@ export class Maintenance extends Entity<MaintenanceProps> {
 		this.props.description = description
 	}
 
+	get scheduledAt(): Date {
+		return this.props.scheduledAt
+	}
+
 	get canceledAt(): Date | undefined {
 		return this.props.canceledAt
 	}
@@ -60,12 +65,13 @@ export class Maintenance extends Entity<MaintenanceProps> {
 	}
 
 	static create(
-		props: Optional<MaintenanceProps, 'createdAt'>,
+		props: Optional<MaintenanceProps, 'createdAt' | 'scheduledAt'>,
 		id?: UniqueEntityId,
 	) {
 		const maintenance = new Maintenance(
 			{
 				...props,
+				scheduledAt: props.scheduledAt ?? new Date(),
 				createdAt: props.createdAt ?? new Date(),
 			},
 			id,

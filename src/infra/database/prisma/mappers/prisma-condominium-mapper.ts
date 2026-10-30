@@ -15,6 +15,7 @@ export class PrismaCondominiumMapper {
 				addressId: new UniqueEntityId(raw.addressId),
 				name: raw.name,
 				slug: Slug.create(raw.slug),
+				unitsCount: raw.unitsCount,
 				createdAt: new Date(raw.createdAt),
 				updatedAt: raw.updatedAt,
 			},
@@ -31,6 +32,7 @@ export class PrismaCondominiumMapper {
 			addressId: condominium.addressId.toString(),
 			name: condominium.name,
 			slug: condominium.slug.value,
+			unitsCount: condominium.unitsCount,
 			createdAt: condominium.createdAt,
 			updatedAt: condominium.updatedAt,
 		}

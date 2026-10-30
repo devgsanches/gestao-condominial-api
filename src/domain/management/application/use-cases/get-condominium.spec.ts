@@ -1,3 +1,4 @@
+import { MaintenanceType } from '@generated/prisma/enums'
 import { NotFoundException, UnauthorizedException } from '@nestjs/common'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Address } from '@/domain/management/enterprise/entities/address'
@@ -9,6 +10,7 @@ import { makeManager } from '@/test/factories/make-manager'
 import { InMemoryAddressesRepository } from '@/test/repositories/in-memory-addresses-repository'
 import { InMemoryAppointmentsRepository } from '@/test/repositories/in-memory-appointments-repository'
 import { InMemoryCondominiumsRepository } from '@/test/repositories/in-memory-condominiums-repository'
+import { InMemoryContractAttachmentsRepository } from '@/test/repositories/in-memory-contract-attachments'
 import { InMemoryContractsRepository } from '@/test/repositories/in-memory-contracts-repository'
 import { InMemoryMaintenancesRepository } from '@/test/repositories/in-memory-maintenances-repository'
 import { GetCondominiumUseCase } from './get-condominium'
@@ -31,7 +33,9 @@ describe('GetCondominiumUseCase', () => {
 		inMemoryAddressesRepository = new InMemoryAddressesRepository()
 		inMemoryCondominiumsRepository = new InMemoryCondominiumsRepository()
 		inMemoryMaintenancesRepository = new InMemoryMaintenancesRepository()
-		inMemoryContractsRepository = new InMemoryContractsRepository()
+		inMemoryContractsRepository = new InMemoryContractsRepository(
+			new InMemoryContractAttachmentsRepository(),
+		)
 		inMemoryAppointmentsRepository = new InMemoryAppointmentsRepository()
 
 		sut = new GetCondominiumUseCase(
@@ -73,27 +77,27 @@ describe('GetCondominiumUseCase', () => {
 
 		const generalMaintenance = makeMaintenance({
 			condominiumId: condominium.id,
-			type: 'general',
+			type: MaintenanceType.GENERAL,
 			title: 'Troca de lâmpadas',
 		})
 
 		const periodicWithContract = makeMaintenance({
 			condominiumId: condominium.id,
-			type: 'periodic',
+			type: MaintenanceType.PERIODIC,
 			periodicity: 'month',
 			title: 'Elevador',
 		})
 
 		const periodicWithoutContract = makeMaintenance({
 			condominiumId: condominium.id,
-			type: 'periodic',
+			type: MaintenanceType.PERIODIC,
 			periodicity: 'semester',
 			title: "Limpeza da caixa d'água",
 		})
 
 		const canceledMaintenance = makeMaintenance({
 			condominiumId: condominium.id,
-			type: 'general',
+			type: MaintenanceType.GENERAL,
 			title: 'Manutenção cancelada',
 			canceledAt: new Date(),
 		})

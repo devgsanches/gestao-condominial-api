@@ -5,7 +5,8 @@ import {
 	HttpCode,
 	NotFoundException,
 	Param,
-	Patch, UnauthorizedException
+	Patch,
+	UnauthorizedException,
 } from '@nestjs/common'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { UpdateCondominiumUseCase } from '@/domain/management/application/use-cases/update-condominium'
@@ -28,12 +29,13 @@ export class UpdateCondominiumController {
 		@Body() body: UpdateCondominiumRequestDTO,
 		@CurrentUser() user: UserPayload,
 	) {
-		const { name } = body
+		const { name, unitsCount } = body
 
 		const response = await this.updateCondominium.execute({
 			managerId: new UniqueEntityId(user.id),
 			condominiumId: new UniqueEntityId(condominiumId),
 			name,
+			unitsCount,
 		})
 
 		if (response.isLeft()) {

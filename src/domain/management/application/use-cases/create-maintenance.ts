@@ -17,6 +17,7 @@ interface CreateMaintenanceInput {
 	periodicity?: 'month' | 'trimester' | 'semester' | null
 	title: string
 	description: string
+	scheduledAt?: Date
 }
 
 type CreateMaintenanceOutput = Either<
@@ -40,6 +41,7 @@ export class CreateMaintenanceUseCase {
 		periodicity = null,
 		title,
 		description,
+		scheduledAt,
 	}: CreateMaintenanceInput): Promise<CreateMaintenanceOutput> {
 		const condominium = await this.condominiumRepository.findById(condominiumId)
 
@@ -59,6 +61,7 @@ export class CreateMaintenanceUseCase {
 			periodicity: type === MaintenanceType.GENERAL ? null : periodicity,
 			title,
 			description,
+			scheduledAt,
 		})
 
 		await this.maintenanceRepository.create(maintenance)

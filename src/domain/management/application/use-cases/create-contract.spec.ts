@@ -1,3 +1,4 @@
+import { MaintenanceType } from '@generated/prisma/enums'
 import { BadRequestException, ConflictException } from '@nestjs/common'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { makeCondominium } from '@/test/factories/make-condominium'
@@ -5,10 +6,10 @@ import { makeContract } from '@/test/factories/make-contract'
 import { makeMaintenance } from '@/test/factories/make-maintenance'
 import { makeManager } from '@/test/factories/make-manager'
 import { InMemoryCondominiumsRepository } from '@/test/repositories/in-memory-condominiums-repository'
+import { InMemoryContractAttachmentsRepository } from '@/test/repositories/in-memory-contract-attachments'
 import { InMemoryContractsRepository } from '@/test/repositories/in-memory-contracts-repository'
 import { InMemoryMaintenancesRepository } from '@/test/repositories/in-memory-maintenances-repository'
 import { CreateContractUseCase } from './create-contract'
-import { MaintenanceType } from './fetch-maintenances'
 
 // @TODO: Add coverage and test all possible errors
 
@@ -22,7 +23,9 @@ describe('CreateContractUseCase', () => {
 	beforeEach(() => {
 		inMemoryCondominiumsRepository = new InMemoryCondominiumsRepository()
 		inMemoryMaintenancesRepository = new InMemoryMaintenancesRepository()
-		inMemoryContractsRepository = new InMemoryContractsRepository()
+		inMemoryContractsRepository = new InMemoryContractsRepository(
+			new InMemoryContractAttachmentsRepository(),
+		)
 
 		sut = new CreateContractUseCase(
 			inMemoryCondominiumsRepository,
@@ -58,6 +61,9 @@ describe('CreateContractUseCase', () => {
 			maintenanceId: maintenance.id,
 			title: 'Contrato de manutenção periódica',
 			description: 'Contrato de manutenção periódica para o condomínio',
+			supplierName: 'Elevadores Atlas',
+			supplierCnpj: '12345678000190',
+			valueInCents: 150000,
 			startVigencyDate,
 			endVigencyDate,
 		})
@@ -72,6 +78,9 @@ describe('CreateContractUseCase', () => {
 				maintenanceId: maintenance.id,
 				title: 'Contrato de manutenção periódica',
 				description: 'Contrato de manutenção periódica para o condomínio',
+				supplierName: 'Elevadores Atlas',
+				supplierCnpj: '12345678000190',
+				valueInCents: 150000,
 				isValid: true,
 				startVigencyDate,
 				endVigencyDate,
@@ -107,6 +116,9 @@ describe('CreateContractUseCase', () => {
 			maintenanceId: maintenance.id,
 			title: 'Contrato de manutenção periódica',
 			description: 'Contrato de manutenção periódica para o condomínio',
+			supplierName: 'Elevadores Atlas',
+			supplierCnpj: '12345678000190',
+			valueInCents: 150000,
 			startVigencyDate,
 			endVigencyDate,
 		})
@@ -148,6 +160,9 @@ describe('CreateContractUseCase', () => {
 			maintenanceId: maintenance.id,
 			title: 'Contrato duplicado',
 			description: 'Não deve ser criado',
+			supplierName: 'Elevadores Atlas',
+			supplierCnpj: '12345678000190',
+			valueInCents: 150000,
 			startVigencyDate: new Date(),
 			endVigencyDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
 		})

@@ -27,6 +27,7 @@ export type GetCondominiumDashboard = {
 	address: Address
 	activeMaintenancesCount: number
 	periodicWithoutContractCount: number
+	validContractsCount: number
 	scheduledAppointmentsCount: number
 	nextAppointment: Meeting | Assembly | null
 	periodicWithoutContract: Maintenance[]
@@ -80,6 +81,7 @@ export class GetCondominiumUseCase {
 		)
 
 		const periodicWithoutContract: Maintenance[] = []
+		let validContractsCount = 0
 
 		for (const maintenance of activeMaintenances) {
 			if (maintenance.type !== MaintenanceType.PERIODIC) {
@@ -92,6 +94,11 @@ export class GetCondominiumUseCase {
 
 			if (!contract) {
 				periodicWithoutContract.push(maintenance)
+				continue
+			}
+
+			if (contract.isValid) {
+				validContractsCount++
 			}
 		}
 
@@ -119,6 +126,7 @@ export class GetCondominiumUseCase {
 			activeMaintenancesCount: activeMaintenances.length,
 			periodicWithoutContractCount: periodicWithoutContract.length,
 			periodicWithoutContract,
+			validContractsCount,
 			scheduledAppointmentsCount: scheduledAppointments.length,
 			nextAppointment: scheduledAppointments[0] ?? null,
 		})

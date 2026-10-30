@@ -20,6 +20,8 @@ describe('Fetch maintenances (E2E)', () => {
 	let accessToken: string
 	let condominiumId: string
 	let elevatorMaintenanceId: string
+	let waterTankMaintenanceId: string
+	let canceledMaintenanceId: string
 
 	beforeAll(async () => {
 		const moduleRef = await Test.createTestingModule({
@@ -97,7 +99,19 @@ describe('Fetch maintenances (E2E)', () => {
 
 		elevatorMaintenanceId = elevator.id
 
-		await prisma.maintenance.create({
+		await prisma.contract.create({
+			data: {
+				maintenanceId: elevator.id,
+				slug: 'atlas-elevadores-fetch-maintenances',
+				supplierName: 'Atlas Elevadores Ltda.',
+				supplierCnpj: '12345678000190',
+				valueInCents: 125000,
+				startVigencyDate: new Date('2026-01-01T00:00:00.000Z'),
+				endVigencyDate: new Date('2026-12-31T23:59:59.000Z'),
+			},
+		})
+
+		const waterTank = await prisma.maintenance.create({
 			data: {
 				condominiumId: condominium.id,
 				type: MaintenanceType.PERIODIC,
@@ -106,6 +120,20 @@ describe('Fetch maintenances (E2E)', () => {
 				description: 'Manutencao periodica semestral',
 			},
 		})
+
+		waterTankMaintenanceId = waterTank.id
+
+		const canceled = await prisma.maintenance.create({
+			data: {
+				condominiumId: condominium.id,
+				type: MaintenanceType.GENERAL,
+				title: 'Pintura da fachada',
+				description: 'Cancelada',
+				canceledAt: new Date(),
+			},
+		})
+
+		canceledMaintenanceId = canceled.id
 
 		const session = await request(app.getHttpServer())
 			.post('/v1/sessions')
@@ -127,7 +155,49 @@ describe('Fetch maintenances (E2E)', () => {
 			.set('Authorization', `Bearer ${accessToken}`)
 
 		expect(response.statusCode).toBe(200)
-		expect(response.body.maintenances).toHaveLength(3)
+		expect(response.body.maintenances).toHaveLength(4)
+		expect(response.body.meta).toEqual({ page: 1, perPage: 20, total: 4 })
+		expect(response.body.maintenances.at(-1).id).toBe(canceledMaintenanceId)
+		expect(
+			response.body.maintenances.find(
+				(maintenance: { id: string }) =>
+					maintenance.id === elevatorMaintenanceId,
+			),
+		).toEqual(
+			expect.objectContaining({
+				contractId: expect.any(String),
+				contractStatus: 'valid',
+				scheduledAt: expect.any(String),
+			}),
+		)
+	})
+
+	test('[GET] /v1/condominium/:condominiumId/maintenances?withoutContract=true', async () => {
+		const response = await request(app.getHttpServer())
+			.get(`/v1/condominium/${condominiumId}/maintenances`)
+			.query({ withoutContract: true })
+			.set('Authorization', `Bearer ${accessToken}`)
+
+		expect(response.statusCode).toBe(200)
+		expect(response.body.maintenances).toEqual([
+			expect.objectContaining({
+				id: waterTankMaintenanceId,
+				contractId: null,
+				contractStatus: null,
+			}),
+		])
+		expect(response.body.meta.total).toBe(1)
+	})
+
+	test('[GET] /v1/condominium/:condominiumId/maintenances?page=2', async () => {
+		const response = await request(app.getHttpServer())
+			.get(`/v1/condominium/${condominiumId}/maintenances`)
+			.query({ page: 2 })
+			.set('Authorization', `Bearer ${accessToken}`)
+
+		expect(response.statusCode).toBe(200)
+		expect(response.body.maintenances).toHaveLength(0)
+		expect(response.body.meta).toEqual({ page: 2, perPage: 20, total: 4 })
 	})
 
 	test('[GET] /v1/condominium/:condominiumId/maintenances?type=PERIODIC', async () => {

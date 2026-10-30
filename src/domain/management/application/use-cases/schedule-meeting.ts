@@ -23,6 +23,7 @@ interface ScheduleMeetingInput {
 	type: ScheduleType
 	title: string
 	description: string
+	location?: string | null
 	scheduledAt: Date
 }
 
@@ -45,6 +46,7 @@ export class ScheduleMeetingUseCase {
 		type,
 		title,
 		description,
+		location,
 		scheduledAt,
 	}: ScheduleMeetingInput): Promise<ScheduleMeetingOutput> {
 		const condominium = await this.condominiumRepository.findById(condominiumId)
@@ -77,6 +79,7 @@ export class ScheduleMeetingUseCase {
 				condominiumId,
 				title,
 				description,
+				location,
 				scheduledAt,
 			})
 
@@ -89,6 +92,7 @@ export class ScheduleMeetingUseCase {
 			condominiumId,
 			title,
 			description,
+			location,
 			scheduledAt,
 		})
 

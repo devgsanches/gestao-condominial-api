@@ -71,10 +71,12 @@ describe('Update condominium (E2E)', () => {
 
 		condominiumId = condominium.id
 
-		const session = await request(app.getHttpServer()).post('/v1/sessions').send({
-			email: 'update-condominium@example.com',
-			password: '123456',
-		})
+		const session = await request(app.getHttpServer())
+			.post('/v1/sessions')
+			.send({
+				email: 'update-condominium@example.com',
+				password: '123456',
+			})
 
 		accessToken = session.body.access_token
 	})
@@ -89,6 +91,7 @@ describe('Update condominium (E2E)', () => {
 			.set('Authorization', `Bearer ${accessToken}`)
 			.send({
 				name: 'Residencial Update Atualizado',
+				unitsCount: 64,
 			})
 
 		expect(response.statusCode).toBe(200)
@@ -96,6 +99,7 @@ describe('Update condominium (E2E)', () => {
 			condominium: expect.objectContaining({
 				id: condominiumId,
 				name: 'Residencial Update Atualizado',
+				unitsCount: 64,
 			}),
 		})
 
@@ -106,5 +110,6 @@ describe('Update condominium (E2E)', () => {
 		})
 
 		expect(condominiumOnDatabase?.name).toBe('Residencial Update Atualizado')
+		expect(condominiumOnDatabase?.unitsCount).toBe(64)
 	})
 })

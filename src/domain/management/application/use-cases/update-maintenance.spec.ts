@@ -1,12 +1,12 @@
+import { MaintenanceType } from '@generated/prisma/enums'
 import { NotFoundException, UnauthorizedException } from '@nestjs/common'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { makeCondominium } from '@/test/factories/make-condominium'
+import { makeMaintenance } from '@/test/factories/make-maintenance'
 import { makeManager } from '@/test/factories/make-manager'
 import { InMemoryCondominiumsRepository } from '@/test/repositories/in-memory-condominiums-repository'
-import { UpdateMaintenanceUseCase } from './update-maintenance'
 import { InMemoryMaintenancesRepository } from '@/test/repositories/in-memory-maintenances-repository'
-import { makeMaintenance } from '@/test/factories/make-maintenance'
-import { MaintenanceType } from './fetch-maintenances'
+import { UpdateMaintenanceUseCase } from './update-maintenance'
 
 // @TODO: Add coverage and test all possible errors
 
@@ -20,7 +20,10 @@ describe('UpdateMaintenanceUseCase', () => {
 		inMemoryCondominiumsRepository = new InMemoryCondominiumsRepository()
 		inMemoryMaintenancesRepository = new InMemoryMaintenancesRepository()
 
-		sut = new UpdateMaintenanceUseCase(inMemoryCondominiumsRepository, inMemoryMaintenancesRepository) // system under test
+		sut = new UpdateMaintenanceUseCase(
+			inMemoryCondominiumsRepository,
+			inMemoryMaintenancesRepository,
+		) // system under test
 	})
 
 	it('should be possible for a manager to update a valid maintenance at a condominium.', async () => {
@@ -33,7 +36,7 @@ describe('UpdateMaintenanceUseCase', () => {
 			name: 'Condomínio Teste',
 		})
 
-   await inMemoryCondominiumsRepository.create(condominium)
+		await inMemoryCondominiumsRepository.create(condominium)
 
 		const maintenance = makeMaintenance({
 			condominiumId: condominium.id,
@@ -64,7 +67,7 @@ describe('UpdateMaintenanceUseCase', () => {
 					description: 'Descrição da manutenção teste atualizada',
 					type: MaintenanceType.GENERAL,
 					canceledAt: undefined,
-				})
+				}),
 			)
 		}
 	})
@@ -79,8 +82,7 @@ describe('UpdateMaintenanceUseCase', () => {
 			name: 'Condomínio Teste',
 		})
 
-   await inMemoryCondominiumsRepository.create(condominium)
-
+		await inMemoryCondominiumsRepository.create(condominium)
 
 		const response = await sut.execute({
 			managerId: manager.id,
@@ -107,7 +109,7 @@ describe('UpdateMaintenanceUseCase', () => {
 			name: 'Condomínio Teste',
 		})
 
-   await inMemoryCondominiumsRepository.create(condominium)
+		await inMemoryCondominiumsRepository.create(condominium)
 
 		const maintenance = makeMaintenance({
 			condominiumId: condominium.id,
@@ -117,7 +119,6 @@ describe('UpdateMaintenanceUseCase', () => {
 		})
 
 		await inMemoryMaintenancesRepository.create(maintenance)
-
 
 		const response = await sut.execute({
 			managerId: manager.id,
@@ -144,7 +145,7 @@ describe('UpdateMaintenanceUseCase', () => {
 			name: 'Condomínio Teste',
 		})
 
-   await inMemoryCondominiumsRepository.create(condominium)
+		await inMemoryCondominiumsRepository.create(condominium)
 
 		const maintenance = makeMaintenance({
 			condominiumId: condominium.id,

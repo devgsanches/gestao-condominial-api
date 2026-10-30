@@ -18,6 +18,7 @@ export class PrismaAppointmentWithTypeMapper {
 			condominiumId: new UniqueEntityId(raw.condominiumId),
 			type: typeToDomainMap[raw.type],
 			title: raw.title,
+			location: raw.location,
 			scheduledAt: new Date(raw.scheduledAt),
 			canceledAt: raw.canceledAt ?? undefined,
 			createdAt: new Date(raw.createdAt),

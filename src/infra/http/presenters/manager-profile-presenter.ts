@@ -7,6 +7,7 @@ export class ManagerProfilePresenter {
 			managerId: manager.id.toString(),
 			name: manager.name,
 			email: manager.email,
+			avatarUrl: manager.avatarUrl,
 			createdAt: manager.createdAt,
 			updatedAt: manager.updatedAt,
 		}

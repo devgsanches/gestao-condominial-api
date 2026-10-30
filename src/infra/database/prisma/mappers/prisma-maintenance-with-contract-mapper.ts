@@ -2,10 +2,11 @@ import { Prisma } from '@generated/prisma/client'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { MaintenanceWithContract } from '@/domain/management/enterprise/entities/value-objects/maintenance-with-contract'
 
-const maintenanceWithContractInclude = {
+export const maintenanceWithContractInclude = {
 	contract: {
 		select: {
 			id: true,
+			isValid: true,
 		},
 	},
 } satisfies Prisma.MaintenanceInclude
@@ -30,10 +31,10 @@ export class PrismaMaintenanceWithContractMapper {
 			periodicity: raw.periodicity
 				? periodicityToDomainMap[raw.periodicity]
 				: null,
-			contractId: raw.contract
-				? new UniqueEntityId(raw.contract.id)
-				: null,
+			contractId: raw.contract ? new UniqueEntityId(raw.contract.id) : null,
+			contractIsValid: raw.contract ? raw.contract.isValid : null,
 			title: raw.title,
+			scheduledAt: new Date(raw.scheduledAt),
 			canceledAt: raw.canceledAt ?? undefined,
 			createdAt: new Date(raw.createdAt),
 			updatedAt: raw.updatedAt ?? undefined,

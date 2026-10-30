@@ -18,8 +18,11 @@ interface CreateContractInput {
 	managerId: UniqueEntityId
 	condominiumId: UniqueEntityId
 	maintenanceId: UniqueEntityId
-	title: string
-	description: string
+	title?: string | null
+	description?: string | null
+	supplierName: string
+	supplierCnpj: string
+	valueInCents: number
 	startVigencyDate: Date
 	endVigencyDate: Date
 }
@@ -48,9 +51,20 @@ export class CreateContractUseCase {
 		maintenanceId,
 		title,
 		description,
+		supplierName,
+		supplierCnpj,
+		valueInCents,
 		startVigencyDate,
 		endVigencyDate,
 	}: CreateContractInput): Promise<CreateContractOutput> {
+		if (endVigencyDate.getTime() <= startVigencyDate.getTime()) {
+			return left(
+				new BadRequestException(
+					'Contract end vigency date must be after the start date.',
+				),
+			)
+		}
+
 		const condominium = await this.condominiumRepository.findById(condominiumId)
 
 		if (!condominium) {
@@ -93,6 +107,9 @@ export class CreateContractUseCase {
 			maintenanceId,
 			title,
 			description,
+			supplierName,
+			supplierCnpj,
+			valueInCents,
 			isValid: true,
 			attachments: new ContractAttachmentList([]),
 			startVigencyDate,

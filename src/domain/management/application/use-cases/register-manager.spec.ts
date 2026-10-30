@@ -1,3 +1,4 @@
+import { FakeHasher } from '@/test/cryptography/fake-hasher'
 import { makeManager } from '@/test/factories/make-manager'
 import { InMemoryManagersRepository } from '@/test/repositories/in-memory-managers-repository'
 import { RegisterManagerUseCase } from './register-manager'
@@ -11,7 +12,10 @@ describe.skip('RegisterManagerUseCaseUseCase', () => {
 	beforeEach(() => {
 		inMemoryManagersRepository = new InMemoryManagersRepository()
 
-		sut = new RegisterManagerUseCase(inMemoryManagersRepository) // system under test
+		sut = new RegisterManagerUseCase(
+			inMemoryManagersRepository,
+			new FakeHasher(),
+		) // system under test
 	})
 
 	it('should be able to register a manager (sign-up)', async () => {

@@ -6,6 +6,7 @@ export interface AppointmentWithTypeProps {
 	condominiumId: UniqueEntityId
 	type: 'meeting' | 'assembly'
 	title: string
+	location: string | null
 	scheduledAt: Date
 	canceledAt?: Date
 	createdAt: Date
@@ -27,6 +28,10 @@ export class AppointmentWithType extends ValueObject<AppointmentWithTypeProps> {
 
 	get title() {
 		return this.props.title
+	}
+
+	get location() {
+		return this.props.location
 	}
 
 	get scheduledAt() {

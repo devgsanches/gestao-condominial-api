@@ -6,9 +6,12 @@ import { Slug } from './value-objects/slug'
 
 export interface ContractProps {
 	maintenanceId: UniqueEntityId
-	title: string
+	title?: string | null
 	slug: Slug
-	description: string
+	description?: string | null
+	supplierName: string
+	supplierCnpj: string
+	valueInCents: number
 	isValid: boolean
 	startVigencyDate: Date
 	endVigencyDate: Date
@@ -30,12 +33,24 @@ export class Contract extends AggregateRoot<ContractProps> {
 		return this.props.slug
 	}
 
-	get title(): string {
-		return this.props.title
+	get title(): string | null {
+		return this.props.title ?? null
 	}
 
-	get description(): string {
-		return this.props.description
+	get description(): string | null {
+		return this.props.description ?? null
+	}
+
+	get supplierName(): string {
+		return this.props.supplierName
+	}
+
+	get supplierCnpj(): string {
+		return this.props.supplierCnpj
+	}
+
+	get valueInCents(): number {
+		return this.props.valueInCents
 	}
 
 	get isValid(): boolean {
@@ -95,7 +110,11 @@ export class Contract extends AggregateRoot<ContractProps> {
 		const contract = new Contract(
 			{
 				...props,
-				slug: props.slug ?? Slug.createFromText(props.title),
+				slug:
+					props.slug ??
+					Slug.createFromText(
+						`${props.title ?? props.supplierName} ${props.maintenanceId.toString()}`,
+					),
 				attachments: props.attachments ?? new ContractAttachmentList([]),
 				createdAt: props.createdAt ?? new Date(),
 			},

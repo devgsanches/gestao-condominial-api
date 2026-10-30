@@ -47,10 +47,12 @@ describe('Create condominium (E2E)', () => {
 			},
 		})
 
-		const session = await request(app.getHttpServer()).post('/v1/sessions').send({
-			email: 'create-condominium@example.com',
-			password: '123456',
-		})
+		const session = await request(app.getHttpServer())
+			.post('/v1/sessions')
+			.send({
+				email: 'create-condominium@example.com',
+				password: '123456',
+			})
 
 		accessToken = session.body.access_token
 	})
@@ -83,6 +85,7 @@ describe('Create condominium (E2E)', () => {
 			.send({
 				addressId,
 				name: 'Condomínio E2E Create',
+				unitsCount: 32,
 			})
 
 		expect(response.statusCode).toBe(201)
@@ -91,6 +94,7 @@ describe('Create condominium (E2E)', () => {
 				id: expect.any(String),
 				name: 'Condomínio E2E Create',
 				slug: 'condominio-e2e-create',
+				unitsCount: 32,
 				addressId,
 			}),
 		})

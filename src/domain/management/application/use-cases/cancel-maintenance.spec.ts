@@ -1,3 +1,4 @@
+import { MaintenanceType } from '@generated/prisma/enums'
 import { NotFoundException, UnauthorizedException } from '@nestjs/common'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { makeCondominium } from '@/test/factories/make-condominium'
@@ -5,6 +6,7 @@ import { makeContract } from '@/test/factories/make-contract'
 import { makeMaintenance } from '@/test/factories/make-maintenance'
 import { makeManager } from '@/test/factories/make-manager'
 import { InMemoryCondominiumsRepository } from '@/test/repositories/in-memory-condominiums-repository'
+import { InMemoryContractAttachmentsRepository } from '@/test/repositories/in-memory-contract-attachments'
 import { InMemoryContractsRepository } from '@/test/repositories/in-memory-contracts-repository'
 import { InMemoryMaintenancesRepository } from '@/test/repositories/in-memory-maintenances-repository'
 import { CancelMaintenanceUseCase } from './cancel-maintenance'
@@ -23,7 +25,9 @@ describe('CancelMaintenanceUseCase', () => {
 	beforeEach(() => {
 		inMemoryCondominiumsRepository = new InMemoryCondominiumsRepository()
 		inMemoryMaintenancesRepository = new InMemoryMaintenancesRepository()
-		inMemoryContractsRepository = new InMemoryContractsRepository()
+		inMemoryContractsRepository = new InMemoryContractsRepository(
+			new InMemoryContractAttachmentsRepository(),
+		)
 
 		sut = new CancelMaintenanceUseCase(
 			inMemoryCondominiumsRepository,
@@ -48,7 +52,7 @@ describe('CancelMaintenanceUseCase', () => {
 			condominiumId: condominium.id,
 			title: 'Título da manutenção',
 			description: 'Descrição da manutenção',
-			type: 'periodic',
+			type: MaintenanceType.PERIODIC,
 		})
 
 		await inMemoryMaintenancesRepository.create(maintenance)
@@ -97,7 +101,7 @@ describe('CancelMaintenanceUseCase', () => {
 			condominiumId: condominium.id,
 			title: 'Título da manutenção',
 			description: 'Descrição da manutenção',
-			type: 'periodic',
+			type: MaintenanceType.PERIODIC,
 		})
 
 		await inMemoryMaintenancesRepository.create(maintenance)

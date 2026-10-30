@@ -6,6 +6,7 @@ export interface MeetingProps {
 	condominiumId: UniqueEntityId
 	title: string
 	description: string
+	location?: string | null
 	scheduledAt: Date
 	canceledAt?: Date
 	createdAt: Date
@@ -23,6 +24,10 @@ export class Meeting extends Entity<MeetingProps> {
 
 	get description(): string {
 		return this.props.description
+	}
+
+	get location(): string | null {
+		return this.props.location ?? null
 	}
 
 	get scheduledAt(): Date {

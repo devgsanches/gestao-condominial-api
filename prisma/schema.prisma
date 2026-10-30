@@ -71,6 +71,7 @@ model Condominium {
   slug      String @unique
   managerId String @map("manager_id")
   addressId String @unique @map("address_id")
+  unitsCount Int?  @map("units_count")
 
   manager User @relation(fields: [managerId], references: [id], onDelete: Cascade)
   address Address @relation(fields: [addressId], references: [id], onDelete: Cascade)
@@ -91,6 +92,7 @@ model Appointment {
   type           AppointmentType
   title          String
   description    String
+  location       String?
   scheduledAt    DateTime        @map("scheduled_at")
   canceledAt     DateTime?       @map("canceled_at")
 
@@ -110,6 +112,7 @@ model Maintenance {
   periodicity   MaintenancePeriodicity?
   title         String
   description   String
+  scheduledAt   DateTime                @default(now()) @map("scheduled_at")
   canceledAt    DateTime?               @map("canceled_at")
 
   condominium Condominium @relation(fields: [condominiumId], references: [id], onDelete: Cascade)
@@ -124,9 +127,12 @@ model Maintenance {
 model Contract {
   id               String   @id @default(uuid())
   maintenanceId    String   @unique @map("maintenance_id")
-  title            String
+  title            String?
   slug             String   @unique
-  description      String
+  description      String?
+  supplierName     String   @map("supplier_name")
+  supplierCnpj     String   @map("supplier_cnpj")
+  valueInCents     Int      @map("value_in_cents")
   isValid          Boolean  @default(true) @map("is_valid")
   startVigencyDate DateTime @map("start_vigency_date")
   endVigencyDate   DateTime @map("end_vigency_date")
@@ -187,4 +193,17 @@ model ContractAttachment {
   attachment Attachment @relation(fields: [attachmentId], references: [id], onDelete: Cascade)
 
   @@map("contracts_attachments")
+}
+
+model AuthCode {
+  id        String    @id @default(uuid())
+  email     String
+  code      String
+  attempts  Int       @default(0)
+  expiresAt DateTime  @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  @@index([email])
+  @@map("auth_codes")
 }

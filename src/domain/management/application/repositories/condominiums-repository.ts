@@ -25,7 +25,7 @@ export abstract class CondominiumsRepository {
 		condominiumId: UniqueEntityId,
 	): Promise<CondominiumDashboard | null>
 	abstract update(
-		condominium: Pick<Condominium, 'name' | 'id'>,
+		condominium: Pick<Condominium, 'name' | 'id' | 'unitsCount'>,
 	): Promise<Condominium>
 	abstract delete(id: UniqueEntityId): Promise<void>
 }

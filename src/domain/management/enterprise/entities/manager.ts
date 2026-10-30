@@ -26,6 +26,11 @@ export class Manager extends Entity<ManagerProps> {
 		return this.props.password
 	}
 
+	set password(password: string) {
+		this.props.password = password
+		this.props.updatedAt = new Date()
+	}
+
 	get role(): UserRole {
 		return this.props.role
 	}

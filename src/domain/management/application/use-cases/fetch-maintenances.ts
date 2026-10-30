@@ -10,16 +10,25 @@ import { MaintenanceWithContract } from '../../enterprise/entities/value-objects
 import { CondominiumsRepository } from '../repositories/condominiums-repository'
 import { MaintenancesRepository } from '../repositories/maintenances-repository'
 
+export const MAINTENANCES_PER_PAGE = 20
+
 interface FetchMaintenancesInput {
 	type?: MaintenanceType
 	title?: string
+	withoutContract?: boolean
+	page?: number
 	managerId: UniqueEntityId
 	condominiumId: UniqueEntityId
 }
 
 type FetchMaintenancesOutput = Either<
 	UnauthorizedException | NotFoundException,
-	{ maintenances: MaintenanceWithContract[] }
+	{
+		maintenances: MaintenanceWithContract[]
+		page: number
+		perPage: number
+		total: number
+	}
 >
 
 @Injectable()
@@ -34,6 +43,8 @@ export class FetchMaintenancesUseCase {
 		condominiumId,
 		type,
 		title,
+		withoutContract = false,
+		page = 1,
 	}: FetchMaintenancesInput): Promise<FetchMaintenancesOutput> {
 		const condominium = await this.condominiumRepository.findById(condominiumId)
 
@@ -47,15 +58,25 @@ export class FetchMaintenancesUseCase {
 			return left(new UnauthorizedException())
 		}
 
-		const maintenances =
+		const { maintenances, total } =
 			await this.maintenancesRepository.findManyWithContractByCondominiumId({
 				condominiumId,
 				filters: {
 					title,
 					type,
+					withoutContract,
+				},
+				pagination: {
+					page,
+					perPage: MAINTENANCES_PER_PAGE,
 				},
 			})
 
-		return right({ maintenances })
+		return right({
+			maintenances,
+			page,
+			perPage: MAINTENANCES_PER_PAGE,
+			total,
+		})
 	}
 }

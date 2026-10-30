@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common'
 import { AddressesRepository } from '@/domain/management/application/repositories/addresses-repository'
 import { AppointmentsRepository } from '@/domain/management/application/repositories/appointments-repository'
 import { AttachmentsRepository } from '@/domain/management/application/repositories/attachments-repository'
+import { AuthCodesRepository } from '@/domain/management/application/repositories/auth-codes-repository'
 import { CondominiumsRepository } from '@/domain/management/application/repositories/condominiums-repository'
 import { ContractAttachmentsRepository } from '@/domain/management/application/repositories/contract-attachments-repository'
 import { ContractsRepository } from '@/domain/management/application/repositories/contracts-repository'
@@ -11,6 +12,7 @@ import { PrismaService } from './prisma/prisma.service'
 import { PrismaAddressesRepository } from './prisma/repositories/prisma-addresses-repository'
 import { PrismaAppointmentsRepository } from './prisma/repositories/prisma-appointments-repository'
 import { PrismaAttachmentsRepository } from './prisma/repositories/prisma-attachments-repository'
+import { PrismaAuthCodesRepository } from './prisma/repositories/prisma-auth-codes-repository'
 import { PrismaCondominiumsRepository } from './prisma/repositories/prisma-condominiums-repository'
 import { PrismaContractAttachmentsRepository } from './prisma/repositories/prisma-contract-attachments-repository'
 import { PrismaContractsRepository } from './prisma/repositories/prisma-contracts-repository'
@@ -52,6 +54,10 @@ import { PrismaManagersRepository } from './prisma/repositories/prisma-managers-
 			provide: ContractAttachmentsRepository,
 			useClass: PrismaContractAttachmentsRepository,
 		},
+		{
+			provide: AuthCodesRepository,
+			useClass: PrismaAuthCodesRepository,
+		},
 	],
 	exports: [
 		PrismaService,
@@ -63,6 +69,7 @@ import { PrismaManagersRepository } from './prisma/repositories/prisma-managers-
 		AddressesRepository,
 		AttachmentsRepository,
 		ContractAttachmentsRepository,
+		AuthCodesRepository,
 	],
 })
 export class DatabaseModule {}

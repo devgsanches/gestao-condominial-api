@@ -12,16 +12,22 @@ import { FetchAppointmentsUseCase } from '@/domain/management/application/use-ca
 import { FetchCondominiumDashboardUseCase } from '@/domain/management/application/use-cases/fetch-condominium-dashboard'
 import { FetchCondominiumsByManagerUseCase } from '@/domain/management/application/use-cases/fetch-condominiums-by-manager'
 import { FetchMaintenancesUseCase } from '@/domain/management/application/use-cases/fetch-maintenances'
+import { GetAppointmentUseCase } from '@/domain/management/application/use-cases/get-appointment'
 import { GetCondominiumUseCase } from '@/domain/management/application/use-cases/get-condominium'
+import { GetMaintenanceUseCase } from '@/domain/management/application/use-cases/get-maintenance'
 import { GetManagerProfileUseCase } from '@/domain/management/application/use-cases/get-manager-profile'
 import { RegisterManagerUseCase } from '@/domain/management/application/use-cases/register-manager'
+import { RequestFirstAccessCodeUseCase } from '@/domain/management/application/use-cases/request-first-access-code'
 import { ScheduleMeetingUseCase } from '@/domain/management/application/use-cases/schedule-meeting'
+import { SetManagerPasswordUseCase } from '@/domain/management/application/use-cases/set-manager-password'
 import { SignInManagerUseCase } from '@/domain/management/application/use-cases/sign-in-manager'
 import { UpdateCondominiumUseCase } from '@/domain/management/application/use-cases/update-condominium'
 import { UpdateMaintenanceUseCase } from '@/domain/management/application/use-cases/update-maintenance'
 import { UploadAndCreateAttachmentUseCase } from '@/domain/management/application/use-cases/upload-and-create-attachment'
+import { VerifyFirstAccessCodeUseCase } from '@/domain/management/application/use-cases/verify-first-access-code'
 import { CryptographyModule } from '../cryptography/cryptography.module'
 import { DatabaseModule } from '../database/database.module'
+import { MailModule } from '../mail/mail.module'
 import { StorageModule } from '../storage/storage.module'
 import { AuthenticateController } from './controllers/authenticate.controller'
 import { CancelAppointmentController } from './controllers/cancel-appointment.controller'
@@ -38,20 +44,28 @@ import { FetchAppointmentsController } from './controllers/fetch-appointments.co
 import { FetchCondominiumDashboardController } from './controllers/fetch-condominium-dashboard.controller'
 import { FetchCondominiumsController } from './controllers/fetch-condominiums.controller'
 import { FetchMaintenancesController } from './controllers/fetch-maintenances.controller'
+import { GetAppointmentController } from './controllers/get-appointment.controller'
 import { GetCondominiumController } from './controllers/get-condominium.controller'
+import { GetMaintenanceController } from './controllers/get-maintenance.controller'
 import { GetManagerProfileController } from './controllers/get-manager-profile.controller'
 import { HealthCheckController } from './controllers/health-check.controller'
+import { RequestFirstAccessCodeController } from './controllers/request-first-access-code.controller'
 import { ScheduleController } from './controllers/schedule.controller'
+import { SetManagerPasswordController } from './controllers/set-manager-password.controller'
 import { UpdateCondominiumController } from './controllers/update-condominium.controller'
 import { UpdateMaintenanceController } from './controllers/update-maintenance.controller'
 import { UploadAttachmentController } from './controllers/upload-attachment.controller'
+import { VerifyFirstAccessCodeController } from './controllers/verify-first-access-code.controller'
 
 @Module({
-	imports: [DatabaseModule, CryptographyModule, StorageModule],
+	imports: [DatabaseModule, CryptographyModule, StorageModule, MailModule],
 	controllers: [
 		HealthCheckController,
 		CreateAccountController,
 		AuthenticateController,
+		RequestFirstAccessCodeController,
+		VerifyFirstAccessCodeController,
+		SetManagerPasswordController,
 		GetManagerProfileController,
 		CreateManagerAvatarController,
 		CreateAddressController,
@@ -62,7 +76,9 @@ import { UploadAttachmentController } from './controllers/upload-attachment.cont
 		UpdateCondominiumController,
 		DeleteCondominiumController,
 		FetchMaintenancesController,
+		GetMaintenanceController,
 		FetchAppointmentsController,
+		GetAppointmentController,
 		ScheduleController,
 		CreateMaintenanceController,
 		CreateContractController,
@@ -75,6 +91,9 @@ import { UploadAttachmentController } from './controllers/upload-attachment.cont
 	providers: [
 		RegisterManagerUseCase,
 		SignInManagerUseCase,
+		RequestFirstAccessCodeUseCase,
+		VerifyFirstAccessCodeUseCase,
+		SetManagerPasswordUseCase,
 		GetManagerProfileUseCase,
 		CreateManagerAvatarUseCase,
 		CreateAddressUseCase,
@@ -85,7 +104,9 @@ import { UploadAttachmentController } from './controllers/upload-attachment.cont
 		UpdateCondominiumUseCase,
 		DeleteCondominiumUseCase,
 		FetchMaintenancesUseCase,
+		GetMaintenanceUseCase,
 		FetchAppointmentsUseCase,
+		GetAppointmentUseCase,
 		ScheduleMeetingUseCase,
 		CreateMaintenanceUseCase,
 		CreateContractUseCase,

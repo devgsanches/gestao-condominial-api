@@ -29,7 +29,7 @@ export class CreateMaintenanceController {
 		@Body() body: CreateMaintenanceRequestDTO,
 		@CurrentUser() user: UserPayload,
 	) {
-		const { title, description, type, periodicity } = body
+		const { title, description, type, periodicity, scheduledAt } = body
 
 		const response = await this.createMaintenance.execute({
 			managerId: new UniqueEntityId(user.id),
@@ -38,6 +38,7 @@ export class CreateMaintenanceController {
 			description,
 			type,
 			periodicity,
+			scheduledAt: scheduledAt ? new Date(scheduledAt) : undefined,
 		})
 
 		if (response.isLeft()) {

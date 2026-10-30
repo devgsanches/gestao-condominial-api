@@ -1,6 +1,12 @@
 import { MaintenanceType } from '@generated/prisma/enums'
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
-import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator'
+import {
+	IsDateString,
+	IsEnum,
+	IsNotEmpty,
+	IsOptional,
+	IsString,
+} from 'class-validator'
 
 export enum MaintenancePeriodicityDTO {
 	MONTH = 'month',
@@ -38,4 +44,13 @@ export class CreateMaintenanceRequestDTO {
 	@IsOptional()
 	@IsEnum(MaintenancePeriodicityDTO)
 	periodicity?: MaintenancePeriodicityDTO
+
+	@ApiPropertyOptional({
+		description:
+			'Expected date (general) or start date (periodic). Defaults to now.',
+		example: '2026-11-15T00:00:00.000Z',
+	})
+	@IsOptional()
+	@IsDateString()
+	scheduledAt?: string
 }

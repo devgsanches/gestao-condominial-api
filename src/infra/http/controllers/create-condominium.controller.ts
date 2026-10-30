@@ -32,12 +32,13 @@ export class CreateCondominiumController {
 		@Body() body: CreateCondominiumRequestDTO,
 		@CurrentUser() user: UserPayload,
 	) {
-		const { addressId, name } = body
+		const { addressId, name, unitsCount } = body
 
 		const response = await this.createCondominiumUseCase.execute({
 			managerId: new UniqueEntityId(user.id),
 			addressId: new UniqueEntityId(addressId),
 			name,
+			unitsCount,
 		})
 
 		if (response.isLeft()) {
