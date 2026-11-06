@@ -20,12 +20,6 @@ services:
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
 
-  mailpit:
-    image: axllent/mailpit:latest
-    container_name: mailpit
-    ports:
-      - '1025:1025'
-      - '8025:8025'
   cache:
     container_name: gestao-condominial-cache
     # Para produção, usar imagem redis/bitnami
