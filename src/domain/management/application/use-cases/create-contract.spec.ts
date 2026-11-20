@@ -5,6 +5,7 @@ import { makeCondominium } from '@/test/factories/make-condominium'
 import { makeContract } from '@/test/factories/make-contract'
 import { makeMaintenance } from '@/test/factories/make-maintenance'
 import { makeManager } from '@/test/factories/make-manager'
+import { InMemoryAdminsRepository } from '@/test/repositories/in-memory-admins-repository'
 import { InMemoryCondominiumsRepository } from '@/test/repositories/in-memory-condominiums-repository'
 import { InMemoryContractAttachmentsRepository } from '@/test/repositories/in-memory-contract-attachments'
 import { InMemoryContractsRepository } from '@/test/repositories/in-memory-contracts-repository'
@@ -31,6 +32,7 @@ describe('CreateContractUseCase', () => {
 			inMemoryCondominiumsRepository,
 			inMemoryMaintenancesRepository,
 			inMemoryContractsRepository,
+			new InMemoryAdminsRepository(),
 		) // system under test
 	})
 

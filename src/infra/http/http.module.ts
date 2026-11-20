@@ -16,6 +16,8 @@ import { GetAppointmentUseCase } from '@/domain/management/application/use-cases
 import { GetCondominiumUseCase } from '@/domain/management/application/use-cases/get-condominium'
 import { GetMaintenanceUseCase } from '@/domain/management/application/use-cases/get-maintenance'
 import { GetManagerProfileUseCase } from '@/domain/management/application/use-cases/get-manager-profile'
+import { LinkAdminToCondominiumUseCase } from '@/domain/management/application/use-cases/link-admin-to-condominium'
+import { RegisterAdminUseCase } from '@/domain/management/application/use-cases/register-admin'
 import { RegisterManagerUseCase } from '@/domain/management/application/use-cases/register-manager'
 import { RequestFirstAccessCodeUseCase } from '@/domain/management/application/use-cases/request-first-access-code'
 import { ScheduleMeetingUseCase } from '@/domain/management/application/use-cases/schedule-meeting'
@@ -49,6 +51,7 @@ import { GetCondominiumController } from './controllers/get-condominium.controll
 import { GetMaintenanceController } from './controllers/get-maintenance.controller'
 import { GetManagerProfileController } from './controllers/get-manager-profile.controller'
 import { HealthCheckController } from './controllers/health-check.controller'
+import { LinkAdminToCondominiumController } from './controllers/link-admin-to-condominium.controller'
 import { RequestFirstAccessCodeController } from './controllers/request-first-access-code.controller'
 import { ScheduleController } from './controllers/schedule.controller'
 import { SetManagerPasswordController } from './controllers/set-manager-password.controller'
@@ -75,6 +78,7 @@ import { VerifyFirstAccessCodeController } from './controllers/verify-first-acce
 		GetCondominiumController,
 		UpdateCondominiumController,
 		DeleteCondominiumController,
+		LinkAdminToCondominiumController,
 		FetchMaintenancesController,
 		GetMaintenanceController,
 		FetchAppointmentsController,
@@ -90,6 +94,7 @@ import { VerifyFirstAccessCodeController } from './controllers/verify-first-acce
 	],
 	providers: [
 		RegisterManagerUseCase,
+		RegisterAdminUseCase,
 		SignInManagerUseCase,
 		RequestFirstAccessCodeUseCase,
 		VerifyFirstAccessCodeUseCase,
@@ -103,6 +108,7 @@ import { VerifyFirstAccessCodeController } from './controllers/verify-first-acce
 		GetCondominiumUseCase,
 		UpdateCondominiumUseCase,
 		DeleteCondominiumUseCase,
+		LinkAdminToCondominiumUseCase,
 		FetchMaintenancesUseCase,
 		GetMaintenanceUseCase,
 		FetchAppointmentsUseCase,

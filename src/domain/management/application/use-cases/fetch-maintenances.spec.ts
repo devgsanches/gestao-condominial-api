@@ -1,9 +1,12 @@
 import { MaintenanceType } from '@generated/prisma/enums'
+import { UnauthorizedException } from '@nestjs/common'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import { makeAdmin } from '@/test/factories/make-admin'
 import { makeCondominium } from '@/test/factories/make-condominium'
 import { makeContract } from '@/test/factories/make-contract'
 import { makeMaintenance } from '@/test/factories/make-maintenance'
 import { makeManager } from '@/test/factories/make-manager'
+import { InMemoryAdminsRepository } from '@/test/repositories/in-memory-admins-repository'
 import { InMemoryCondominiumsRepository } from '@/test/repositories/in-memory-condominiums-repository'
 import { InMemoryContractAttachmentsRepository } from '@/test/repositories/in-memory-contract-attachments'
 import { InMemoryContractsRepository } from '@/test/repositories/in-memory-contracts-repository'
@@ -16,10 +19,12 @@ describe('FetchMaintenancesUseCase', () => {
 	let inMemoryCondominiumsRepository: InMemoryCondominiumsRepository
 	let inMemoryContractsRepository: InMemoryContractsRepository
 	let inMemoryMaintenancesRepository: InMemoryMaintenancesRepository
+	let inMemoryAdminsRepository: InMemoryAdminsRepository
 
 	let sut: FetchMaintenancesUseCase
 
 	beforeEach(() => {
+		inMemoryAdminsRepository = new InMemoryAdminsRepository()
 		inMemoryCondominiumsRepository = new InMemoryCondominiumsRepository()
 		inMemoryContractsRepository = new InMemoryContractsRepository(
 			new InMemoryContractAttachmentsRepository(),
@@ -31,7 +36,49 @@ describe('FetchMaintenancesUseCase', () => {
 		sut = new FetchMaintenancesUseCase(
 			inMemoryCondominiumsRepository,
 			inMemoryMaintenancesRepository,
+			inMemoryAdminsRepository,
 		) // system under test
+	})
+
+	it('should allow an admin linked to the condominium to fetch maintenances.', async () => {
+		const admin = makeAdmin()
+		const condominium = makeCondominium({ managerId: new UniqueEntityId() })
+
+		await inMemoryCondominiumsRepository.create(condominium)
+		await inMemoryAdminsRepository.create(admin)
+		await inMemoryAdminsRepository.linkToCondominium(admin.id, condominium.id)
+
+		await inMemoryMaintenancesRepository.create(
+			makeMaintenance({ condominiumId: condominium.id }),
+		)
+
+		const response = await sut.execute({
+			managerId: admin.id,
+			condominiumId: condominium.id,
+		})
+
+		expect(response.isRight()).toBe(true)
+		if (response.isRight()) {
+			expect(response.result.maintenances).toHaveLength(1)
+		}
+	})
+
+	it('should not allow an admin not linked to the condominium to fetch maintenances.', async () => {
+		const admin = makeAdmin()
+		const condominium = makeCondominium({ managerId: new UniqueEntityId() })
+
+		await inMemoryCondominiumsRepository.create(condominium)
+		await inMemoryAdminsRepository.create(admin)
+
+		const response = await sut.execute({
+			managerId: admin.id,
+			condominiumId: condominium.id,
+		})
+
+		expect(response.isLeft()).toBe(true)
+		if (response.isLeft()) {
+			expect(response.reason).toBeInstanceOf(UnauthorizedException)
+		}
 	})
 
 	it('should be possible for a manager to fetch all maintenances at a condominium.', async () => {

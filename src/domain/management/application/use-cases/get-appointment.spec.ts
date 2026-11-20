@@ -2,6 +2,7 @@ import { NotFoundException, UnauthorizedException } from '@nestjs/common'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { makeAppointment } from '@/test/factories/make-appointment'
 import { makeCondominium } from '@/test/factories/make-condominium'
+import { InMemoryAdminsRepository } from '@/test/repositories/in-memory-admins-repository'
 import { InMemoryAppointmentsRepository } from '@/test/repositories/in-memory-appointments-repository'
 import { InMemoryCondominiumsRepository } from '@/test/repositories/in-memory-condominiums-repository'
 import { GetAppointmentUseCase } from './get-appointment'
@@ -19,6 +20,7 @@ describe('GetAppointmentUseCase', () => {
 		sut = new GetAppointmentUseCase(
 			inMemoryCondominiumsRepository,
 			inMemoryAppointmentsRepository,
+			new InMemoryAdminsRepository(),
 		)
 	})
 

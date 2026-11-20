@@ -15,6 +15,9 @@ export abstract class CondominiumsRepository {
 	abstract findManyWithAddressByManagerId(
 		managerId: UniqueEntityId,
 	): Promise<CondominiumWithAddress[]>
+	abstract findManyWithAddressByAdminId(
+		adminId: UniqueEntityId,
+	): Promise<CondominiumWithAddress[]>
 	abstract findByManagerId(
 		managerId: UniqueEntityId,
 	): Promise<Condominium | null>

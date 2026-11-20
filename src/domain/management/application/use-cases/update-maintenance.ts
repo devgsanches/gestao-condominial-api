@@ -6,6 +6,7 @@ import {
 import { type Either, left, right } from '@/core/either'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Maintenance } from '../../enterprise/entities/maintenance'
+import { AdminsRepository } from '../repositories/admins-repository'
 import { CondominiumsRepository } from '../repositories/condominiums-repository'
 import { MaintenancesRepository } from '../repositories/maintenances-repository'
 
@@ -29,6 +30,7 @@ export class UpdateMaintenanceUseCase {
 	constructor(
 		private condominiumRepository: CondominiumsRepository,
 		private maintenanceRepository: MaintenancesRepository,
+		private adminsRepository: AdminsRepository,
 	) {}
 
 	async execute({
@@ -40,10 +42,20 @@ export class UpdateMaintenanceUseCase {
 	}: UpdateMaintenanceInput): Promise<UpdateMaintenanceOutput> {
 		const condominium = await this.condominiumRepository.findById(condominiumId)
 
-		const isCondominiumManager = condominium?.managerId.equals(managerId)
+		if (!condominium) {
+			return left(new UnauthorizedException())
+		}
 
-		// somente o síndico do condomínio pode atualizar aquela manutenção do condomínio
-		if (!isCondominiumManager) {
+		const isCondominiumManager = condominium.managerId.equals(managerId)
+
+		const isValidAdmin =
+			!isCondominiumManager &&
+			(await this.adminsRepository.isAdminOfCondominium(
+				managerId,
+				condominium.id,
+			))
+
+		if (!isCondominiumManager && !isValidAdmin) {
 			return left(new UnauthorizedException())
 		}
 

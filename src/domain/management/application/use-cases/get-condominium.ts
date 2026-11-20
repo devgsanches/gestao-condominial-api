@@ -12,6 +12,7 @@ import { Condominium } from '../../enterprise/entities/condominium'
 import { Maintenance } from '../../enterprise/entities/maintenance'
 import { Meeting } from '../../enterprise/entities/meeting'
 import { AddressesRepository } from '../repositories/addresses-repository'
+import { AdminsRepository } from '../repositories/admins-repository'
 import { AppointmentsRepository } from '../repositories/appointments-repository'
 import { CondominiumsRepository } from '../repositories/condominiums-repository'
 import { ContractsRepository } from '../repositories/contracts-repository'
@@ -46,6 +47,7 @@ export class GetCondominiumUseCase {
 		private maintenancesRepository: MaintenancesRepository,
 		private contractsRepository: ContractsRepository,
 		private appointmentsRepository: AppointmentsRepository,
+		private adminsRepository: AdminsRepository,
 	) {}
 
 	async execute({
@@ -58,7 +60,16 @@ export class GetCondominiumUseCase {
 			return left(new NotFoundException())
 		}
 
-		if (!condominium.managerId.equals(managerId)) {
+		const isCondominiumManager = condominium.managerId.equals(managerId)
+
+		const isValidAdmin =
+			!isCondominiumManager &&
+			(await this.adminsRepository.isAdminOfCondominium(
+				managerId,
+				condominium.id,
+			))
+
+		if (!isCondominiumManager && !isValidAdmin) {
 			return left(new UnauthorizedException())
 		}
 

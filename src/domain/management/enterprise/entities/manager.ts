@@ -58,7 +58,7 @@ export class Manager extends Entity<ManagerProps> {
 		const manager = new Manager(
 			{
 				...props,
-				role: UserRole.CONDOMINIUM_MANAGER,
+				role: props.role ?? UserRole.CONDOMINIUM_MANAGER,
 				createdAt: props.createdAt ?? new Date(),
 			},
 			id,

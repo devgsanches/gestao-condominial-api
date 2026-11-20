@@ -1,5 +1,17 @@
-import { ApiProperty } from '@nestjs/swagger'
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator'
+import { UserRole } from '@generated/prisma/enums'
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
+import {
+	IsEmail,
+	IsEnum,
+	IsNotEmpty,
+	IsOptional,
+	IsString,
+} from 'class-validator'
+
+const ACCOUNT_ROLES = [
+	UserRole.CONDOMINIUM_MANAGER,
+	UserRole.CONDOMINIUM_ADMIN,
+] as const
 
 export class CreateAccountRequestDTO {
 	@ApiProperty({
@@ -22,4 +34,13 @@ export class CreateAccountRequestDTO {
 	@IsString()
 	@IsNotEmpty()
 	password: string
+
+	@ApiPropertyOptional({
+		description: 'User role. Defaults to condominium manager.',
+		enum: ACCOUNT_ROLES,
+		default: UserRole.CONDOMINIUM_MANAGER,
+	})
+	@IsOptional()
+	@IsEnum(ACCOUNT_ROLES)
+	role?: (typeof ACCOUNT_ROLES)[number]
 }

@@ -4,6 +4,7 @@ import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Attachment } from '../../enterprise/entities/attachment'
 import { Contract } from '../../enterprise/entities/contract'
 import { ContractAttachment } from '../../enterprise/entities/contract-attachment'
+import { AdminsRepository } from '../repositories/admins-repository'
 import { AttachmentsRepository } from '../repositories/attachments-repository'
 import { CondominiumsRepository } from '../repositories/condominiums-repository'
 import { ContractsRepository } from '../repositories/contracts-repository'
@@ -32,6 +33,7 @@ export class AttachContractDocumentUseCase {
 		private maintenancesRepository: MaintenancesRepository,
 		private condominiumsRepository: CondominiumsRepository,
 		private attachmentsRepository: AttachmentsRepository,
+		private adminsRepository: AdminsRepository,
 	) {}
 
 	async execute({
@@ -53,7 +55,20 @@ export class AttachContractDocumentUseCase {
 			? await this.condominiumsRepository.findById(maintenance.condominiumId)
 			: null
 
-		if (!condominium?.managerId.equals(managerId)) {
+		if (!condominium) {
+			return left(new UnauthorizedException())
+		}
+
+		const isCondominiumManager = condominium.managerId.equals(managerId)
+
+		const isValidAdmin =
+			!isCondominiumManager &&
+			(await this.adminsRepository.isAdminOfCondominium(
+				managerId,
+				condominium.id,
+			))
+
+		if (!isCondominiumManager && !isValidAdmin) {
 			return left(new UnauthorizedException())
 		}
 

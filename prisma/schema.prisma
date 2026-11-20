@@ -11,6 +11,7 @@ datasource db {
 
 enum UserRole {
   CONDOMINIUM_MANAGER
+  CONDOMINIUM_ADMIN
   RESIDENT
 }
 
@@ -39,6 +40,7 @@ model User {
   avatarUrl String? @map("avatar_url")
 
   condominiums Condominium[]
+  adminCondominiums CondominiumAdmin[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -79,6 +81,7 @@ model Condominium {
   appointments Appointment[]
   maintenances Maintenance[]
   finances     CondominiumFinance[]
+  admins       CondominiumAdmin[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -157,6 +160,20 @@ model Finance {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("finances")
+}
+
+model CondominiumAdmin {
+  id            String @id @default(uuid())
+  condominiumId String @map("condominium_id")
+  adminId       String @map("admin_id")
+
+  condominium Condominium @relation(fields: [condominiumId], references: [id], onDelete: Cascade)
+  admin       User        @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([condominiumId, adminId])
+  @@map("condominium_admins")
 }
 
 model CondominiumFinance {

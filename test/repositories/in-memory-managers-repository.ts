@@ -1,3 +1,4 @@
+import { UserRole } from '@generated/prisma/enums'
 import type { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import type { ManagersRepository } from '@/domain/management/application/repositories/managers-repository'
 import type { Manager } from '@/domain/management/enterprise/entities/manager'
@@ -18,7 +19,10 @@ export class InMemoryManagersRepository implements ManagersRepository {
 	}
 
 	async findById(id: UniqueEntityId) {
-		const manager = this.items.find((item) => item.id.equals(id))
+		const manager = this.items.find(
+			(item) =>
+				item.id.equals(id) && item.role === UserRole.CONDOMINIUM_MANAGER,
+		)
 
 		if (!manager) {
 			return null

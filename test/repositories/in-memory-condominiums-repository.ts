@@ -10,6 +10,7 @@ import { Meeting } from '@/domain/management/enterprise/entities/meeting'
 import { CondominiumDashboard } from '@/domain/management/enterprise/entities/value-objects/condominium-dashboard'
 import { CondominiumWithAddress } from '@/domain/management/enterprise/entities/value-objects/condominium-with-address'
 import type { InMemoryAddressesRepository } from './in-memory-addresses-repository'
+import type { InMemoryAdminsRepository } from './in-memory-admins-repository'
 import type { InMemoryAppointmentsRepository } from './in-memory-appointments-repository'
 import type { InMemoryMaintenancesRepository } from './in-memory-maintenances-repository'
 
@@ -20,6 +21,7 @@ export class InMemoryCondominiumsRepository implements CondominiumsRepository {
 		private addressesRepository?: InMemoryAddressesRepository,
 		private maintenancesRepository?: InMemoryMaintenancesRepository,
 		private appointmentsRepository?: InMemoryAppointmentsRepository,
+		private adminsRepository?: InMemoryAdminsRepository,
 	) {}
 
 	async create(condominium: Condominium) {
@@ -89,6 +91,27 @@ export class InMemoryCondominiumsRepository implements CondominiumsRepository {
 			item.managerId.equals(managerId),
 		)
 
+		return this.withAddress(condominiums)
+	}
+
+	async findManyWithAddressByAdminId(
+		adminId: UniqueEntityId,
+	): Promise<CondominiumWithAddress[]> {
+		const links = this.adminsRepository?.condominiumLinks ?? []
+
+		const condominiums = this.items.filter((item) =>
+			links.some(
+				(link) =>
+					link.adminId.equals(adminId) && link.condominiumId.equals(item.id),
+			),
+		)
+
+		return this.withAddress(condominiums)
+	}
+
+	private withAddress(
+		condominiums: Condominium[],
+	): Promise<CondominiumWithAddress[]> {
 		return Promise.all(
 			condominiums.map(async (condominium) => {
 				const address = this.addressesRepository?.items.find((item) =>

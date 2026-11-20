@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common'
 import { AddressesRepository } from '@/domain/management/application/repositories/addresses-repository'
+import { AdminsRepository } from '@/domain/management/application/repositories/admins-repository'
 import { AppointmentsRepository } from '@/domain/management/application/repositories/appointments-repository'
 import { AttachmentsRepository } from '@/domain/management/application/repositories/attachments-repository'
 import { AuthCodesRepository } from '@/domain/management/application/repositories/auth-codes-repository'
@@ -11,6 +12,7 @@ import { ManagersRepository } from '@/domain/management/application/repositories
 import { CacheModule } from '../cache/cache.module'
 import { PrismaService } from './prisma/prisma.service'
 import { PrismaAddressesRepository } from './prisma/repositories/prisma-addresses-repository'
+import { PrismaAdminsRepository } from './prisma/repositories/prisma-admins-repository'
 import { PrismaAppointmentsRepository } from './prisma/repositories/prisma-appointments-repository'
 import { PrismaAttachmentsRepository } from './prisma/repositories/prisma-attachments-repository'
 import { PrismaAuthCodesRepository } from './prisma/repositories/prisma-auth-codes-repository'
@@ -27,6 +29,10 @@ import { PrismaManagersRepository } from './prisma/repositories/prisma-managers-
 		{
 			provide: ManagersRepository,
 			useClass: PrismaManagersRepository,
+		},
+		{
+			provide: AdminsRepository,
+			useClass: PrismaAdminsRepository,
 		},
 		{
 			provide: MaintenancesRepository,
@@ -64,6 +70,7 @@ import { PrismaManagersRepository } from './prisma/repositories/prisma-managers-
 	exports: [
 		PrismaService,
 		ManagersRepository,
+		AdminsRepository,
 		MaintenancesRepository,
 		ContractsRepository,
 		CondominiumsRepository,

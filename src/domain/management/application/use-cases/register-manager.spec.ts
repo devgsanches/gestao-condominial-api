@@ -26,11 +26,11 @@ describe.skip('RegisterManagerUseCaseUseCase', () => {
 		const response = await sut.execute(manager)
 
 		if (response.isRight()) {
-			const { manager } = response.result
+			const { user } = response.result
 
-			expect(manager).toMatchObject(
+			expect(user).toMatchObject(
 				expect.objectContaining({
-					id: manager.id,
+					id: user.id,
 					name: 'Guilherme Sanches',
 				}),
 			)

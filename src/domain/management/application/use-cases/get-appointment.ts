@@ -7,6 +7,7 @@ import { type Either, left, right } from '@/core/either'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Assembly } from '../../enterprise/entities/assembly'
 import { Meeting } from '../../enterprise/entities/meeting'
+import { AdminsRepository } from '../repositories/admins-repository'
 import { AppointmentsRepository } from '../repositories/appointments-repository'
 import { CondominiumsRepository } from '../repositories/condominiums-repository'
 
@@ -26,6 +27,7 @@ export class GetAppointmentUseCase {
 	constructor(
 		private condominiumRepository: CondominiumsRepository,
 		private appointmentsRepository: AppointmentsRepository,
+		private adminsRepository: AdminsRepository,
 	) {}
 
 	async execute({
@@ -39,7 +41,16 @@ export class GetAppointmentUseCase {
 			return left(new NotFoundException('Condominium not found.'))
 		}
 
-		if (!condominium.managerId.equals(managerId)) {
+		const isCondominiumManager = condominium.managerId.equals(managerId)
+
+		const isValidAdmin =
+			!isCondominiumManager &&
+			(await this.adminsRepository.isAdminOfCondominium(
+				managerId,
+				condominium.id,
+			))
+
+		if (!isCondominiumManager && !isValidAdmin) {
 			return left(new UnauthorizedException())
 		}
 

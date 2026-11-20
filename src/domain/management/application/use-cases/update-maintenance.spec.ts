@@ -4,6 +4,7 @@ import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { makeCondominium } from '@/test/factories/make-condominium'
 import { makeMaintenance } from '@/test/factories/make-maintenance'
 import { makeManager } from '@/test/factories/make-manager'
+import { InMemoryAdminsRepository } from '@/test/repositories/in-memory-admins-repository'
 import { InMemoryCondominiumsRepository } from '@/test/repositories/in-memory-condominiums-repository'
 import { InMemoryMaintenancesRepository } from '@/test/repositories/in-memory-maintenances-repository'
 import { UpdateMaintenanceUseCase } from './update-maintenance'
@@ -23,6 +24,7 @@ describe('UpdateMaintenanceUseCase', () => {
 		sut = new UpdateMaintenanceUseCase(
 			inMemoryCondominiumsRepository,
 			inMemoryMaintenancesRepository,
+			new InMemoryAdminsRepository(),
 		) // system under test
 	})
 

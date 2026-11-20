@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker'
 import { BadRequestException, UnauthorizedException } from '@nestjs/common'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import { makeAdmin } from '@/test/factories/make-admin'
 import { makeCondominium } from '@/test/factories/make-condominium'
 import { makeManager } from '@/test/factories/make-manager'
 import { InMemoryAppointmentsRepository } from '@/test/repositories/in-memory-appointments-repository'
@@ -26,6 +27,30 @@ describe('ScheduleMeetingUseCase', () => {
 			inMemoryCondominiumsRepository,
 			inMemoryAppointmentsRepository,
 		) // system under test
+	})
+
+	it('should not be possible for an admin to schedule a meeting, even when linked to the condominium.', async () => {
+		const admin = makeAdmin()
+
+		const condominium = makeCondominium({
+			managerId: new UniqueEntityId(),
+		})
+
+		await inMemoryCondominiumsRepository.create(condominium)
+
+		const response = await sut.execute({
+			managerId: admin.id,
+			condominiumId: condominium.id,
+			type: ScheduleType.MEETING,
+			title: 'Reunião Teste',
+			description: 'Descrição da reunião teste',
+			scheduledAt,
+		})
+
+		expect(response.isLeft()).toBe(true)
+		if (response.isLeft()) {
+			expect(response.reason).toBeInstanceOf(UnauthorizedException)
+		}
 	})
 
 	it('should be possible for a manager to schedule a meeting.', async () => {

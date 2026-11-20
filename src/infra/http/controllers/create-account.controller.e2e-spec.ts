@@ -1,3 +1,4 @@
+import { UserRole } from '@generated/prisma/enums'
 import {
 	INestApplication,
 	ValidationPipe,
@@ -50,6 +51,7 @@ describe('Create account (E2E)', () => {
 			})
 
 		expect(response.statusCode).toBe(201)
+		expect(response.body.role).toBe(UserRole.CONDOMINIUM_MANAGER)
 
 		const userOnDatabase = await prisma.user.findUnique({
 			where: {
@@ -58,5 +60,28 @@ describe('Create account (E2E)', () => {
 		})
 
 		expect(userOnDatabase).toBeTruthy()
+		expect(userOnDatabase?.role).toBe(UserRole.CONDOMINIUM_MANAGER)
+	})
+
+	test('[POST] /v1/accounts as condominium admin', async () => {
+		const response = await request(app.getHttpServer())
+			.post('/v1/accounts')
+			.send({
+				name: 'Ana Admin',
+				email: 'ana-admin@example.com',
+				password: '123456',
+				role: UserRole.CONDOMINIUM_ADMIN,
+			})
+
+		expect(response.statusCode).toBe(201)
+		expect(response.body.role).toBe(UserRole.CONDOMINIUM_ADMIN)
+
+		const userOnDatabase = await prisma.user.findUnique({
+			where: {
+				email: 'ana-admin@example.com',
+			},
+		})
+
+		expect(userOnDatabase?.role).toBe(UserRole.CONDOMINIUM_ADMIN)
 	})
 })

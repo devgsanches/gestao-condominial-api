@@ -1,5 +1,8 @@
+import { UserRole } from '@generated/prisma/enums'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import { makeAdmin } from '@/test/factories/make-admin'
 import { makeManager } from '@/test/factories/make-manager'
+import { InMemoryAdminsRepository } from '@/test/repositories/in-memory-admins-repository'
 import { InMemoryManagersRepository } from '@/test/repositories/in-memory-managers-repository'
 import { ManagerNotFoundError } from './errors/manager-not-found'
 import { GetManagerProfileUseCase } from './get-manager-profile'
@@ -8,13 +11,18 @@ import { GetManagerProfileUseCase } from './get-manager-profile'
 
 describe('GetManagerProfileUseCaseUseCase', () => {
 	let inMemoryManagersRepository: InMemoryManagersRepository
+	let inMemoryAdminsRepository: InMemoryAdminsRepository
 
 	let sut: GetManagerProfileUseCase
 
 	beforeEach(() => {
 		inMemoryManagersRepository = new InMemoryManagersRepository()
+		inMemoryAdminsRepository = new InMemoryAdminsRepository()
 
-		sut = new GetManagerProfileUseCase(inMemoryManagersRepository)
+		sut = new GetManagerProfileUseCase(
+			inMemoryManagersRepository,
+			inMemoryAdminsRepository,
+		)
 	})
 
 	it('should be able to get a manager profile', async () => {
@@ -39,6 +47,30 @@ describe('GetManagerProfileUseCaseUseCase', () => {
 			expect(response.result.id.toString()).toBe('mock-id')
 			expect(response.result.name).toBe('Guilherme Sanches')
 			expect(response.result.email).toBe('guilherme@example.com')
+		}
+	})
+
+	it('should be able to get an admin profile with the admin role', async () => {
+		const admin = makeAdmin(
+			{
+				name: 'Ana Admin',
+				email: 'ana@example.com',
+				password: 'fake-hash',
+			},
+			new UniqueEntityId('admin-id'),
+		)
+
+		await inMemoryAdminsRepository.create(admin)
+
+		const response = await sut.execute({
+			managerId: admin.id,
+		})
+
+		expect(response.isRight()).toBe(true)
+
+		if (response.isRight()) {
+			expect(response.result.id.toString()).toBe('admin-id')
+			expect(response.result.role).toBe(UserRole.CONDOMINIUM_ADMIN)
 		}
 	})
 

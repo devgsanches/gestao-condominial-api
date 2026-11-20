@@ -6,6 +6,7 @@ import {
 import { type Either, left, right } from '@/core/either'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { AppointmentWithType } from '../../enterprise/entities/value-objects/appointment-with-type'
+import { AdminsRepository } from '../repositories/admins-repository'
 import { AppointmentsRepository } from '../repositories/appointments-repository'
 import { CondominiumsRepository } from '../repositories/condominiums-repository'
 import { ScheduleType } from './schedule-meeting'
@@ -60,6 +61,7 @@ export class FetchAppointmentsUseCase {
 	constructor(
 		private condominiumRepository: CondominiumsRepository,
 		private appointmentsRepository: AppointmentsRepository,
+		private adminsRepository: AdminsRepository,
 	) {}
 
 	async execute({
@@ -76,7 +78,14 @@ export class FetchAppointmentsUseCase {
 
 		const isCondominiumManager = condominium.managerId.equals(managerId)
 
-		if (!isCondominiumManager) {
+		const isValidAdmin =
+			!isCondominiumManager &&
+			(await this.adminsRepository.isAdminOfCondominium(
+				managerId,
+				condominium.id,
+			))
+
+		if (!isCondominiumManager && !isValidAdmin) {
 			return left(new UnauthorizedException())
 		}
 

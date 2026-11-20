@@ -74,9 +74,44 @@ describe('Get manager profile (E2E)', () => {
 			managerId,
 			name: 'John Doe',
 			email: 'get-manager-profile@example.com',
+			role: UserRole.CONDOMINIUM_MANAGER,
+			avatarUrl: null,
 			createdAt: expect.any(String),
 			updatedAt: expect.any(String),
 		})
 		expect(response.body).not.toHaveProperty('condominiums')
+	})
+
+	test('[GET] /v1/accounts/manager/profile as condominium admin', async () => {
+		const admin = await prisma.user.create({
+			data: {
+				name: 'Ana Admin',
+				role: UserRole.CONDOMINIUM_ADMIN,
+				email: 'get-admin-profile@example.com',
+				password: await hash('123456', 8),
+			},
+		})
+
+		const session = await request(app.getHttpServer())
+			.post('/v1/sessions')
+			.send({
+				email: 'get-admin-profile@example.com',
+				password: '123456',
+			})
+
+		const response = await request(app.getHttpServer())
+			.get('/v1/accounts/manager/profile')
+			.set('Authorization', `Bearer ${session.body.access_token}`)
+
+		expect(response.statusCode).toBe(200)
+		expect(response.body).toEqual({
+			managerId: admin.id,
+			name: 'Ana Admin',
+			email: 'get-admin-profile@example.com',
+			role: UserRole.CONDOMINIUM_ADMIN,
+			avatarUrl: null,
+			createdAt: expect.any(String),
+			updatedAt: expect.any(String),
+		})
 	})
 })

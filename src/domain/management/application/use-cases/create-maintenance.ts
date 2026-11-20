@@ -7,6 +7,7 @@ import {
 import { type Either, left, right } from '@/core/either'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Maintenance } from '../../enterprise/entities/maintenance'
+import { AdminsRepository } from '../repositories/admins-repository'
 import { CondominiumsRepository } from '../repositories/condominiums-repository'
 import { MaintenancesRepository } from '../repositories/maintenances-repository'
 
@@ -32,6 +33,7 @@ export class CreateMaintenanceUseCase {
 	constructor(
 		private condominiumRepository: CondominiumsRepository,
 		private maintenanceRepository: MaintenancesRepository,
+		private adminsRepository: AdminsRepository,
 	) {}
 
 	async execute({
@@ -51,7 +53,14 @@ export class CreateMaintenanceUseCase {
 
 		const isCondominiumManager = condominium.managerId.equals(managerId)
 
-		if (!isCondominiumManager) {
+		const isValidAdmin =
+			!isCondominiumManager &&
+			(await this.adminsRepository.isAdminOfCondominium(
+				managerId,
+				condominium.id,
+			))
+
+		if (!isCondominiumManager && !isValidAdmin) {
 			return left(new UnauthorizedException())
 		}
 

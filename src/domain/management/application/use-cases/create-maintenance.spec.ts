@@ -3,6 +3,7 @@ import { NotFoundException, UnauthorizedException } from '@nestjs/common'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { makeCondominium } from '@/test/factories/make-condominium'
 import { makeManager } from '@/test/factories/make-manager'
+import { InMemoryAdminsRepository } from '@/test/repositories/in-memory-admins-repository'
 import { InMemoryCondominiumsRepository } from '@/test/repositories/in-memory-condominiums-repository'
 import { InMemoryMaintenancesRepository } from '@/test/repositories/in-memory-maintenances-repository'
 import { CreateMaintenanceUseCase } from './create-maintenance'
@@ -21,6 +22,7 @@ describe('CreateMaintenanceUseCase', () => {
 		sut = new CreateMaintenanceUseCase(
 			inMemoryCondominiumsRepository,
 			inMemoryMaintenancesRepository,
+			new InMemoryAdminsRepository(),
 		) // system under test
 	})
 

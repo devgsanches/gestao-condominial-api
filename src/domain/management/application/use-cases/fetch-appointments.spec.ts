@@ -1,8 +1,10 @@
 import { UnauthorizedException } from '@nestjs/common'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import { makeAdmin } from '@/test/factories/make-admin'
 import { makeAppointment } from '@/test/factories/make-appointment'
 import { makeCondominium } from '@/test/factories/make-condominium'
 import { makeManager } from '@/test/factories/make-manager'
+import { InMemoryAdminsRepository } from '@/test/repositories/in-memory-admins-repository'
 import { InMemoryAppointmentsRepository } from '@/test/repositories/in-memory-appointments-repository'
 import { InMemoryCondominiumsRepository } from '@/test/repositories/in-memory-condominiums-repository'
 import { FetchAppointmentsUseCase } from './fetch-appointments'
@@ -17,17 +19,64 @@ function daysFromNow(days: number) {
 describe('FetchAppointmentsUseCase', () => {
 	let inMemoryCondominiumsRepository: InMemoryCondominiumsRepository
 	let inMemoryAppointmentsRepository: InMemoryAppointmentsRepository
+	let inMemoryAdminsRepository: InMemoryAdminsRepository
 
 	let sut: FetchAppointmentsUseCase
 
 	beforeEach(() => {
 		inMemoryCondominiumsRepository = new InMemoryCondominiumsRepository()
 		inMemoryAppointmentsRepository = new InMemoryAppointmentsRepository()
+		inMemoryAdminsRepository = new InMemoryAdminsRepository()
 
 		sut = new FetchAppointmentsUseCase(
 			inMemoryCondominiumsRepository,
 			inMemoryAppointmentsRepository,
+			inMemoryAdminsRepository,
 		)
+	})
+
+	it('should allow an admin linked to the condominium to fetch appointments.', async () => {
+		const admin = makeAdmin()
+		const condominium = makeCondominium({ managerId: new UniqueEntityId() })
+
+		await inMemoryCondominiumsRepository.create(condominium)
+		await inMemoryAdminsRepository.create(admin)
+		await inMemoryAdminsRepository.linkToCondominium(admin.id, condominium.id)
+
+		await inMemoryAppointmentsRepository.create(
+			makeAppointment('meeting', {
+				condominiumId: condominium.id,
+				scheduledAt: daysFromNow(3),
+			}),
+		)
+
+		const response = await sut.execute({
+			managerId: admin.id,
+			condominiumId: condominium.id,
+		})
+
+		expect(response.isRight()).toBe(true)
+		if (response.isRight()) {
+			expect(response.result.upcoming).toHaveLength(1)
+		}
+	})
+
+	it('should not allow an admin not linked to the condominium to fetch appointments.', async () => {
+		const admin = makeAdmin()
+		const condominium = makeCondominium({ managerId: new UniqueEntityId() })
+
+		await inMemoryCondominiumsRepository.create(condominium)
+		await inMemoryAdminsRepository.create(admin)
+
+		const response = await sut.execute({
+			managerId: admin.id,
+			condominiumId: condominium.id,
+		})
+
+		expect(response.isLeft()).toBe(true)
+		if (response.isLeft()) {
+			expect(response.reason).toBeInstanceOf(UnauthorizedException)
+		}
 	})
 
 	it('should group meetings into canceled, completed and upcoming ordered by closest date.', async () => {

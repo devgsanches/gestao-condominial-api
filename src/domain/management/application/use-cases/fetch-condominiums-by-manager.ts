@@ -23,13 +23,15 @@ export class FetchCondominiumsByManagerUseCase {
 	async execute({
 		managerId,
 	}: FetchCondominiumsByManagerInput): Promise<FetchCondominiumsByManagerOutput> {
-		const condominiums =
-			await this.condominiumRepository.findManyWithAddressByManagerId(managerId)
+		const [managed, administered] = await Promise.all([
+			this.condominiumRepository.findManyWithAddressByManagerId(managerId),
+			this.condominiumRepository.findManyWithAddressByAdminId(managerId),
+		])
 
-		if (!condominiums) {
+		if (!managed || !administered) {
 			return left(new NotFoundException())
 		}
 
-		return right({ condominiums })
+		return right({ condominiums: [...managed, ...administered] })
 	}
 }

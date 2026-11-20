@@ -15,7 +15,7 @@ interface RegisterManagerInput {
 type RegisterManagerOutput = Either<
 	ManagerAlreadyExistsError,
 	{
-		manager: Manager
+		user: Manager
 	}
 >
 
@@ -47,6 +47,6 @@ export class RegisterManagerUseCase {
 
 		await this.managersRepository.create(manager)
 
-		return right({ manager })
+		return right({ user: manager })
 	}
 }

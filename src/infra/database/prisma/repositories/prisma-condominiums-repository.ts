@@ -82,6 +82,22 @@ export class PrismaCondominiumsRepository implements CondominiumsRepository {
 		return condominiums.map(PrismaCondominiumWithAddressMapper.toDomain)
 	}
 
+	async findManyWithAddressByAdminId(
+		adminId: UniqueEntityId,
+	): Promise<CondominiumWithAddress[]> {
+		const condominiums = await this.prisma.condominium.findMany({
+			where: {
+				admins: {
+					some: { adminId: adminId.toValue() },
+				},
+			},
+			include: condominiumWithAddressInclude,
+			orderBy: { createdAt: 'asc' },
+		})
+
+		return condominiums.map(PrismaCondominiumWithAddressMapper.toDomain)
+	}
+
 	async findByManagerId(
 		managerId: UniqueEntityId,
 	): Promise<Condominium | null> {

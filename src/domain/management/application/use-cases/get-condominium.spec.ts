@@ -8,6 +8,7 @@ import { makeContract } from '@/test/factories/make-contract'
 import { makeMaintenance } from '@/test/factories/make-maintenance'
 import { makeManager } from '@/test/factories/make-manager'
 import { InMemoryAddressesRepository } from '@/test/repositories/in-memory-addresses-repository'
+import { InMemoryAdminsRepository } from '@/test/repositories/in-memory-admins-repository'
 import { InMemoryAppointmentsRepository } from '@/test/repositories/in-memory-appointments-repository'
 import { InMemoryCondominiumsRepository } from '@/test/repositories/in-memory-condominiums-repository'
 import { InMemoryContractAttachmentsRepository } from '@/test/repositories/in-memory-contract-attachments'
@@ -44,6 +45,7 @@ describe('GetCondominiumUseCase', () => {
 			inMemoryMaintenancesRepository,
 			inMemoryContractsRepository,
 			inMemoryAppointmentsRepository,
+			new InMemoryAdminsRepository(),
 		)
 	})
 
