@@ -6,6 +6,7 @@ export abstract class AdminsRepository {
 	abstract save(admin: Admin): Promise<void>
 	abstract findById(id: UniqueEntityId): Promise<Admin | null>
 	abstract findByEmail(email: string): Promise<Admin | null>
+	abstract findMany(): Promise<Admin[]>
 	abstract isAdminOfCondominium(
 		adminId: UniqueEntityId,
 		condominiumId: UniqueEntityId,

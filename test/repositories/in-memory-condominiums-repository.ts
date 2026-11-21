@@ -24,8 +24,12 @@ export class InMemoryCondominiumsRepository implements CondominiumsRepository {
 		private adminsRepository?: InMemoryAdminsRepository,
 	) {}
 
-	async create(condominium: Condominium) {
+	async create(condominium: Condominium, adminIds: UniqueEntityId[] = []) {
 		this.items.push(condominium)
+
+		for (const adminId of adminIds) {
+			await this.adminsRepository?.linkToCondominium(adminId, condominium.id)
+		}
 	}
 
 	async findById(id: UniqueEntityId) {

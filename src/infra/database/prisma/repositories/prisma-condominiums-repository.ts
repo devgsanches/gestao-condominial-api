@@ -16,12 +16,23 @@ import { PrismaService } from '../prisma.service'
 export class PrismaCondominiumsRepository implements CondominiumsRepository {
 	constructor(private readonly prisma: PrismaService) {}
 
-	async create(condominium: Condominium): Promise<void> {
+	async create(
+		condominium: Condominium,
+		adminIds: UniqueEntityId[] = [],
+	): Promise<void> {
 		const condominiumPrisma = PrismaCondominiumMapper.toPrisma(condominium)
+
+		const data = adminIds.map((adminId) => ({ adminId: adminId.toString() }))
 
 		await this.prisma.condominium.create({
 			data: {
 				...condominiumPrisma,
+				admins: {
+					createMany: {
+						data,
+						skipDuplicates: true,
+					},
+				},
 			},
 		})
 	}

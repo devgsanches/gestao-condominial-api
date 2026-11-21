@@ -63,6 +63,16 @@ export class PrismaAdminsRepository implements AdminsRepository {
 		return PrismaAdminMapper.toDomain(admin)
 	}
 
+	async findMany(): Promise<Admin[]> {
+		const admins = await this.prisma.user.findMany({
+			where: {
+				role: UserRole.CONDOMINIUM_ADMIN,
+			},
+		})
+
+		return admins.map((admin) => PrismaAdminMapper.toDomain(admin))
+	}
+
 	async isAdminOfCondominium(
 		adminId: UniqueEntityId,
 		condominiumId: UniqueEntityId,

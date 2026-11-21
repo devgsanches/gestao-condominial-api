@@ -6,7 +6,10 @@ import { CondominiumWithAddress } from '../../enterprise/entities/value-objects/
 // import type { IPaginationParams } from '@/core/repositories/pagination-params'
 
 export abstract class CondominiumsRepository {
-	abstract create(condominium: Condominium): Promise<void>
+	abstract create(
+		condominium: Condominium,
+		adminIds?: UniqueEntityId[],
+	): Promise<void>
 	abstract findByName(name: string): Promise<Condominium | null>
 	abstract findById(id: UniqueEntityId): Promise<Condominium | null>
 	abstract findManyByManagerId(

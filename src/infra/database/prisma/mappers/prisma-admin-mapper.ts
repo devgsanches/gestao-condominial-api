@@ -10,6 +10,7 @@ export class PrismaAdminMapper {
 				name: raw.name,
 				email: raw.email,
 				password: raw.password,
+				role: raw.role,
 				avatarUrl: raw.avatarUrl,
 				createdAt: new Date(raw.createdAt),
 				updatedAt: raw.updatedAt,

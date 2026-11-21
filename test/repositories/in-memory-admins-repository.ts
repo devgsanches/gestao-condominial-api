@@ -47,6 +47,12 @@ export class InMemoryAdminsRepository implements AdminsRepository {
 		return admin
 	}
 
+	async findMany() {
+		return this.items.filter(
+			(item) => item.role === UserRole.CONDOMINIUM_ADMIN,
+		)
+	}
+
 	async isAdminOfCondominium(
 		adminId: UniqueEntityId,
 		condominiumId: UniqueEntityId,

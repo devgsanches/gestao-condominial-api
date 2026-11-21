@@ -4,6 +4,7 @@ import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { DatabaseError } from '@/core/errors/errors/database-error'
 import { Condominium } from '../../enterprise/entities/condominium'
 import { Slug } from '../../enterprise/entities/value-objects/slug'
+import { AdminsRepository } from '../repositories/admins-repository'
 import { CondominiumsRepository } from '../repositories/condominiums-repository'
 import { ManagersRepository } from '../repositories/managers-repository'
 import { AddressAlreadyInUseError } from './errors/address-already-in-use-error'
@@ -34,6 +35,7 @@ export class CreateCondominiumUseCase {
 	constructor(
 		private condominiumRepository: CondominiumsRepository,
 		private managersRepository: ManagersRepository,
+		private adminsRepository: AdminsRepository,
 	) {}
 
 	async execute({
@@ -78,7 +80,13 @@ export class CreateCondominiumUseCase {
 				unitsCount,
 			})
 
-			await this.condominiumRepository.create(condominium)
+			// fornecer acesso a todos os admins da companhia, para que visualizem o condominio recém criado
+			const admins = await this.adminsRepository.findMany()
+
+			await this.condominiumRepository.create(
+				condominium,
+				admins.map((admin) => admin.id),
+			)
 
 			return right({ condominium })
 		} catch (error: unknown) {
