@@ -5,6 +5,9 @@
 	"author": "",
 	"private": true,
 	"license": "UNLICENSED",
+	"engines": {
+		"node": "27.0.0-alpha.0.1.1"
+	},
 	"scripts": {
 		"build": "nest build",
 		"format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
