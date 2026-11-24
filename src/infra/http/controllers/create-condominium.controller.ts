@@ -13,7 +13,6 @@ import { CreateCondominiumUseCase } from '@/domain/management/application/use-ca
 import { AddressAlreadyInUseError } from '@/domain/management/application/use-cases/errors/address-already-in-use-error'
 import { CondominiumAlreadyExistsError } from '@/domain/management/application/use-cases/errors/condominium-already-exists-error'
 import { MaxCondominiumsReachedError } from '@/domain/management/application/use-cases/errors/max-condominiums-reached-error'
-import { NotAManagerError } from '@/domain/management/application/use-cases/errors/not-a-manager-error'
 import { CurrentUser } from '@/infra/auth/current-user-decorator'
 import { UserPayload } from '@/infra/auth/jwt.strategy'
 import { CreateCondominiumRequestDTO } from '@/infra/http/dtos/create-condominium'

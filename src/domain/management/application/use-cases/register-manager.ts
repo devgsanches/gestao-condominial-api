@@ -1,5 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common'
-import { hash } from 'bcryptjs'
+import { Injectable } from '@nestjs/common'
 import { type Either, left, right } from '@/core/either'
 import { Manager } from '../../enterprise/entities/manager'
 import { HashGenerator } from '../cryptography/hash-generator'
