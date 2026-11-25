@@ -1,4 +1,3 @@
-
 name: CI
 
 on: 
@@ -15,6 +14,14 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
     
-    # Change latest version
+    - name: Generate HASH
+      id: generate-hash
+      run: |
+        HASH=$(echo $GITHUB_SHA | head -c7)
+        echo "hash=$HASH" >> $GITHUB_OUTPUT
+
     - name: Build docker image
-      run: docker build -t sanches3g/api-gestao-condominial:latest .
+      run: docker build -t sanches3g/api-gestao-condominial:${{ steps.generate-hash.outputs.hash }} .
+
+    #  logar no container registry (DockerHub)
+    # enviar imagem após
