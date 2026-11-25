@@ -31,3 +31,8 @@ jobs:
       run: docker build -t sanches3g/api-gestao-condominial:${{ steps.generate-hash.outputs.hash }} .
 
     # enviar imagem após build
+    - name: Push docker image
+      run: | 
+        docker push sanches3g/api-gestao-condominial:${{ steps.generate-hash.outputs.hash }}
+        docker tag sanches3g/api-gestao-condominial:${{ steps.generate-hash.outputs.hash }} sanches3g/api-gestao-condominial:latest
+        docker push sanches3g/api-gestao-condominial:latest
