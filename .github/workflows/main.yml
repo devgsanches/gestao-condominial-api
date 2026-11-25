@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # (first step) - Copy repository code to the runner (VM = ubuntu-latest)
     - name: Checkout
       uses: actions/checkout@v4
     
@@ -27,12 +28,21 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: Build docker image
-      run: docker build -t sanches3g/api-gestao-condominial:${{ steps.generate-hash.outputs.hash }} .
+    # - name: Build docker image
+    #   run: docker build -t sanches3g/api-gestao-condominial:${{ steps.generate-hash.outputs.hash }} .
 
-    # enviar imagem após build
-    - name: Push docker image
-      run: | 
-        docker push sanches3g/api-gestao-condominial:${{ steps.generate-hash.outputs.hash }}
-        docker tag sanches3g/api-gestao-condominial:${{ steps.generate-hash.outputs.hash }} sanches3g/api-gestao-condominial:latest
-        docker push sanches3g/api-gestao-condominial:latest
+    # # enviar imagem após build
+    # - name: Push docker image
+    #   run: | 
+    #     docker push sanches3g/api-gestao-condominial:${{ steps.generate-hash.outputs.hash }}
+    #     docker tag sanches3g/api-gestao-condominial:${{ steps.generate-hash.outputs.hash }} sanches3g/api-gestao-condominial:latest
+    #     docker push sanches3g/api-gestao-condominial:latest
+
+    - name: Build and push
+      uses: docker/build-push-action@v7
+      with:
+        context: .
+        push: true
+        tags: |
+         sanches3g/api-gestao-condominial:${{ steps.generate-hash.outputs.hash }}
+         sanches3g/api-gestao-condominial:latest
