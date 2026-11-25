@@ -20,8 +20,14 @@ jobs:
         HASH=$(echo $GITHUB_SHA | head -c7)
         echo "hash=$HASH" >> $GITHUB_OUTPUT
 
+      #  logar no container registry (DockerHub)
+    - name: Login to Docker Hub
+      uses: docker/login-action@v4
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }} || 'sanches3g'
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
     - name: Build docker image
       run: docker build -t sanches3g/api-gestao-condominial:${{ steps.generate-hash.outputs.hash }} .
 
-    #  logar no container registry (DockerHub)
-    # enviar imagem após
+    # enviar imagem após build
