@@ -14,7 +14,29 @@ jobs:
       # (first step) - Copy repository code to the runner (VM = ubuntu-latest)
     - name: Checkout
       uses: actions/checkout@v4
-    
+
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4   
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v7
+      with:
+        node-version-file: '.nvmrc'
+        cache: 'pnpm'
+
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+
+    - name: Generate Prisma Client
+      run: pnpm prisma generate
+
+    # (second step) - run all tests and linting checks
+    - name: Run tests
+      run: pnpm run test
+
+    - name: Run linting checks
+      run: pnpm run lint
+
     - name: Generate HASH
       id: generate-hash
       run: |
@@ -28,16 +50,7 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    # - name: Build docker image
-    #   run: docker build -t sanches3g/api-gestao-condominial:${{ steps.generate-hash.outputs.hash }} .
-
-    # # enviar imagem após build
-    # - name: Push docker image
-    #   run: | 
-    #     docker push sanches3g/api-gestao-condominial:${{ steps.generate-hash.outputs.hash }}
-    #     docker tag sanches3g/api-gestao-condominial:${{ steps.generate-hash.outputs.hash }} sanches3g/api-gestao-condominial:latest
-    #     docker push sanches3g/api-gestao-condominial:latest
-
+      #  build and push docker image
     - name: Build and push
       uses: docker/build-push-action@v7
       with:
