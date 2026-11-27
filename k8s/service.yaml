@@ -1,0 +1,19 @@
+# Componente de rede > para acessar a app
+
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: gestao-condominial-service
+  labels:
+    app: gestao-condominial
+
+spec:
+  selector:
+    app: gestao-condominial
+  type: ClusterIP
+  ports:
+  - name: gestao-condominial-service
+    port: 3333
+    targetPort: 3333
+    protocol: TCP

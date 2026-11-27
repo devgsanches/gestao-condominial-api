@@ -1,0 +1,105 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata: 
+  name: gestao-condominial-deployment
+  labels: 
+    app: gestao-condominial
+spec: 
+# PODs
+  replicas: 5
+  selector: 
+    matchLabels: 
+      app: gestao-condominial
+  template:
+    metadata:
+      labels:
+        app: gestao-condominial
+    spec:
+      containers:
+        - name: gestao-condominial-api
+        # Docker registry: utiliza o Dockerhub por default
+          image: sanches3g/api-gestao-condominial:3cce708
+          # Estes recursos são consumidos da capacidade do Nó (maquina virtual > responsável por executar os pods)
+          # Mappper - Envs que minha app espera > valores que estão no secret
+          env: 
+            - name: DATABASE_URL 
+              valueFrom:
+                secretKeyRef:
+                  name: db-connection
+                  key: database_url
+            - name: POSTGRES_USER 
+              valueFrom:
+                secretKeyRef:
+                  name: db-connection
+                  key: postgres_user
+            - name: POSTGRES_PASSWORD   
+              valueFrom:
+                secretKeyRef:
+                  name: db-connection
+                  key: postgres_password
+            - name: POSTGRES_DB 
+              valueFrom:
+                secretKeyRef:
+                  name: db-connection
+                  key: postgres_db
+            - name: JWT_SECRET 
+              valueFrom:
+                secretKeyRef:
+                  name: db-connection
+                  key: jwt_secret
+            - name: CLOUDFLARE_ACCOUNT_ID 
+              valueFrom:
+                secretKeyRef:
+                  name: db-connection
+                  key: cloudflare_account_id
+            - name: AWS_BUCKET_NAME 
+              valueFrom:
+                secretKeyRef:
+                  name: db-connection
+                  key: aws_bucket_name
+            - name: AWS_ACCESS_KEY_ID 
+              valueFrom:
+                secretKeyRef:
+                  name: db-connection
+                  key: aws_access_key_id
+            - name: AWS_SECRET_ACCESS_KEY 
+              valueFrom:
+                secretKeyRef:
+                  name: db-connection
+                  key: aws_secret_access_key
+            - name: SMTP_HOST 
+              valueFrom:
+                secretKeyRef:
+                  name: db-connection
+                  key: smtp_host
+            - name: SMTP_PORT 
+              valueFrom:
+                secretKeyRef:
+                  name: db-connection
+                  key: smtp_port
+            - name: RABBITMQ_URL 
+              valueFrom:
+                secretKeyRef:
+                  name: db-connection
+                  key: rabbitmq_url
+            - name: REDIS_HOST 
+              valueFrom:
+                secretKeyRef:
+                  name: db-connection
+                  key: redis_host
+            - name: REDIS_PASSWORD 
+              valueFrom:
+                secretKeyRef:
+                  name: db-connection
+                  key: redis_password
+          ports:
+            - containerPort: 3333
+          resources:
+            requests:
+              cpu: 200m
+              memory: 256Mi 
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            
