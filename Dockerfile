@@ -28,7 +28,11 @@ COPY package.json pnpm-lock.yaml ./
 
 RUN pnpm install --frozen-lockfile --prod
 
+# Copy compiled application
 COPY --from=builder /app/dist ./dist
+
+# Copy generated Prisma Client
+COPY --from=builder /app/generated ./generated
 
 # limitando as permissões - com usuário node
 USER node
